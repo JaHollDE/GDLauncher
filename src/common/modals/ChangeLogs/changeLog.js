@@ -3,7 +3,7 @@ module.exports = {
   improvements: [],
   bugfixes: [
     {
-      header: 'Hallo das ist ein Test',
+      header: 'Hallo das ist ein Test 2',
       content: 'when closing the Launcher.',
       advanced: { cm: '391dd9cc', pr: '1412' }
     },
@@ -13,7 +13,7 @@ module.exports = {
       advanced: { cm: '87f89ed9', pr: '1429' }
     },
     {
-      header: 'Fixed the kill button',
+      header: 'lalalalalalalalalla',
       content: 'having to be clicked twice.',
       advanced: { cm: '2664f8bb', pr: '1419' }
     },

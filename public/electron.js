@@ -78,7 +78,7 @@ const edit = [
   ...(process.platform === 'darwin'
     ? [
         {
-          label: 'GDLauncher',
+          label: 'JaHollDELauncher',
           submenu: [
             {
               label: 'About GDLauncher',
@@ -348,7 +348,7 @@ function createWindow() {
   tray = new Tray(nimage);
   const trayMenuTemplate = [
     {
-      label: 'GDLauncher',
+      label: 'JaHollDELauncher',
       enabled: false
     },
     {
