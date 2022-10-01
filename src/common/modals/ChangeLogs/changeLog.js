@@ -3,12 +3,12 @@ module.exports = {
   improvements: [],
   bugfixes: [
     {
-      header: 'No longer killing the game',
+      header: 'Hallo das ist ein Test',
       content: 'when closing the Launcher.',
       advanced: { cm: '391dd9cc', pr: '1412' }
     },
     {
-      header: 'Fixed the game resolution setting',
+      header: 'Test 2',
       content: 'being ignored.',
       advanced: { cm: '87f89ed9', pr: '1429' }
     },
