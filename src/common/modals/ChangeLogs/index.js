@@ -42,7 +42,7 @@ const UpdateRow = ({ header, content, advanced }) => {
           `}
         >
           <a
-            href={`https://github.com/gorilla-devs/GDLauncher/commit/${advanced.cm}`}
+            href={`https://github.com/JaHollDE/GDLauncher/commit/${advanced.cm}`}
           >
             {advanced.cm}
           </a>
