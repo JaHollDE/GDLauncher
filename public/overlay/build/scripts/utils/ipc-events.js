@@ -17,7 +17,9 @@ export function initIPCEvents(application) {
         return application.socket.port;
     });
     ipcMain.handle("trigger-device", (event, state) => {
-        console.log("TRIGGER DEVICE!");
         state ? application.window.enableMouseEvents() : application.window.disableMouseEvents();
+    });
+    ipcMain.handle("transmit-mod", (event, data) => {
+        application.socket.sendMessage(JSON.stringify(data));
     });
 }

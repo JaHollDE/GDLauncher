@@ -1,0 +1,13 @@
+{
+  "microphoneID": "",
+  "speakerID": "",
+  "microphoneVolume": 1,
+  "speakerVolume": 1,
+  "voiceThreshold": -50,
+  "windowScaling": 1,
+  "externalMicrophone": false,
+  "showHints": true,
+  "enableHardwareAcceleration": false,
+  "productive": true,
+  "assetsVersion": "undefined"
+}
