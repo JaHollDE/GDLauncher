@@ -88,6 +88,8 @@
 .player-online {
     position: absolute;
 
+    display: flex;
+
     font-size: 1.5rem;
 
     font-family: Roboto;
@@ -101,4 +103,9 @@
     background-color: rgba(100, 100, 100, 0.3);
     padding: 0 .5rem;
     border-radius: .2rem;
+}
+.chain-part {
+    position: absolute;
+
+    overflow: hidden;
 }

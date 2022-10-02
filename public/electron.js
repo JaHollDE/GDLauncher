@@ -27,7 +27,7 @@ const nsfw = require('./native/nsfw');
 const napi = require('./native/napi');
 
 // console.log(napi.fibonacci(10));
-require('./overlay/build/main.js').init();
+
 
 const fs = fss.promises;
 
@@ -289,6 +289,8 @@ function createWindow() {
       webSecurity: !isDev
     }
   });
+
+  require('./overlay/build/main.js').init(mainWindow);
 
   if (isDev) {
     globalShortcut.register('CommandOrControl+R', () => {

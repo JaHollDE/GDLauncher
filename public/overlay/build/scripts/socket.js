@@ -56,6 +56,7 @@ export default class SocketManager {
         this.events.push(event);
     }
     async updateWindow() {
+        this.app.mainWindow.webContents.send("overlay-connected", this.webSockets.length !== 0);
         if (this.webSockets.length === 0) {
             await this.app.window.hideHomePage();
             // check if websockets are empty after 5 seconds, then quit

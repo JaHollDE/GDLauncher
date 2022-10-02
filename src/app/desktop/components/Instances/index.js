@@ -14,6 +14,10 @@ import bg2 from "../../../../common/assets/jahollde/backgrounds/bg2.jpg"
 import bg3 from "../../../../common/assets/jahollde/backgrounds/bg3.png"
 import Logo from "../../../../ui/Logo";
 
+import link from "../../../../common/assets/jahollde/link.svg"
+
+import {ipcRenderer} from "electron";
+
 import * as jaholldeVerification from "../../utils/jaholldeVerification";
 
 import "./index.css";
@@ -244,6 +248,12 @@ const Instances = () => {
     dispatch(openModal('ModsManagement', { instanceName }));
   }
 
+  const [overlayConnected, setOverlayConnected] = useState(false);
+
+  ipcRenderer.on("overlay-connected", (event, status) => {
+    setOverlayConnected(status);
+  });
+
   return (
       <Container>
         <div style={{
@@ -258,7 +268,19 @@ const Instances = () => {
             <Logo size={35} />
           </div>
 
-          <div className={"player-online"}>Online: <span>{playerOnline}</span></div>
+          <div className={"player-online"}>Online: <span>{playerOnline}</span>
+            <div style={{
+              marginLeft: "1rem",
+            }}>
+              <img src={link} style={{
+                filter: "invert(1)",
+                height: "1.5rem",
+                transform: "rotate(45deg)",
+                opacity: overlayConnected ? "100%" : "0%",
+                transition: "all 0.5s"
+              }}></img>
+            </div>
+          </div>
 
           <div className={"start-instance"}>
             <div>

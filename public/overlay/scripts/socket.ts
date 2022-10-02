@@ -7,6 +7,7 @@ import ElectronEvent from "./electron-event";
 import JaHollDEApplication from "./app";
 import OnScreenUpdate from "./api/screen-update";
 import ElectronEventTransmitter from "./api/electron-event";
+import {ipcMain} from "electron";
 
 export default class SocketManager {
   public port!: number;
@@ -75,7 +76,9 @@ export default class SocketManager {
   }
 
   public async updateWindow(): Promise<void> {
+    this.app.mainWindow.webContents.send("overlay-connected", this.webSockets.length !== 0);
     if (this.webSockets.length === 0) {
+
       await this.app.window.hideHomePage();
       // check if websockets are empty after 5 seconds, then quit
       setTimeout(async () => {
