@@ -7,12 +7,15 @@ let activity;
 const initialAppStartup = Math.floor(Date.now() / 1000);
 
 const defaultValue = {
-  details: 'Idle',
+  details: 'Im Launcher',
+  state: 'www.jaholl.de',
   startTimestamp: initialAppStartup,
-  largeImageKey: 'default_big',
-  largeImageText: 'JaHollDE - Dein Minecraft Roleplay Erlebnis',
+  largeImageKey: 'jahollde',
+  largeImageText: 'JaHollDE - Minecraft Roleplay',
   instance: false
 };
+
+const messages = ["www.jaholl.de", "Jetzt beitreten!"];
 
 exports.initRPC = () => {
   client = new Client({ transport: 'ipc' });
@@ -22,9 +25,16 @@ exports.initRPC = () => {
   client.on('ready', () => {
     log.log('Discord RPC Connected');
     client.setActivity(activity);
+
+    setInterval(() => {
+      const msgs = messages.filter(l => activity.state !== l);
+      const randomMessage = msgs[Math.floor(Math.random()*msgs.length)];
+      activity.state = randomMessage;
+      client?.setActivity(activity);
+    }, 60*1000);
   });
 
-  client.login({ clientId: '555898932467597312' }).catch(error => {
+  client.login({ clientId: '931843550801449011' }).catch(error => {
     if (error.message.includes('ENOENT')) {
       log.error('Unable to initialize Discord RPC, no client detected.');
     } else {

@@ -191,49 +191,21 @@ const Login = () => {
         <Container>
           <LeftSide transitionState={transitionState}>
             <Header>
-              <HorizontalLogo size={200} />
+              <HorizontalLogo size={50} />
             </Header>
-            <Form>
-              <div>
-                <Input
-                  placeholder="Email"
-                  value={email}
-                  onChange={({ target: { value } }) => setEmail(value)}
-                />
+            <div class="loginOptionActions">
+              <div class="loginOptionButtonContainer">
+                <Button id="loginOptionMicrosoft" className="loginOptionButton" onClick={authenticateMicrosoft}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="10" viewBox="0 0 23 23">
+                    <path fill="#f35325" d="M1 1h10v10H1z"/>
+                    <path fill="#81bc06" d="M12 1h10v10H12z"/>
+                    <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+                    <path fill="#ffba08" d="M12 12h10v10H12z"/>
+                  </svg>
+                  <span>Einloggen mit Microsoft</span>
+                </Button>
               </div>
-              <div>
-                <Input
-                  placeholder="Password"
-                  type="password"
-                  value={password}
-                  onChange={({ target: { value } }) => setPassword(value)}
-                />
-              </div>
-              {loginFailed && (
-                <LoginFailMessage>{loginFailed?.message}</LoginFailMessage>
-              )}
-              <LoginButton color="primary" onClick={authenticate}>
-                Sign In
-                <FontAwesomeIcon
-                  css={`
-                    margin-left: 6px;
-                  `}
-                  icon={faArrowRight}
-                />
-              </LoginButton>
-              <MicrosoftLoginButton
-                color="primary"
-                onClick={authenticateMicrosoft}
-              >
-                Sign in with Microsoft
-                <FontAwesomeIcon
-                  css={`
-                    margin-left: 6px;
-                  `}
-                  icon={faExternalLinkAlt}
-                />
-              </MicrosoftLoginButton>
-            </Form>
+            </div>
             <Footer>
               <div
                 css={`

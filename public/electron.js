@@ -81,7 +81,7 @@ const edit = [
           label: 'JaHollDELauncher',
           submenu: [
             {
-              label: 'About GDLauncher',
+              label: 'About JaHollDELauncher',
               role: 'about'
             },
             { type: 'separator' },
@@ -92,7 +92,7 @@ const edit = [
             },
             { type: 'separator' },
             {
-              label: 'Hide GDLauncher',
+              label: 'Hide JaHollDELauncher',
               accelerator: 'Command+H',
               role: 'hide'
             },
@@ -359,7 +359,7 @@ function createWindow() {
 
   const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
   tray.setContextMenu(trayMenu);
-  tray.setToolTip('GDLauncher');
+  tray.setToolTip('JaHollDELauncher');
   tray.on('double-click', () => mainWindow.show());
 
   mainWindow.loadURL(
