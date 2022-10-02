@@ -51,7 +51,7 @@ const UpdateRow = ({ header, content, advanced }) => {
               {' | '}
               {/* Yes, this was the best (and shortest) version to do this I could come up with */}
               <a
-                href={`https://github.com/gorilla-devs/GDLauncher/pull/${
+                href={`https://github.com/JaHollDE/GDLauncher/pull/${
                   prSplit[0]
                 }${prSplit.length > 1 ? `/commits/${prSplit[1]}` : ''}`}
               >
