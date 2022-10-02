@@ -1,6 +1,7 @@
 import { Server as WebSocketServer } from "ws";
 import * as tcpPortUsed from "tcp-port-used";
 import OnScreenUpdate from "./api/screen-update";
+import ElectronEventTransmitter from "./api/electron-event";
 export default class SocketManager {
     app;
     port;
@@ -10,7 +11,7 @@ export default class SocketManager {
     queue = [];
     constructor(app) {
         this.app = app;
-        this.events.push(new OnScreenUpdate(this.app));
+        this.events.push(new OnScreenUpdate(this.app), new ElectronEventTransmitter(this.app));
     }
     async init() {
         let port = 5050;
@@ -71,12 +72,13 @@ export default class SocketManager {
         this.webSockets.forEach(webSocket => webSocket.send(message));
     }
     onMessage(msg) {
+        console.log(msg);
         let content = undefined;
         try {
             content = JSON.parse(msg);
         }
         catch (exception) {
-            console.warn(exception);
+            console.warn(exception, msg);
             return;
         }
         this.onJSONMessage(content);

@@ -11,7 +11,19 @@ export class Window {
   private size: [number, number] = [0, 0];
   private pos: [number, number] = [0, 0];
 
+  private onReady: (() => void)[] = [];
+
   constructor(private application: JaHollDEApplication) {
+  }
+
+  public getWindow(): Promise<BrowserWindow> {
+    return new Promise(resolve => {
+        if (this.window !== undefined) {
+          resolve(this.window);
+          return;
+        }
+        this.onReady.push(() => resolve(this.window));
+    });
   }
 
   public enableMouseEvents(): void {
@@ -72,6 +84,11 @@ export class Window {
       this.sendReadyState();
 
       console.log("loaded window");
+
+      this.onReady = this.onReady.filter(l => {
+        l();
+        return false;
+      })
     }
   }
 

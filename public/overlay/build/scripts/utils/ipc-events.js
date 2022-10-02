@@ -16,4 +16,8 @@ export function initIPCEvents(application) {
     ipcMain.handle("get-jahollde-port", (event) => {
         return application.socket.port;
     });
+    ipcMain.handle("trigger-device", (event, state) => {
+        console.log("TRIGGER DEVICE!");
+        state ? application.window.enableMouseEvents() : application.window.disableMouseEvents();
+    });
 }

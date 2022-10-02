@@ -7,8 +7,18 @@ export class Window {
     siteActive = false;
     size = [0, 0];
     pos = [0, 0];
+    onReady = [];
     constructor(application) {
         this.application = application;
+    }
+    getWindow() {
+        return new Promise(resolve => {
+            if (this.window !== undefined) {
+                resolve(this.window);
+                return;
+            }
+            this.onReady.push(() => resolve(this.window));
+        });
     }
     enableMouseEvents() {
         /*
@@ -57,9 +67,13 @@ export class Window {
             this.window?.showInactive();
             this.window?.setAlwaysOnTop(true, "screen-saver");
             this.siteActive = true;
-            //this.disableMouseEvents();
+            this.disableMouseEvents();
             this.sendReadyState();
             console.log("loaded window");
+            this.onReady = this.onReady.filter(l => {
+                l();
+                return false;
+            });
         }
     }
     async hideHomePage() {

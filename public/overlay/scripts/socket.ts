@@ -6,6 +6,7 @@ import * as tcpPortUsed from "tcp-port-used";
 import ElectronEvent from "./electron-event";
 import JaHollDEApplication from "./app";
 import OnScreenUpdate from "./api/screen-update";
+import ElectronEventTransmitter from "./api/electron-event";
 
 export default class SocketManager {
   public port!: number;
@@ -19,7 +20,8 @@ export default class SocketManager {
 
   constructor(private app: JaHollDEApplication) {
     this.events.push(
-      new OnScreenUpdate(this.app)
+       new OnScreenUpdate(this.app),
+       new ElectronEventTransmitter(this.app)
     );
   }
 
@@ -90,11 +92,12 @@ export default class SocketManager {
   }
 
   private onMessage(msg: string): void {
+    console.log(msg);
     let content: { [key: string]: any } | undefined = undefined;
     try {
       content = JSON.parse(msg);
     } catch (exception) {
-      console.warn(exception);
+      console.warn(exception, msg);
       return;
     }
     this.onJSONMessage(content);

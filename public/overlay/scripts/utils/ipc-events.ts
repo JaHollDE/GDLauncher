@@ -20,6 +20,7 @@ export function initIPCEvents(application: JaHollDEApplication): void {
   });
 
   ipcMain.handle("trigger-device", (event, state: boolean) => {
+    console.log("TRIGGER DEVICE!")
       state ? application.window.enableMouseEvents() : application.window.disableMouseEvents();
   });
 }

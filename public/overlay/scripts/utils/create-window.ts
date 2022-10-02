@@ -36,6 +36,7 @@ export async function createWindow(): Promise<BrowserWindow> {
   if (is.windows) options.type = "toolbar";
   const win = new BrowserWindow(options);
 
+
   is.macos ? app.dock.hide() : undefined;
   win.setFullScreenable(false);
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
@@ -43,7 +44,9 @@ export async function createWindow(): Promise<BrowserWindow> {
 
   win.setMenu(null);
 
-  win.webContents.openDevTools();
+  win.webContents.openDevTools({
+    mode: "undocked"
+  });
 
   return win;
 }
