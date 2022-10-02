@@ -38,6 +38,8 @@ import psTree from "ps-tree";
 import { getUpdateMods, onConfig } from "../../../../common/store/jahollConfig";
 import { installMods } from "../../../../common/modals/ModsManagement";
 import { hasAssetsUpdate, installAssets } from "../../utils/webAssetsManager";
+import {Button} from "antd";
+import Instance from "./Instance";
 
 const Container = styled.div`
   display: flex;
@@ -249,10 +251,15 @@ const Instances = () => {
   }
 
   const [overlayConnected, setOverlayConnected] = useState(false);
+  const [showAllInstances, setShowAllInstances] = useState(false);
 
   ipcRenderer.on("overlay-connected", (event, status) => {
     setOverlayConnected(status);
   });
+
+  const openAddInstanceModal = defaultPage => {
+    dispatch(openModal('AddInstance', { defaultPage }));
+  };
 
   return (
       <Container>
@@ -268,6 +275,17 @@ const Instances = () => {
             <Logo size={35} />
           </div>
 
+          <div className={"show-all-instances"}>
+            <Button onClick={() => setShowAllInstances(!showAllInstances)}>
+              {!showAllInstances ? 'Alle Instanzen' : 'Verbergen'}
+            </Button>
+            {showAllInstances ? <Button onClick={openAddInstanceModal}>
+              Instanz erstellen
+            </Button> : null}
+
+          </div>
+
+
           <div className={"player-online"}>Online: <span>{playerOnline}</span>
             <div style={{
               marginLeft: "1rem",
@@ -281,6 +299,40 @@ const Instances = () => {
               }}></img>
             </div>
           </div>
+
+          {
+            showAllInstances ? <div style={{
+              top: "4rem",
+              maxHeight: "70%",
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              width: "80%",
+              padding: "2rem",
+              marginTop: "2rem",
+              marginLeft: "10%",
+              marginRight: "10%",
+              position: "absolute",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              borderRadius: ".5rem",
+              gap: "10px"
+            }}>
+              {
+                memoInstances.length > 0 ? (
+                    memoInstances.map(i => <Instance key={i.name} instanceName={i.name} />)
+                ) : (
+                    <NoInstance>
+                      No Instance has been installed
+                      <SubNoInstance>
+                        Click on the icon in the bottom left corner to add new instances
+                      </SubNoInstance>
+                    </NoInstance>
+                )
+              }
+            </div> : null
+          }
+
+
 
           <div className={"start-instance"}>
             <div>
@@ -316,16 +368,7 @@ const Instances = () => {
   );
 
   /*
-  {memoInstances.length > 0 ? (
-        memoInstances.map(i => <Instance key={i.name} instanceName={i.name} />)
-      ) : (
-        <NoInstance>
-          No Instance has been installed
-          <SubNoInstance>
-            Click on the icon in the bottom left corner to add new instances
-          </SubNoInstance>
-        </NoInstance>
-      )}
+
    */
 
 

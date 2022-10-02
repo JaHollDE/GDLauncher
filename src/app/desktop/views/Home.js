@@ -145,9 +145,6 @@ const Home = () => {
             </div>
         ) : null}
         <Instances />
-        <AddInstanceIcon type="primary" onClick={() => openAddInstanceModal(0)}>
-          <FontAwesomeIcon icon={faPlus} />
-        </AddInstanceIcon>
         <AccountContainer type="primary">
           {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
           {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}

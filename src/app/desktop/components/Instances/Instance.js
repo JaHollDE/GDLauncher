@@ -45,8 +45,6 @@ const Container = styled.div`
       p.isHovered && !p.installing
           ? 'scale3d(1.1, 1.1, 1.1)'
           : 'scale3d(1, 1, 1)'};
-  margin-right: 20px;
-  margin-top: 20px;
   transition: transform 150ms ease-in-out;
   &:hover {
     ${p => (p.installing ? '' : 'transform: scale3d(1.1, 1.1, 1.1);')}
@@ -90,7 +88,6 @@ const InstanceContainer = styled.div`
   font-weight: 600;
   background-size: cover;
   border-radius: 4px;
-  margin: 10px;
 `;
 
 const HoverContainer = styled.div`
@@ -101,7 +98,6 @@ const HoverContainer = styled.div`
   align-items: center;
   cursor: pointer;
   font-size: 18px;
-  margin: 10px;
   padding: 10px;
   text-align: center;
   font-weight: 800;
@@ -173,6 +169,8 @@ const Instance = ({ instanceName }) => {
   const isInQueue = downloadQueue[instanceName];
 
   const isPlaying = startedInstances[instanceName];
+
+
 
   useEffect(() => {
     if (instance.background) {
