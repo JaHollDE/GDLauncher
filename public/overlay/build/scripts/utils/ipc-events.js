@@ -13,4 +13,7 @@ export function initIPCEvents(application) {
             callback = () => resolve(token);
         });
     });
+    ipcMain.handle("get-jahollde-port", (event) => {
+        return application.socket.port;
+    });
 }

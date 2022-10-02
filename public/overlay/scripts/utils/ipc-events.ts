@@ -14,4 +14,12 @@ export function initIPCEvents(application: JaHollDEApplication): void {
       callback = () => resolve(token);
     })
   });
+
+  ipcMain.handle("get-jahollde-port", (event) => {
+    return application.socket.port;
+  });
+
+  ipcMain.handle("trigger-device", (event, state: boolean) => {
+      state ? application.window.enableMouseEvents() : application.window.disableMouseEvents();
+  });
 }

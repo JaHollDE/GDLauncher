@@ -1,5 +1,4 @@
 import { app, BrowserWindow } from "electron";
-import * as path from "path";
 import { is } from "electron-util";
 export async function createWindow() {
     const options = {
@@ -25,10 +24,10 @@ export async function createWindow() {
         minHeight: 0,
         webPreferences: {
             //contextIsolation: !is.linux,
-            contextIsolation: true,
+            contextIsolation: false,
             //enableRemoteModule: true,
-            nodeIntegration: false,
-            preload: path.join(__dirname, "./preload.js"),
+            nodeIntegration: true,
+            //preload: path.join(__dirname, "./preload.js"),
         },
     };
     if (is.windows)

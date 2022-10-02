@@ -68,7 +68,7 @@ export class Window {
       this.window?.showInactive();
       this.window?.setAlwaysOnTop(true, "screen-saver");
       this.siteActive = true;
-      //this.disableMouseEvents();
+      this.disableMouseEvents();
       this.sendReadyState();
 
       console.log("loaded window");
@@ -76,17 +76,18 @@ export class Window {
   }
 
   public async hideHomePage() {
+    if (this.window.isDestroyed()) return;
     this.window.hide();
   }
 
   public async deleteHomePage() {
     if (this.window === undefined) return;
-
     this.pos = [0, 0];
     this.size = [0, 0];
-
-    this.window.hide();
-    this.window.destroy();
+    if (!this.window.isDestroyed()) {
+      this.window.hide();
+      this.window.destroy();
+    }
     this.window = undefined;
 
     console.log("deleted window");

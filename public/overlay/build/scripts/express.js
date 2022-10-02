@@ -30,8 +30,11 @@ export class ExpressManager {
         this.port = port;
     }
     start() {
-        this.server = this.app.listen(this.port, () => {
-            console.log("Started express app!");
+        return new Promise(resolve => {
+            this.server = this.app.listen(this.port, () => {
+                console.log("Started express app!");
+                resolve(undefined);
+            });
         });
     }
 }

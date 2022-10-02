@@ -57,6 +57,8 @@ export async function installAssets(callback) {
     await downloadFile(p2, `${url}${asset.startsWith("assets/") ? "" : "/static"}/${asset}`);
   }
 
+  config.version = webData.version;
+
   const p2 = path.join(appData, "gdlauncher_next", "jahollde_assets.json");
   fsa.writeFileSync(p2, JSON.stringify(webData, undefined, 2));
 }

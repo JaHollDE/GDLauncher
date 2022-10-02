@@ -128,6 +128,7 @@ const Instances = () => {
     setUpdateInstance(createInstance2);
 
     const updateAss = await hasAssetsUpdate();
+
     setUpdateAssets(updateAss);
 
     setUpdateAvailable(updateMods2.length > 0 || createInstance2 || updateAss);

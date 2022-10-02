@@ -3229,18 +3229,26 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     let closed = false;
 
-    const ps = spawn(
-      `${addQuotes(needsQuote, javaPath)}`,
-      jvmArguments.map(v =>
-        v
-          .toString()
+    const port = await ipcRenderer.invoke("get-jahollde-port");
+
+    const completeArgs = [];
+    jvmArguments.forEach(l => {
+      // eslint-disable-next-line no-template-curly-in-string
+      if (l.includes('-Dlog4j.configurationFile=${path}')) {
+        completeArgs.push(`-Djahollde.port=${port}`);
+      }
+      completeArgs.push(l.toString()
           .replace(...replaceRegex)
           .replace(
-            // eslint-disable-next-line no-template-curly-in-string
-            '-Dlog4j.configurationFile=${path}',
-            `-Dlog4j.configurationFile=${addQuotes(needsQuote, loggingPath)}`
-          )
-      ),
+              // eslint-disable-next-line no-template-curly-in-string
+              '-Dlog4j.configurationFile=${path}',
+              `-Dlog4j.configurationFile=${addQuotes(needsQuote, loggingPath)}`
+          ))
+    });
+
+    const ps = spawn(
+      `${addQuotes(needsQuote, javaPath)}`,
+      completeArgs,
       {
         cwd: instancePath,
         shell: process.platform !== 'win32',
