@@ -37,6 +37,10 @@ import {
   ACCOUNT_MICROSOFT,
   LATEST_JAVA_VERSION
 } from '../../common/utils/constants';
+import bg0 from "../../common/assets/jahollde/backgrounds/bg0.jpg";
+import bg1 from "../../common/assets/jahollde/backgrounds/bg1.jpg";
+import bg2 from "../../common/assets/jahollde/backgrounds/bg2.jpg";
+import bg3 from "../../common/assets/jahollde/backgrounds/bg3.png";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -54,6 +58,9 @@ const Container = styled.div`
   transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
   will-change: transform;
 `;
+
+const randomBackgrounds = [bg0, bg1, bg2, bg3];
+const randomBackground = randomBackgrounds[Math.floor(Math.random() * randomBackgrounds.length)];
 
 function DesktopRoot({ store }) {
   const dispatch = useDispatch();
@@ -126,7 +133,7 @@ function DesktopRoot({ store }) {
       });
     }
 
-    if (process.env.NODE_ENV === 'development' && currentAccount) {
+    if (process.env.NODE_ENV === 'development' && currentAccount && false) {
       dispatch(received(features.mcAuthentication));
       dispatch(push('/home'));
     } else if (currentAccount) {
@@ -187,8 +194,15 @@ function DesktopRoot({ store }) {
   //   }
   // }, [modals]);
 
+
+
   return (
-    <Wrapper>
+    <Wrapper style={{
+      backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 1) 100%), url(${randomBackground})`,
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center"
+    }}>
       <SystemNavbar />
       <Message />
       <Container>

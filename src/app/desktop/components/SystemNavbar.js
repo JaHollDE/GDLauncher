@@ -33,9 +33,6 @@ const DevtoolButton = () => {
 
   return (
     <TerminalButton
-      css={`
-        margin: 0 10px;
-      `}
       onClick={openDevTools}
     >
       <FontAwesomeIcon icon={faTerminal} />
@@ -56,7 +53,6 @@ const SettingsButton = () => {
     <TerminalButton
       areSettingsOpen={areSettingsOpen}
       css={`
-        margin: 0 20px 0 10px;
         ${props =>
           props.areSettingsOpen
             ? `background: ${props.theme.palette.grey[700]};`
@@ -172,25 +168,17 @@ const SystemNavbar = () => {
     >
       {!isOsx && (
         <>
+          <title css={`
+              font-weight: bold;
+              margin: 1rem;
+            `}
+          > JaHollDE Launcher</title>
           <div
             css={`
               cursor: auto !important;
               -webkit-app-region: drag;
-              margin-left: 10px;
             `}
           >
-            <a
-              href="https://gdevs.io/"
-              rel="noopener noreferrer"
-              css={`
-                margin-top: 5px;
-                margin-right: 5px;
-                -webkit-app-region: no-drag;
-              `}
-            >
-              <Logo size={35} pointerCursor />
-            </a>
-            <DevtoolButton />
           </div>
           <div
             css={`
@@ -198,20 +186,6 @@ const SystemNavbar = () => {
               height: 100%;
             `}
           >
-            <div
-              css={`
-                white-space: nowrap;
-              `}
-            >
-              Partnered with &nbsp;&nbsp;
-            </div>
-            <BisectHosting
-              showPointerCursor
-              onClick={() => {
-                ga.sendCustomEvent('BHAdViewNavbar');
-                dispatch(openModal('BisectHosting'));
-              }}
-            />
             {/* <PulsatingCircle /> */}
           </div>
         </>
@@ -221,7 +195,10 @@ const SystemNavbar = () => {
           <>
             {isUpdateAvailable && <UpdateButton isAppImage={isAppImage} />}
             {!isLocation('/') && !isLocation('/onboarding') && (
-              <SettingsButton />
+              <DevtoolButton/>
+            )}
+            {!isLocation('/') && !isLocation('/onboarding') && (
+                <SettingsButton />
             )}
             <div
               onClick={() => ipcRenderer.invoke('minimize-window')}
@@ -302,20 +279,6 @@ const SystemNavbar = () => {
             />
             {/* <PulsatingCircle /> */}
           </div>
-          <div>
-            <DevtoolButton />
-            <a
-              href="https://gdevs.io/"
-              rel="noopener noreferrer"
-              css={`
-                margin-top: 5px;
-                margin-right: 5px;
-                -webkit-app-region: no-drag;
-              `}
-            >
-              <Logo size={35} pointerCursor />
-            </a>
-          </div>
         </>
       )}
     </MainContainer>
@@ -327,7 +290,7 @@ export default memo(SystemNavbar);
 const MainContainer = styled.div`
   width: 100%;
   height: ${({ theme }) => theme.sizes.height.systemNavbar}px;
-  background: ${({ theme }) => theme.palette.grey[900]};
+  background: rgba(0, 0, 0, 0.5);
   -webkit-app-region: drag;
   display: flex;
   align-items: center;

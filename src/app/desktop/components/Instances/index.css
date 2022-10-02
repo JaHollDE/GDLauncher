@@ -1,0 +1,104 @@
+@font-face {
+    font-family: "Roboto";
+    src: local("Roboto"), url("./Roboto-Regular.ttf"), format("truetype");
+}
+
+.jahollde-symbol {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 1rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    /*animation: update 1s infinite;*/
+    padding: .75rem;
+    border-radius: 50rem;
+
+    border: solid .3rem rgba(0, 0, 0, 0);
+}
+
+.jahollde-symbol:hover, .jahollde-symbol:hover > * {
+    cursor: pointer;
+}
+
+@keyframes update {
+    0% {
+        border-color: rgba(0, 220, 0, 0);
+    }
+    50% {
+        border-color: rgba(0, 220, 0, 0.5);
+    }
+    100% {
+        border-color: rgba(0, 220, 0, 0);
+    }
+}
+
+.start-instance {
+    position: absolute;
+
+    right: 0;
+    bottom: 0;
+
+    margin: 1rem;
+
+    border: none;
+
+    font-size: 1.5rem;
+
+    font-family: Roboto;
+
+    padding: .5rem;
+
+    border-radius: .25rem;
+
+    background-color: rgba(0, 0, 0, 0);
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+.start-instance > button, .start-instance > div > button {
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    text-align: right;
+}
+.start-instance > div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.start-instance:hover, .start-instance:hover > *, .start-instance:hover > * > * {
+    cursor: pointer;
+}
+
+.install-instance-status {
+    font-size: .75em;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    text-align: right;
+
+    max-width: 50vw;
+    white-space: nowrap;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.player-online {
+    position: absolute;
+
+    font-size: 1.5rem;
+
+    font-family: Roboto;
+
+    margin: 1rem;
+    bottom: 0;
+    left: 0;
+    padding: .5rem;
+}
+.player-online > span {
+    background-color: rgba(100, 100, 100, 0.3);
+    padding: 0 .5rem;
+    border-radius: .2rem;
+}

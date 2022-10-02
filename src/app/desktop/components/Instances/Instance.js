@@ -42,9 +42,9 @@ const Container = styled.div`
   width: 180px;
   height: 100px;
   transform: ${p =>
-    p.isHovered && !p.installing
-      ? 'scale3d(1.1, 1.1, 1.1)'
-      : 'scale3d(1, 1, 1)'};
+      p.isHovered && !p.installing
+          ? 'scale3d(1.1, 1.1, 1.1)'
+          : 'scale3d(1, 1, 1)'};
   margin-right: 20px;
   margin-top: 20px;
   transition: transform 150ms ease-in-out;
@@ -84,7 +84,7 @@ const InstanceContainer = styled.div`
   overflow: hidden;
   height: 100%;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url('${props => props.background}') center no-repeat;
+  url('${props => props.background}') center no-repeat;
   background-position: center;
   color: ${props => props.theme.palette.text.secondary};
   font-weight: 600;
@@ -177,10 +177,10 @@ const Instance = ({ instanceName }) => {
   useEffect(() => {
     if (instance.background) {
       fs.readFile(path.join(instancesPath, instanceName, instance.background))
-        .then(res =>
-          setBackground(`data:image/png;base64,${res.toString('base64')}`)
-        )
-        .catch(console.warning);
+          .then(res =>
+              setBackground(`data:image/png;base64,${res.toString('base64')}`)
+          )
+          .catch(console.warning);
     } else {
       setBackground(`${instanceDefaultBackground}`);
     }
@@ -238,228 +238,228 @@ const Instance = ({ instanceName }) => {
   };
 
   return (
-    <>
-      <ContextMenuTrigger id={instanceName}>
-        <Container
-          installing={isInQueue}
-          onClick={startInstance}
-          isHovered={isHovered || isPlaying}
-        >
-          <InstanceContainer installing={isInQueue} background={background}>
-            <TimePlayed>
-              <FontAwesomeIcon
-                icon={faClock}
-                css={`
-                  margin-right: 5px;
-                `}
-              />
-
-              {convertMinutesToHumanTime(instance.timePlayed)}
-            </TimePlayed>
-            <MCVersion>{instance.loader?.mcVersion}</MCVersion>
-            {instanceName}
-          </InstanceContainer>
-          <HoverContainer
-            installing={isInQueue}
-            isHovered={isHovered || isPlaying}
+      <>
+        <ContextMenuTrigger id={instanceName}>
+          <Container
+              installing={isInQueue}
+              onClick={startInstance}
+              isHovered={isHovered || isPlaying}
           >
-            {currentDownload === instanceName ? (
-              <>
-                <div
-                  css={`
-                    font-size: 14px;
-                  `}
-                >
-                  {isInQueue ? isInQueue.status : null}
-                </div>
-                {`${isInQueue.percentage}%`}
-                <LoadingOutlined
-                  css={`
-                    position: absolute;
-                    bottom: 8px;
-                    right: 8px;
-                  `}
-                />
-              </>
-            ) : (
-              <>
-                {isPlaying && (
-                  <div
+            <InstanceContainer installing={isInQueue} background={background}>
+              <TimePlayed>
+                <FontAwesomeIcon
+                    icon={faClock}
                     css={`
-                      position: relative;
-                      width: 20px;
-                      height: 20px;
+                      margin-right: 5px;
                     `}
-                  >
-                    {isPlaying.initialized && (
-                      <FontAwesomeIcon
+                />
+
+                {convertMinutesToHumanTime(instance.timePlayed)}
+              </TimePlayed>
+              <MCVersion>{instance.loader?.mcVersion}</MCVersion>
+              {instanceName}
+            </InstanceContainer>
+            <HoverContainer
+                installing={isInQueue}
+                isHovered={isHovered || isPlaying}
+            >
+              {currentDownload === instanceName ? (
+                  <>
+                    <div
                         css={`
-                          color: ${({ theme }) => theme.palette.colors.green};
-                          font-size: 27px;
-                          position: absolute;
-                          margin-left: -6px;
-                          margin-top: -2px;
-                          animation: ${PlayButtonAnimation} 0.5s
-                            cubic-bezier(0.75, -1.5, 0, 2.75);
+                          font-size: 14px;
                         `}
-                        icon={faPlay}
-                      />
+                    >
+                      {isInQueue ? isInQueue.status : null}
+                    </div>
+                    {`${isInQueue.percentage}%`}
+                    <LoadingOutlined
+                        css={`
+                          position: absolute;
+                          bottom: 8px;
+                          right: 8px;
+                        `}
+                    />
+                  </>
+              ) : (
+                  <>
+                    {isPlaying && (
+                        <div
+                            css={`
+                              position: relative;
+                              width: 20px;
+                              height: 20px;
+                            `}
+                        >
+                          {isPlaying.initialized && (
+                              <FontAwesomeIcon
+                                  css={`
+                                    color: ${({ theme }) => theme.palette.colors.green};
+                                    font-size: 27px;
+                                    position: absolute;
+                                    margin-left: -6px;
+                                    margin-top: -2px;
+                                    animation: ${PlayButtonAnimation} 0.5s
+                                    cubic-bezier(0.75, -1.5, 0, 2.75);
+                                  `}
+                                  icon={faPlay}
+                              />
+                          )}
+                          {!isPlaying.initialized && <div className="spinner" />}
+                        </div>
                     )}
-                    {!isPlaying.initialized && <div className="spinner" />}
-                  </div>
-                )}
-                {isInQueue && 'In Queue'}
-                {!isInQueue && !isPlaying && <span>PLAY</span>}
-              </>
+                    {isInQueue && 'In Queue'}
+                    {!isInQueue && !isPlaying && <span>PLAY</span>}
+                  </>
+              )}
+            </HoverContainer>
+          </Container>
+        </ContextMenuTrigger>
+        <Portal>
+          <ContextMenu
+              id={instance.name}
+              onShow={() => setIsHovered(true)}
+              onHide={() => setIsHovered(false)}
+          >
+            <MenuInstanceName>{instanceName}</MenuInstanceName>
+            {isPlaying && (
+                <MenuItem onClick={killProcess}>
+                  <FontAwesomeIcon
+                      icon={faStop}
+                      css={`
+                        margin-right: 10px;
+                        width: 25px !important;
+                      `}
+                  />
+                  Kill
+                </MenuItem>
             )}
-          </HoverContainer>
-        </Container>
-      </ContextMenuTrigger>
-      <Portal>
-        <ContextMenu
-          id={instance.name}
-          onShow={() => setIsHovered(true)}
-          onHide={() => setIsHovered(false)}
-        >
-          <MenuInstanceName>{instanceName}</MenuInstanceName>
-          {isPlaying && (
-            <MenuItem onClick={killProcess}>
+            <MenuItem disabled={Boolean(isInQueue)} onClick={manageInstance}>
               <FontAwesomeIcon
-                icon={faStop}
-                css={`
-                  margin-right: 10px;
-                  width: 25px !important;
-                `}
+                  icon={faWrench}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
               />
-              Kill
+              Manage
             </MenuItem>
-          )}
-          <MenuItem disabled={Boolean(isInQueue)} onClick={manageInstance}>
-            <FontAwesomeIcon
-              icon={faWrench}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Manage
-          </MenuItem>
-          <MenuItem onClick={openFolder}>
-            <FontAwesomeIcon
-              icon={faFolder}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Open Folder
-          </MenuItem>
+            <MenuItem onClick={openFolder}>
+              <FontAwesomeIcon
+                  icon={faFolder}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
+              />
+              Open Folder
+            </MenuItem>
 
-          {/* // TODO - Support other export options besides curseforge forge. */}
-          <MenuItem
-            onClick={instanceExportCurseForge}
-            disabled={
-              Boolean(isInQueue) ||
-              !(
-                instance.loader?.loaderType === FORGE ||
-                instance.loader?.loaderType === FABRIC ||
-                instance.loader?.loaderType === VANILLA
-              )
-            }
-          >
-            <FontAwesomeIcon
-              icon={faBoxOpen}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Export Pack
-          </MenuItem>
-          <MenuItem
-            disabled={Boolean(isInQueue)}
-            onClick={openDuplicateNameDialog}
-          >
-            <FontAwesomeIcon
-              icon={faCopy}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Duplicate
-          </MenuItem>
-          <MenuItem divider />
-          <MenuItem
-            disabled={Boolean(isInQueue) || Boolean(isPlaying)}
-            onClick={async () => {
-              let manifest = null;
-              try {
-                manifest = JSON.parse(
-                  await fs.readFile(
-                    path.join(instancesPath, instanceName, 'manifest.json')
-                  )
-                );
-              } catch {
-                // NO-OP
-              }
+            {/* // TODO - Support other export options besides curseforge forge. */}
+            <MenuItem
+                onClick={instanceExportCurseForge}
+                disabled={
+                    Boolean(isInQueue) ||
+                    !(
+                        instance.loader?.loaderType === FORGE ||
+                        instance.loader?.loaderType === FABRIC ||
+                        instance.loader?.loaderType === VANILLA
+                    )
+                }
+            >
+              <FontAwesomeIcon
+                  icon={faBoxOpen}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
+              />
+              Export Pack
+            </MenuItem>
+            <MenuItem
+                disabled={Boolean(isInQueue)}
+                onClick={openDuplicateNameDialog}
+            >
+              <FontAwesomeIcon
+                  icon={faCopy}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
+              />
+              Duplicate
+            </MenuItem>
+            <MenuItem divider />
+            <MenuItem
+                disabled={Boolean(isInQueue) || Boolean(isPlaying)}
+                onClick={async () => {
+                  let manifest = null;
+                  try {
+                    manifest = JSON.parse(
+                        await fs.readFile(
+                            path.join(instancesPath, instanceName, 'manifest.json')
+                        )
+                    );
+                  } catch {
+                    // NO-OP
+                  }
 
-              dispatch(
-                addToQueue(
-                  instanceName,
-                  instance.loader,
-                  manifest,
-                  instance.background,
-                  instance.timePlayed,
-                  {},
-                  { isUpdate: true }
-                )
-              );
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faHammer}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Repair
-          </MenuItem>
-          <MenuItem
-            disabled={Boolean(isInQueue) || Boolean(isPlaying)}
-            onClick={openConfirmationDeleteModal}
-          >
-            <FontAwesomeIcon
-              icon={faTrash}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Delete
-          </MenuItem>
-          <MenuItem divider />
-          <MenuItem
-            onClick={openBisectModal}
-            preventClose
-            css={`
-              border: 2px solid #04cbeb;
-              border-radius: 5px;
-            `}
-          >
-            <FontAwesomeIcon
-              icon={faServer}
-              css={`
-                margin-right: 10px;
-                width: 25px !important;
-              `}
-            />
-            Create Server
-          </MenuItem>
-        </ContextMenu>
-      </Portal>
-    </>
+                  dispatch(
+                      addToQueue(
+                          instanceName,
+                          instance.loader,
+                          manifest,
+                          instance.background,
+                          instance.timePlayed,
+                          {},
+                          { isUpdate: true }
+                      )
+                  );
+                }}
+            >
+              <FontAwesomeIcon
+                  icon={faHammer}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
+              />
+              Repair
+            </MenuItem>
+            <MenuItem
+                disabled={Boolean(isInQueue) || Boolean(isPlaying)}
+                onClick={openConfirmationDeleteModal}
+            >
+              <FontAwesomeIcon
+                  icon={faTrash}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
+              />
+              Delete
+            </MenuItem>
+            <MenuItem divider />
+            <MenuItem
+                onClick={openBisectModal}
+                preventClose
+                css={`
+                  border: 2px solid #04cbeb;
+                  border-radius: 5px;
+                `}
+            >
+              <FontAwesomeIcon
+                  icon={faServer}
+                  css={`
+                    margin-right: 10px;
+                    width: 25px !important;
+                  `}
+              />
+              Create Server
+            </MenuItem>
+          </ContextMenu>
+        </Portal>
+      </>
   );
 };
 

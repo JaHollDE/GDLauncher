@@ -15,7 +15,7 @@ const HeaderComponent = styled.div`
   width: 100%;
   padding: 0 10px;
   height: 40px;
-  background: ${props => props.theme.palette.grey[800]};
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   h3 {
     line-height: 40px;
@@ -51,10 +51,7 @@ const Modal = ({
       transparentBackground={transparentBackground}
       className={className}
       css={`
-        background: ${props =>
-          props.transparentBackground
-            ? 'transparent'
-            : props.theme.palette.grey[700]};
+        background: rgba(0, 0, 0, 0.5);
         position: absolute;
         border-radius: 4px;
       `}

@@ -29,8 +29,8 @@ const SideMenu = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  background: ${props => props.theme.palette.grey[800]};
   padding-top: calc(${props => props.theme.sizes.height.systemNavbar} + 5px);
+  background-color: rgba(0, 0, 0, 0.3);
 `;
 
 const SettingsContainer = styled.div`
@@ -55,21 +55,26 @@ const SettingsButton = styled(({ active, ...props }) => <Button {...props} />)`
   border-radius: 4px 0 0 4px;
   font-size: 12px;
   white-space: nowrap;
-  background: ${props =>
-    props.active
-      ? props.theme.palette.grey[600]
-      : props.theme.palette.grey[800]};
+  
+  transition: all 0.2s;
+  
+  font-weight: ${props => props.active ? "bold" : "normal"};
+  
+  background-color: rgba(0, 0, 0, 0);
+  
   border: 0px;
   text-align: left;
   animation-duration: 0s;
-  color: ${props => props.theme.palette.text.primary};
+  
   &:hover {
-    color: ${props => props.theme.palette.text.primary};
-    background: ${props => props.theme.palette.grey[700]};
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
   }
   &:focus {
-    color: ${props => props.theme.palette.text.primary};
-    background: ${props => props.theme.palette.grey[600]};
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
   }
 `;
 
@@ -108,6 +113,7 @@ export default function Settings() {
       css={`
         height: 100%;
         width: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
       `}
       header="false"
     >
@@ -148,44 +154,11 @@ export default function Settings() {
               margin-bottom: 30px;
             `}
           >
-            <span
-              css={`
-                font-weight: bold;
-                font-size: 16px;
-              `}
-            >
-              Support GDLauncher
-            </span>
-            <div
-              css={`
-                img {
-                  border-radius: 30px;
-                  height: 40px;
-                  cursor: pointer;
-                  transition: transform 0.2s ease-in-out;
-                  &:hover {
-                    transform: scale(1.05);
-                  }
-                }
-              `}
-            >
-              <a href="https://ko-fi.com/gdlauncher">
-                <img
-                  src={KoFiButton}
-                  alt="Ko-Fi"
-                  css={`
-                    margin-bottom: 0px;
-                    margin-top: 20px;
-                  `}
-                />
-              </a>
-            </div>
             <div
               css={`
                 margin-top: 20px;
               `}
             >
-              <SocialButtons />
             </div>
             <div
               css={`
