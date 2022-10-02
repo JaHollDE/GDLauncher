@@ -9,22 +9,14 @@ import { load } from '../reducers/loading/actions';
 import features from '../reducers/loading/features';
 import { login, loginOAuth } from '../reducers/actions';
 import { closeModal } from '../reducers/modals/actions';
-import { ACCOUNT_MICROSOFT, ACCOUNT_MOJANG } from '../utils/constants';
+import { ACCOUNT_MICROSOFT } from '../utils/constants';
 
 const AddAccount = ({ username }) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState(username || '');
   const [password, setPassword] = useState('');
-  const [accountType, setAccountType] = useState(ACCOUNT_MOJANG);
+  const [accountType, setAccountType] = useState(ACCOUNT_MICROSOFT);
   const [loginFailed, setloginFailed] = useState();
-
-  const addAccount = () => {
-    dispatch(
-      load(features.mcAuthentication, dispatch(login(email, password, false)))
-    )
-      .then(() => dispatch(closeModal()))
-      .catch(console.error);
-  };
 
   const addMicrosoftAccount = () => {
     dispatch(load(features.mcAuthentication, dispatch(loginOAuth(false))))
@@ -35,47 +27,20 @@ const AddAccount = ({ username }) => {
       });
   };
 
-  const renderAddMojangAccount = () => (
-    <Container>
-      <FormContainer>
-        <h1
-          css={`
-            height: 80px;
-          `}
-        >
-          Mojang Login
-        </h1>
-        <StyledInput
-          disabled={!!username}
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <StyledInput
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-      </FormContainer>
-      <FormContainer>
-        <StyledButton onClick={addAccount}>Add Account</StyledButton>
-      </FormContainer>
-    </Container>
-  );
-
   const renderAddMicrosoftAccount = () => (
     <Container>
       <FormContainer>
-        <h1
-          css={`
-            height: 80px;
-          `}
-        >
-          Microsoft Login
-        </h1>
+        <Button id="loginOptionMicrosoft" className="loginOptionButton" onClick={addMicrosoftAccount}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="10" viewBox="0 0 23 23">
+            <path fill="#f35325" d="M1 1h10v10H1z"/>
+            <path fill="#81bc06" d="M12 1h10v10H12z"/>
+            <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+            <path fill="#ffba08" d="M12 12h10v10H12z"/>
+          </svg>
+          <span>Einloggen mit Microsoft</span>
+        </Button>
         <FormContainer>
-          <h2>External Login</h2>
+          {addMicrosoftAccount}
           {loginFailed ? (
             <>
               <LoginFailMessage>{loginFailed?.message}</LoginFailMessage>
@@ -85,12 +50,10 @@ const AddAccount = ({ username }) => {
                 `}
                 onClick={addMicrosoftAccount}
               >
-                Retry
+                Erneut Versuchen
               </StyledButton>
             </>
-          ) : (
-            <FontAwesomeIcon spin size="3x" icon={faSpinner} />
-          )}
+          ) : undefined /*<FontAwesomeIcon spin size="3x" icon={faSpinner} />*/ }
         </FormContainer>
       </FormContainer>
     </Container>
@@ -111,22 +74,14 @@ const AddAccount = ({ username }) => {
           overflowedIndicator={null}
         >
           <StyledAccountMenuItem
-            key={ACCOUNT_MOJANG}
-            onClick={() => setAccountType(ACCOUNT_MOJANG)}
-          >
-            Mojang Account
-          </StyledAccountMenuItem>
-          <StyledAccountMenuItem
             key={ACCOUNT_MICROSOFT}
             onClick={() => {
               setAccountType(ACCOUNT_MICROSOFT);
-              addMicrosoftAccount();
             }}
           >
-            Microsoft Account
+            Microsoft Account hinzufügen
           </StyledAccountMenuItem>
         </Menu>
-        {accountType === ACCOUNT_MOJANG ? renderAddMojangAccount() : null}
         {accountType === ACCOUNT_MICROSOFT ? renderAddMicrosoftAccount() : null}
       </Container>
     </Modal>
