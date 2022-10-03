@@ -43,7 +43,7 @@ const SocialButtons = () => {
           <FontAwesomeIcon icon={faDiscord} size="lg" />
         </div>
       </a>
-      <a href="https://github.com/JaHollDE/GDLauncher">
+      <a href="https://github.com/JaHollDE/JaHollDELauncher">
         <div>
           <FontAwesomeIcon icon={faGithub} size="lg" />
         </div>

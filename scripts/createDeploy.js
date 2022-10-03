@@ -124,7 +124,7 @@ const commonConfig = {
   config: {
     generateUpdatesFilesForAllChannels: true,
     npmRebuild: false,
-    productName: 'GDLauncher',
+    productName: 'JaHollDELauncher',
     appId: 'org.gorilladevs.GDLauncher',
     files: [
       '!node_modules/**/*',
