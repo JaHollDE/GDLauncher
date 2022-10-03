@@ -14,11 +14,11 @@
     "webpack"
   ],
   "bugs": {
-    "url": "https://github.com/JaHollDE/GDLauncher/issues"
+    "url": "https://github.com/JaHollDE/JaHollDELauncher/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JaHollDE/GDLauncher.git"
+    "url": "git+https://github.com/JaHollDE/JaHollDELauncher.git"
   },
   "license": "GPL-3.0",
   "author": {
