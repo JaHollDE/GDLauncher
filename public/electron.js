@@ -894,7 +894,7 @@ if (process.env.REACT_APP_RELEASE_TYPE === 'setup') {
   autoUpdater.allowPrerelease = allowUnstableReleases;
   autoUpdater.setFeedURL({
     owner: 'JaHollDE',
-    repo: 'GDLauncher',
+    repo: 'JaHollDELauncher',
     provider: 'github'
   });
 
