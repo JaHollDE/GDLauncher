@@ -15,6 +15,7 @@ import bg3 from "../../../../common/assets/jahollde/backgrounds/bg3.png"
 import Logo from "../../../../ui/Logo";
 
 import link from "../../../../common/assets/jahollde/link.svg"
+import arrowRepeat from "../../../../common/assets/jahollde/arrow-repeat.svg"
 
 import { ipcRenderer } from "electron";
 
@@ -263,6 +264,13 @@ const Instances = () => {
         dispatch(openModal('AddInstance', { defaultPage }));
     };
 
+    const restartElectron = () => {
+        if (!overlayConnected) return;
+        ipcRenderer.invoke("restart-electron");
+    }
+
+    const [overlayHovered, setOverlayHovered] = useState(false);
+
     return (
         <Container>
             <div style={{
@@ -292,7 +300,8 @@ const Instances = () => {
                     <div style={{
                         marginLeft: "1rem",
                     }}>
-                        <img src={link} style={{
+
+                        <img className={overlayConnected ? "click-effect" : ""} title={"Electron neustarten"} src={overlayHovered ? arrowRepeat : link} onClick={restartElectron} onMouseOver={() => setOverlayHovered(true)} onMouseLeave={() => setOverlayHovered(false)} style={{
                             filter: "invert(1)",
                             height: "1.5rem",
                             transform: "rotate(45deg)",

@@ -115,3 +115,7 @@
     flex-wrap: nowrap;
     column-gap: .5rem;
 }
+
+.click-effect:hover {
+    cursor: pointer;
+}

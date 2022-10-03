@@ -20,6 +20,12 @@ export class Window {
             this.onReady.push(() => resolve(this.window));
         });
     }
+    async restart() {
+        if (this.window === undefined)
+            return;
+        await this.deleteHomePage();
+        await this.loadHomePage();
+    }
     enableMouseEvents() {
         /*
         if (!this.siteActive) return;

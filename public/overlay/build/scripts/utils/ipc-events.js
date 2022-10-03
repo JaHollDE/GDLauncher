@@ -22,4 +22,7 @@ export function initIPCEvents(application) {
     ipcMain.handle("transmit-mod", (event, data) => {
         application.socket.sendMessage(JSON.stringify(data));
     });
+    ipcMain.handle("restart-electron", (event) => {
+        application.window.restart();
+    });
 }
