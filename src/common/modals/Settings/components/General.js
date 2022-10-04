@@ -35,9 +35,10 @@ import {
   updateCurseReleaseChannel
 } from '../../../reducers/settings/actions';
 import { updateConcurrentDownloads } from '../../../reducers/actions';
-import { openModal } from '../../../reducers/modals/actions';
+import { closeAllModals, closeModal, openModal } from "../../../reducers/modals/actions";
 import HorizontalLogo from '../../../../ui/HorizontalLogo';
 import { extractFace } from '../../../../app/desktop/utils';
+import { push } from "connected-react-router";
 
 const Title = styled.div`
   margin-top: 30px;
@@ -584,6 +585,20 @@ const General = () => {
         </div>
       </CustomDataPathContainer>
       <LauncherVersion>
+        <Title>
+          Updates
+          <a
+            css={`
+            margin-left: 30px;
+          `}
+            onClick={() => {
+
+              dispatch(push('/onboarding'));
+            }}
+          >
+            Onboarding Screen erneut öffnen
+          </a>
+        </Title>
         <div
           css={`
             display: flex;
@@ -593,7 +608,7 @@ const General = () => {
           `}
         >
           <HorizontalLogo
-            size={200}
+            size={100}
             onClick={() => dispatch(openModal('ChangeLogs'))}
           />{' '}
           <div

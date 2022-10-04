@@ -8,8 +8,33 @@ export class Window {
     size = [0, 0];
     pos = [0, 0];
     onReady = [];
+    mcFocused = false;
+    mcIconified = false;
     constructor(application) {
         this.application = application;
+    }
+    updateMCFocusedState(focused, iconified) {
+        this.mcFocused = focused;
+        this.mcIconified = iconified;
+        this.updateShowState();
+    }
+    updateShowState(focused) {
+        if (focused === undefined)
+            focused = this.window?.isFocused();
+        const alwaysOnTop = this.mcFocused || focused;
+        const showWindow = !this.mcIconified;
+        if (showWindow) {
+            this.window?.showInactive();
+        }
+        else {
+            this.window?.hide();
+        }
+        if (alwaysOnTop) {
+            this.window?.setAlwaysOnTop(true, "screen-saver");
+        }
+        else {
+            this.window?.setAlwaysOnTop(false);
+        }
     }
     getWindow() {
         return new Promise(resolve => {
@@ -76,6 +101,8 @@ export class Window {
             this.disableMouseEvents();
             this.sendReadyState();
             console.log("loaded window");
+            this.window.on("focus", () => this.updateShowState(true));
+            this.window.on("blur", () => this.updateShowState(false));
             this.onReady = this.onReady.filter(l => {
                 l();
                 return false;

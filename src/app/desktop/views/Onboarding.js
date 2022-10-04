@@ -98,7 +98,7 @@ const Home = () => {
             autoPlay
             muted
             css={`
-              height: 100vh;
+              height: 92vh;
             `}
           >
             <source src={backgroundVideo} type="video/webm" />
@@ -125,7 +125,8 @@ const Home = () => {
             padding: 0 120px;
           `}
         >
-          {account.selectedProfile.name}, welcome to GDLauncher!
+          Jaholl {account.selectedProfile.name}, willkommen im JaHollDELauncher.<br /><br />
+          Dieser Launcher basiert auf dem GDLauncher von den GorillaDevs.
         </div>
       </div>
       <div
@@ -148,22 +149,10 @@ const Home = () => {
             margin: 20% 10%;
           `}
         >
-          GDlauncher is completely free and open source. <br />
-          If you want to support us, consider renting a server on BisectHosting,
-          our official partner!
+          In unserem JaHollDELauncher erwarten dich <br />
+          unser Minecraft Roleplay Server und viele verschiedene Modpacks!
           <br />
           <br />
-          <div
-            css={`
-              cursor: pointer;
-            `}
-          >
-            <BisectHosting
-              showPointerCursor
-              size={100}
-              onClick={() => dispatch(openModal('BisectHosting'))}
-            />
-          </div>
         </div>
       </div>
       <div
@@ -186,7 +175,8 @@ const Home = () => {
             margin: 20%;
           `}
         >
-          Or you can also support us through Ko-Fi.
+          Hier könnt ihr die GorillaDevs unterstützen. <br />
+          Diese haben mit ihrer großartigen Arbeit den JaHollDELauncher erst möglich gemacht.
           <div
             css={`
               margin: 40px;
@@ -222,13 +212,12 @@ const Home = () => {
             margin: 20%;
           `}
         >
-          Also, don&apos;t forget to join us on Discord! This is where our
-          community is!
+          Vergiss nicht unserem JaHollDE-Discord Server beizutreten:
           <iframe
             css={`
               margin-top: 40px;
             `}
-            src="https://discordapp.com/widget?id=398091532881756161&theme=dark"
+            src="https://discordapp.com/widget?id=498825859118137345&theme=dark"
             width="350"
             height="410"
             allowTransparency="true"

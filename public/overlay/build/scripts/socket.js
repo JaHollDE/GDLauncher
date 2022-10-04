@@ -2,6 +2,7 @@ import { Server as WebSocketServer } from "ws";
 import * as tcpPortUsed from "tcp-port-used";
 import OnScreenUpdate from "./api/screen-update";
 import ElectronEventTransmitter from "./api/electron-event";
+import OnMcFocus from "./api/mc-focus";
 export default class SocketManager {
     app;
     port;
@@ -11,7 +12,7 @@ export default class SocketManager {
     queue = [];
     constructor(app) {
         this.app = app;
-        this.events.push(new OnScreenUpdate(this.app), new ElectronEventTransmitter(this.app));
+        this.events.push(new OnScreenUpdate(this.app), new ElectronEventTransmitter(this.app), new OnMcFocus(this.app));
     }
     async init() {
         let port = 5050;
