@@ -26,8 +26,9 @@ export class Window {
         this.updateShowState();
     }
 
-    private updateShowState(): void {
-        const alwaysOnTop = this.mcFocused; //|| this.window?.isFocused();
+    private updateShowState(focused?: boolean): void {
+        if (focused === undefined) focused = this.window?.isFocused();
+        const alwaysOnTop = this.mcFocused || focused;
         const showWindow = !this.mcIconified;
 
         if (showWindow) {
@@ -117,8 +118,8 @@ export class Window {
 
             console.log("loaded window");
 
-            this.window.on("focus", () => this.updateShowState());
-            this.window.on("blur", () => this.updateShowState());
+            this.window.on("focus", () => this.updateShowState(true));
+            this.window.on("blur", () => this.updateShowState(false));
 
             this.onReady = this.onReady.filter(l => {
                 l();
