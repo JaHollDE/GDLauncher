@@ -27,7 +27,7 @@ export class Window {
     }
 
     private updateShowState(): void {
-        const alwaysOnTop = this.mcFocused || this.window?.isFocused();
+        const alwaysOnTop = this.mcFocused; //|| this.window?.isFocused();
         const showWindow = !this.mcIconified;
 
         if (showWindow) {
