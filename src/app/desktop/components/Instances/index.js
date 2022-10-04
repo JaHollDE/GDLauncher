@@ -16,6 +16,7 @@ import Logo from "../../../../ui/Logo";
 
 import link from "../../../../common/assets/jahollde/link.svg"
 import arrowRepeat from "../../../../common/assets/jahollde/arrow-repeat.svg"
+import eyeSlash from "../../../../common/assets/jahollde/eye-slash.svg"
 
 import { ipcRenderer } from "electron";
 
@@ -254,6 +255,7 @@ const Instances = () => {
     }
 
     const [overlayConnected, setOverlayConnected] = useState(false);
+    const [overlayVisible, setOverlayVisible] = useState(true);
     const [showAllInstances, setShowAllInstances] = useState(false);
 
     ipcRenderer.on("overlay-connected", (event, status) => {
@@ -306,6 +308,13 @@ const Instances = () => {
                             height: "1.5rem",
                             transform: "rotate(45deg)",
                             opacity: overlayConnected ? "100%" : "0%",
+                            transition: "all 0.5s"
+                        }}></img>
+
+                        <img title={"Overlay versteckt"} src={eyeSlash} style={{
+                            filter: "invert(1)",
+                            height: "1.5rem",
+                            opacity: overlayVisible ? "100%" : "0%",
                             transition: "all 0.5s"
                         }}></img>
                     </div>

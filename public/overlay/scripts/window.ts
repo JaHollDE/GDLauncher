@@ -13,7 +13,33 @@ export class Window {
 
     private onReady: (() => void)[] = [];
 
+    private mcFocused = false;
+    private mcIconified = false;
+
     constructor(private application: JaHollDEApplication) {
+    }
+
+    public updateMCFocusedState(focused: boolean, iconified: boolean): void {
+        this.mcFocused = focused;
+        this.mcIconified = iconified;
+
+        this.updateShowState();
+    }
+
+    private updateShowState(): void {
+        const alwaysOnTop = this.mcFocused || this.window?.isFocused();
+        const showWindow = !this.mcIconified;
+
+        if (showWindow) {
+            this.window?.showInactive();
+        } else {
+            this.window?.hide();
+        }
+        if (alwaysOnTop) {
+            this.window?.setAlwaysOnTop(true, "screen-saver");
+        } else {
+            this.window?.setAlwaysOnTop(false);
+        }
     }
 
     public getWindow(): Promise<BrowserWindow> {
@@ -90,6 +116,9 @@ export class Window {
             this.sendReadyState();
 
             console.log("loaded window");
+
+            this.window.on("focus", () => this.updateShowState());
+            this.window.on("blur", () => this.updateShowState());
 
             this.onReady = this.onReady.filter(l => {
                 l();
