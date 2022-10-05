@@ -112,9 +112,11 @@ export class Window {
                 .getBrowserViews()
                 .forEach((obj) => this.window?.removeBrowserView(obj));
             this.window?.hide();
+            console.log("Loading JaHollDE-Page...");
             await this.window?.loadURL(
                 `http://127.0.0.1:${this.application.express.port}/overlay`
             );
+            console.log("Loaded JaHolLDE-Page!");
             this.window?.showInactive();
             this.window?.setAlwaysOnTop(true, "screen-saver");
             this.siteActive = true;
