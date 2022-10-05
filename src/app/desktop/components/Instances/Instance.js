@@ -8,29 +8,29 @@ import { ipcRenderer } from 'electron';
 import { Portal } from 'react-portal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlay,
-  faClock,
-  faWrench,
-  faFolder,
-  faTrash,
-  faStop,
-  faBoxOpen,
-  faCopy,
-  faServer,
-  faHammer
+    faPlay,
+    faClock,
+    faWrench,
+    faFolder,
+    faTrash,
+    faStop,
+    faBoxOpen,
+    faCopy,
+    faServer,
+    faHammer
 } from '@fortawesome/free-solid-svg-icons';
 import psTree from 'ps-tree';
 import { ContextMenuTrigger, ContextMenu, MenuItem } from 'react-contextmenu';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  _getInstance,
-  _getInstancesPath,
-  _getDownloadQueue
+    _getInstance,
+    _getInstancesPath,
+    _getDownloadQueue
 } from '../../../../common/utils/selectors';
 import {
-  addStartedInstance,
-  addToQueue,
-  launchInstance
+    addStartedInstance,
+    addToQueue,
+    launchInstance
 } from '../../../../common/reducers/actions';
 import { openModal } from '../../../../common/reducers/modals/actions';
 import instanceDefaultBackground from '../../../../common/assets/instance_default.png';
@@ -42,9 +42,9 @@ const Container = styled.div`
   width: 180px;
   height: 100px;
   transform: ${p =>
-      p.isHovered && !p.installing
-          ? 'scale3d(1.1, 1.1, 1.1)'
-          : 'scale3d(1, 1, 1)'};
+        p.isHovered && !p.installing
+            ? 'scale3d(1.1, 1.1, 1.1)'
+            : 'scale3d(1, 1, 1)'};
   transition: transform 150ms ease-in-out;
   &:hover {
     ${p => (p.installing ? '' : 'transform: scale3d(1.1, 1.1, 1.1);')}
@@ -158,140 +158,140 @@ const MenuInstanceName = styled.div`
 `;
 
 const Instance = ({ instanceName }) => {
-  const dispatch = useDispatch();
-  const [isHovered, setIsHovered] = useState(false);
-  const [background, setBackground] = useState(`${instanceDefaultBackground}`);
-  const instance = useSelector(state => _getInstance(state)(instanceName));
-  const downloadQueue = useSelector(_getDownloadQueue);
-  const currentDownload = useSelector(state => state.currentDownload);
-  const startedInstances = useSelector(state => state.startedInstances);
-  const instancesPath = useSelector(_getInstancesPath);
-  const isInQueue = downloadQueue[instanceName];
+    const dispatch = useDispatch();
+    const [isHovered, setIsHovered] = useState(false);
+    const [background, setBackground] = useState(`${instanceDefaultBackground}`);
+    const instance = useSelector(state => _getInstance(state)(instanceName));
+    const downloadQueue = useSelector(_getDownloadQueue);
+    const currentDownload = useSelector(state => state.currentDownload);
+    const startedInstances = useSelector(state => state.startedInstances);
+    const instancesPath = useSelector(_getInstancesPath);
+    const isInQueue = downloadQueue[instanceName];
 
-  const isPlaying = startedInstances[instanceName];
+    const isPlaying = startedInstances[instanceName];
 
+    const isJaHollDEInstance = () => instanceName === "jahollde" || instanceName === "jahollde_dev";
 
-
-  useEffect(() => {
-    if (instance.background) {
-      fs.readFile(path.join(instancesPath, instanceName, instance.background))
-          .then(res =>
-              setBackground(`data:image/png;base64,${res.toString('base64')}`)
-          )
-          .catch(console.warning);
-    } else {
-      setBackground(`${instanceDefaultBackground}`);
-    }
-  }, [instance.background, instancesPath, instanceName]);
-
-  const startInstance = () => {
-    if (isInQueue || isPlaying) return;
-    dispatch(addStartedInstance({ instanceName }));
-    dispatch(launchInstance(instanceName));
-  };
-  const openFolder = () => {
-    ipcRenderer.invoke('openFolder', path.join(instancesPath, instance.name));
-  };
-  const openConfirmationDeleteModal = () => {
-    dispatch(openModal('InstanceDeleteConfirmation', { instanceName }));
-  };
-  const manageInstance = () => {
-    dispatch(openModal('InstanceManager', { instanceName }));
-  };
-  const openBisectModal = () => {
-    dispatch(openModal('BisectHosting'));
-  };
-  const instanceExportCurseForge = () => {
-    dispatch(openModal('InstanceExportCurseForge', { instanceName }));
-  };
-  const openDuplicateNameDialog = () => {
-    dispatch(openModal('InstanceDuplicateName', { instanceName }));
-  };
-  const killProcess = () => {
-    psTree(isPlaying.pid, (err, children) => {
-      process.kill(isPlaying.pid);
-      if (children?.length) {
-        children.forEach(el => {
-          if (el) {
-            try {
-              process.kill(el.PID);
-            } catch {
-              // No-op
-            }
-            try {
-              process.kill(el.PPID);
-            } catch {
-              // No-op
-            }
-          }
-        });
-      } else {
-        try {
-          process.kill(isPlaying.pid);
-        } catch {
-          // No-op
+    useEffect(() => {
+        if (instance.background) {
+            fs.readFile(path.join(instancesPath, instanceName, instance.background))
+                .then(res =>
+                    setBackground(`data:image/png;base64,${res.toString('base64')}`)
+                )
+                .catch(console.warning);
+        } else {
+            setBackground(`${instanceDefaultBackground}`);
         }
-      }
-    });
-  };
+    }, [instance.background, instancesPath, instanceName]);
 
-  return (
-      <>
-        <ContextMenuTrigger id={instanceName}>
-          <Container
-              installing={isInQueue}
-              onClick={startInstance}
-              isHovered={isHovered || isPlaying}
-          >
-            <InstanceContainer installing={isInQueue} background={background}>
-              <TimePlayed>
-                <FontAwesomeIcon
-                    icon={faClock}
-                    css={`
+    const startInstance = () => {
+        if (isInQueue || isPlaying) return;
+        dispatch(addStartedInstance({ instanceName }));
+        dispatch(launchInstance(instanceName));
+    };
+    const openFolder = () => {
+        ipcRenderer.invoke('openFolder', path.join(instancesPath, instance.name));
+    };
+    const openConfirmationDeleteModal = () => {
+        dispatch(openModal('InstanceDeleteConfirmation', { instanceName }));
+    };
+    const manageInstance = () => {
+        dispatch(openModal('InstanceManager', { instanceName }));
+    };
+    const openBisectModal = () => {
+        dispatch(openModal('BisectHosting'));
+    };
+    const instanceExportCurseForge = () => {
+        dispatch(openModal('InstanceExportCurseForge', { instanceName }));
+    };
+    const openDuplicateNameDialog = () => {
+        dispatch(openModal('InstanceDuplicateName', { instanceName }));
+    };
+    const killProcess = () => {
+        psTree(isPlaying.pid, (err, children) => {
+            process.kill(isPlaying.pid);
+            if (children?.length) {
+                children.forEach(el => {
+                    if (el) {
+                        try {
+                            process.kill(el.PID);
+                        } catch {
+                            // No-op
+                        }
+                        try {
+                            process.kill(el.PPID);
+                        } catch {
+                            // No-op
+                        }
+                    }
+                });
+            } else {
+                try {
+                    process.kill(isPlaying.pid);
+                } catch {
+                    // No-op
+                }
+            }
+        });
+    };
+
+    return (
+        <>
+            <ContextMenuTrigger id={instanceName}>
+                <Container
+                    installing={isInQueue}
+                    onClick={startInstance}
+                    isHovered={isHovered || isPlaying}
+                >
+                    <InstanceContainer installing={isInQueue} background={background}>
+                        <TimePlayed>
+                            <FontAwesomeIcon
+                                icon={faClock}
+                                css={`
                       margin-right: 5px;
                     `}
-                />
+                            />
 
-                {convertMinutesToHumanTime(instance.timePlayed)}
-              </TimePlayed>
-              <MCVersion>{instance.loader?.mcVersion}</MCVersion>
-              {instanceName}
-            </InstanceContainer>
-            <HoverContainer
-                installing={isInQueue}
-                isHovered={isHovered || isPlaying}
-            >
-              {currentDownload === instanceName ? (
-                  <>
-                    <div
-                        css={`
+                            {convertMinutesToHumanTime(instance.timePlayed)}
+                        </TimePlayed>
+                        <MCVersion>{instance.loader?.mcVersion}</MCVersion>
+                        {instanceName}
+                    </InstanceContainer>
+                    <HoverContainer
+                        installing={isInQueue}
+                        isHovered={isHovered || isPlaying}
+                    >
+                        {currentDownload === instanceName ? (
+                            <>
+                                <div
+                                    css={`
                           font-size: 14px;
                         `}
-                    >
-                      {isInQueue ? isInQueue.status : null}
-                    </div>
-                    {`${isInQueue.percentage}%`}
-                    <LoadingOutlined
-                        css={`
+                                >
+                                    {isInQueue ? isInQueue.status : null}
+                                </div>
+                                {`${isInQueue.percentage}%`}
+                                <LoadingOutlined
+                                    css={`
                           position: absolute;
                           bottom: 8px;
                           right: 8px;
                         `}
-                    />
-                  </>
-              ) : (
-                  <>
-                    {isPlaying && (
-                        <div
-                            css={`
+                                />
+                            </>
+                        ) : (
+                            <>
+                                {isPlaying && (
+                                    <div
+                                        css={`
                               position: relative;
                               width: 20px;
                               height: 20px;
                             `}
-                        >
-                          {isPlaying.initialized && (
-                              <FontAwesomeIcon
-                                  css={`
+                                    >
+                                        {isPlaying.initialized && (
+                                            <FontAwesomeIcon
+                                                css={`
                                     color: ${({ theme }) => theme.palette.colors.green};
                                     font-size: 27px;
                                     position: absolute;
@@ -300,165 +300,169 @@ const Instance = ({ instanceName }) => {
                                     animation: ${PlayButtonAnimation} 0.5s
                                     cubic-bezier(0.75, -1.5, 0, 2.75);
                                   `}
-                                  icon={faPlay}
-                              />
-                          )}
-                          {!isPlaying.initialized && <div className="spinner" />}
-                        </div>
-                    )}
-                    {isInQueue && 'In Queue'}
-                    {!isInQueue && !isPlaying && <span>PLAY</span>}
-                  </>
-              )}
-            </HoverContainer>
-          </Container>
-        </ContextMenuTrigger>
-        <Portal>
-          <ContextMenu
-              id={instance.name}
-              onShow={() => setIsHovered(true)}
-              onHide={() => setIsHovered(false)}
-          >
-            <MenuInstanceName>{instanceName}</MenuInstanceName>
-            {isPlaying && (
-                <MenuItem onClick={killProcess}>
-                  <FontAwesomeIcon
-                      icon={faStop}
-                      css={`
+                                                icon={faPlay}
+                                            />
+                                        )}
+                                        {!isPlaying.initialized && <div className="spinner" />}
+                                    </div>
+                                )}
+                                {isInQueue && 'In Queue'}
+                                {!isInQueue && !isPlaying && <span>PLAY</span>}
+                            </>
+                        )}
+                    </HoverContainer>
+                </Container>
+            </ContextMenuTrigger>
+            <Portal>
+                <ContextMenu
+                    id={instance.name}
+                    onShow={() => setIsHovered(true)}
+                    onHide={() => setIsHovered(false)}
+                >
+                    <MenuInstanceName>{instanceName}</MenuInstanceName>
+                    {isPlaying && (
+                        <MenuItem onClick={killProcess}>
+                            <FontAwesomeIcon
+                                icon={faStop}
+                                css={`
                         margin-right: 10px;
                         width: 25px !important;
                       `}
-                  />
-                  Kill
-                </MenuItem>
-            )}
-            <MenuItem disabled={Boolean(isInQueue)} onClick={manageInstance}>
-              <FontAwesomeIcon
-                  icon={faWrench}
-                  css={`
+                            />
+                            Kill
+                        </MenuItem>
+                    )}
+                    <MenuItem disabled={Boolean(isInQueue)} onClick={manageInstance}>
+                        <FontAwesomeIcon
+                            icon={faWrench}
+                            css={`
                     margin-right: 10px;
                     width: 25px !important;
                   `}
-              />
-              Manage
-            </MenuItem>
-            <MenuItem onClick={openFolder}>
-              <FontAwesomeIcon
-                  icon={faFolder}
-                  css={`
+                        />
+                        Manage
+                    </MenuItem>
+                    <MenuItem onClick={openFolder}>
+                        <FontAwesomeIcon
+                            icon={faFolder}
+                            css={`
                     margin-right: 10px;
                     width: 25px !important;
                   `}
-              />
-              Open Folder
-            </MenuItem>
+                        />
+                        Open Folder
+                    </MenuItem>
 
-            {/* // TODO - Support other export options besides curseforge forge. */}
-            <MenuItem
-                onClick={instanceExportCurseForge}
-                disabled={
-                    Boolean(isInQueue) ||
-                    !(
-                        instance.loader?.loaderType === FORGE ||
-                        instance.loader?.loaderType === FABRIC ||
-                        instance.loader?.loaderType === VANILLA
-                    )
-                }
-            >
-              <FontAwesomeIcon
-                  icon={faBoxOpen}
-                  css={`
+                    {/* // TODO - Support other export options besides curseforge forge. */}
+                    <MenuItem
+                        onClick={instanceExportCurseForge}
+                        disabled={
+                            Boolean(isInQueue) ||
+                            !(
+                                instance.loader?.loaderType === FORGE ||
+                                instance.loader?.loaderType === FABRIC ||
+                                instance.loader?.loaderType === VANILLA
+                            )
+                        }
+                    >
+                        <FontAwesomeIcon
+                            icon={faBoxOpen}
+                            css={`
                     margin-right: 10px;
                     width: 25px !important;
                   `}
-              />
-              Export Pack
-            </MenuItem>
-            <MenuItem
-                disabled={Boolean(isInQueue)}
-                onClick={openDuplicateNameDialog}
-            >
-              <FontAwesomeIcon
-                  icon={faCopy}
-                  css={`
+                        />
+                        Export Pack
+                    </MenuItem>
+                    <MenuItem
+                        disabled={Boolean(isInQueue)}
+                        onClick={openDuplicateNameDialog}
+                    >
+                        <FontAwesomeIcon
+                            icon={faCopy}
+                            css={`
                     margin-right: 10px;
                     width: 25px !important;
                   `}
-              />
-              Duplicate
-            </MenuItem>
-            <MenuItem divider />
-            <MenuItem
-                disabled={Boolean(isInQueue) || Boolean(isPlaying)}
-                onClick={async () => {
-                  let manifest = null;
-                  try {
-                    manifest = JSON.parse(
-                        await fs.readFile(
-                            path.join(instancesPath, instanceName, 'manifest.json')
-                        )
-                    );
-                  } catch {
-                    // NO-OP
-                  }
+                        />
+                        Duplicate
+                    </MenuItem>
+                    <MenuItem divider />
+                    <MenuItem
+                        disabled={Boolean(isInQueue) || Boolean(isPlaying)}
+                        onClick={async () => {
+                            let manifest = null;
+                            try {
+                                manifest = JSON.parse(
+                                    await fs.readFile(
+                                        path.join(instancesPath, instanceName, 'manifest.json')
+                                    )
+                                );
+                            } catch {
+                                // NO-OP
+                            }
 
-                  dispatch(
-                      addToQueue(
-                          instanceName,
-                          instance.loader,
-                          manifest,
-                          instance.background,
-                          instance.timePlayed,
-                          {},
-                          { isUpdate: true }
-                      )
-                  );
-                }}
-            >
-              <FontAwesomeIcon
-                  icon={faHammer}
-                  css={`
+                            dispatch(
+                                addToQueue(
+                                    instanceName,
+                                    instance.loader,
+                                    manifest,
+                                    instance.background,
+                                    instance.timePlayed,
+                                    {},
+                                    { isUpdate: true }
+                                )
+                            );
+                        }}
+                    >
+                        <FontAwesomeIcon
+                            icon={faHammer}
+                            css={`
                     margin-right: 10px;
                     width: 25px !important;
                   `}
-              />
-              Repair
-            </MenuItem>
-            <MenuItem
-                disabled={Boolean(isInQueue) || Boolean(isPlaying)}
-                onClick={openConfirmationDeleteModal}
-            >
-              <FontAwesomeIcon
-                  icon={faTrash}
-                  css={`
-                    margin-right: 10px;
-                    width: 25px !important;
-                  `}
-              />
-              Delete
-            </MenuItem>
-            <MenuItem divider />
-            <MenuItem
-                onClick={openBisectModal}
-                preventClose
-                css={`
+                        />
+                        Repair
+                    </MenuItem>
+                    {!isJaHollDEInstance() ?
+                        <MenuItem
+                            disabled={Boolean(isInQueue) || Boolean(isPlaying)}
+                            onClick={openConfirmationDeleteModal}
+                        >
+                            <FontAwesomeIcon
+                                icon={faTrash}
+                                css={`
+                        margin-right: 10px;
+                        width: 25px !important;
+                      `}
+                            />
+                            Delete
+                        </MenuItem>
+                        : null
+                    }
+
+                    <MenuItem divider />
+                    <MenuItem
+                        onClick={openBisectModal}
+                        preventClose
+                        css={`
                   border: 2px solid #04cbeb;
                   border-radius: 5px;
                 `}
-            >
-              <FontAwesomeIcon
-                  icon={faServer}
-                  css={`
+                    >
+                        <FontAwesomeIcon
+                            icon={faServer}
+                            css={`
                     margin-right: 10px;
                     width: 25px !important;
                   `}
-              />
-              Create Server
-            </MenuItem>
-          </ContextMenu>
-        </Portal>
-      </>
-  );
+                        />
+                        Create Server
+                    </MenuItem>
+                </ContextMenu>
+            </Portal>
+        </>
+    );
 };
 
 export default memo(Instance);

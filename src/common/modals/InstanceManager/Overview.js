@@ -7,34 +7,34 @@ import { useDebouncedCallback } from 'use-debounce';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faSave,
-  faUndo,
-  faCog,
-  faFolder
+    faSave,
+    faUndo,
+    faCog,
+    faFolder
 } from '@fortawesome/free-solid-svg-icons';
 import { Input, Button, Switch, Slider, Select } from 'antd';
 import { ipcRenderer } from 'electron';
 import {
-  _getInstancesPath,
-  _getInstance,
-  _getJavaPath
+    _getInstancesPath,
+    _getInstance,
+    _getJavaPath
 } from '../../utils/selectors';
 import instanceDefaultBackground from '../../assets/instance_default.png';
 import {
-  DEFAULT_JAVA_ARGS,
-  resolutionPresets
+    DEFAULT_JAVA_ARGS,
+    resolutionPresets
 } from '../../../app/desktop/utils/constants';
 import {
-  getJavaVersionForMCVersion,
-  updateInstanceConfig
+    getJavaVersionForMCVersion,
+    updateInstanceConfig
 } from '../../reducers/actions';
 import { openModal } from '../../reducers/modals/actions';
 import {
-  convertMinutesToHumanTime,
-  marks,
-  scaleMem,
-  scaleMemInv,
-  sysMemScaled
+    convertMinutesToHumanTime,
+    marks,
+    scaleMem,
+    scaleMemInv,
+    sysMemScaled
 } from '../../utils';
 import { CURSEFORGE } from '../../utils/constants';
 
@@ -126,32 +126,32 @@ const ResolutionInputContainer = styled.div`
 `;
 
 const Card = memo(
-  ({ title, children, color, icon, instanceName, defaultValue }) => {
-    const dispatch = useDispatch();
-    return (
-      <CardBox
-        css={`
+    ({ title, children, color, icon, instanceName, defaultValue }) => {
+        const dispatch = useDispatch();
+        return (
+            <CardBox
+                css={`
           background: ${color};
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
         `}
-      >
-        <div
-          css={`
+            >
+                <div
+                    css={`
             position: absolute;
             top: 5px;
             left: 10px;
             font-size: 10px;
             color: ${props => props.theme.palette.text.secondary};
           `}
-        >
-          {title}
-        </div>
+                >
+                    {title}
+                </div>
 
-        {icon && (
-          <div
-            css={`
+                {icon && (
+                    <div
+                        css={`
               position: absolute;
               top: 5px;
               right: 10px;
@@ -159,451 +159,456 @@ const Card = memo(
               color: ${props => props.theme.palette.text.secondary};
               cursor: pointer;
             `}
-            onClick={() => {
-              dispatch(
-                openModal('McVersionChanger', { instanceName, defaultValue })
-              );
-            }}
-          >
-            {icon}
-          </div>
-        )}
+                        onClick={() => {
+                            dispatch(
+                                openModal('McVersionChanger', { instanceName, defaultValue })
+                            );
+                        }}
+                    >
+                        {icon}
+                    </div>
+                )}
 
-        <div>{children}</div>
-      </CardBox>
-    );
-  }
+                <div>{children}</div>
+            </CardBox>
+        );
+    }
 );
 
 const Overview = ({ instanceName, background, manifest }) => {
-  const dispatch = useDispatch();
-  const instancesPath = useSelector(_getInstancesPath);
-  const config = useSelector(state => _getInstance(state)(instanceName));
-  const javaVersion = dispatch(
-    getJavaVersionForMCVersion(config?.loader?.mcVersion)
-  );
-  const defaultJavaPath = useSelector(state =>
-    _getJavaPath(state)(javaVersion)
-  );
-  const [javaLocalMemory, setJavaLocalMemory] = useState(config?.javaMemory);
-  const [javaLocalArguments, setJavaLocalArguments] = useState(
-    config?.javaArgs
-  );
-  const [customJavaPath, setCustomJavaPath] = useState(config?.customJavaPath);
-  const [newName, setNewName] = useState(instanceName);
-  const [screenResolution, setScreenResolution] = useState(null);
-  const [height, setHeight] = useState(config?.resolution?.height);
-  const [width, setWidth] = useState(config?.resolution?.width);
-
-  useEffect(() => {
-    ipcRenderer
-      .invoke('getAllDisplaysBounds')
-      .then(setScreenResolution)
-      .catch(console.error);
-  }, []);
-
-  const updateJavaMemory = v => {
-    dispatch(
-      updateInstanceConfig(instanceName, prev => ({
-        ...prev,
-        javaMemory: Math.round(scaleMemInv(v))
-      }))
+    const dispatch = useDispatch();
+    const instancesPath = useSelector(_getInstancesPath);
+    const config = useSelector(state => _getInstance(state)(instanceName));
+    const javaVersion = dispatch(
+        getJavaVersionForMCVersion(config?.loader?.mcVersion)
     );
-  };
-
-  const updateJavaArguments = v => {
-    dispatch(
-      updateInstanceConfig(instanceName, prev => ({
-        ...prev,
-        javaArgs: v
-      }))
+    const defaultJavaPath = useSelector(state =>
+        _getJavaPath(state)(javaVersion)
     );
-  };
-
-  const updateCustomJavaPath = v => {
-    dispatch(
-      updateInstanceConfig(instanceName, prev => ({
-        ...prev,
-        customJavaPath: v
-      }))
+    const [javaLocalMemory, setJavaLocalMemory] = useState(config?.javaMemory);
+    const [javaLocalArguments, setJavaLocalArguments] = useState(
+        config?.javaArgs
     );
-  };
+    const [customJavaPath, setCustomJavaPath] = useState(config?.customJavaPath);
+    const [newName, setNewName] = useState(instanceName);
+    const [screenResolution, setScreenResolution] = useState(null);
+    const [height, setHeight] = useState(config?.resolution?.height);
+    const [width, setWidth] = useState(config?.resolution?.width);
 
-  const updateGameResolution = (w, h) => {
-    dispatch(
-      updateInstanceConfig(instanceName, prev => ({
-        ...prev,
-        resolution: { height: h, width: w }
-      }))
+    useEffect(() => {
+        ipcRenderer
+            .invoke('getAllDisplaysBounds')
+            .then(setScreenResolution)
+            .catch(console.error);
+    }, []);
+
+    const updateJavaMemory = v => {
+        dispatch(
+            updateInstanceConfig(instanceName, prev => ({
+                ...prev,
+                javaMemory: Math.round(scaleMemInv(v))
+            }))
+        );
+    };
+
+    const updateJavaArguments = v => {
+        dispatch(
+            updateInstanceConfig(instanceName, prev => ({
+                ...prev,
+                javaArgs: v
+            }))
+        );
+    };
+
+    const updateCustomJavaPath = v => {
+        dispatch(
+            updateInstanceConfig(instanceName, prev => ({
+                ...prev,
+                customJavaPath: v
+            }))
+        );
+    };
+
+    const updateGameResolution = (w, h) => {
+        dispatch(
+            updateInstanceConfig(instanceName, prev => ({
+                ...prev,
+                resolution: { height: h, width: w }
+            }))
+        );
+    };
+
+    const debouncedArgumentsUpdate = useDebouncedCallback(
+        v => {
+            updateJavaArguments(v);
+        },
+        400,
+        { maxWait: 700, leading: false }
     );
-  };
 
-  const debouncedArgumentsUpdate = useDebouncedCallback(
-    v => {
-      updateJavaArguments(v);
-    },
-    400,
-    { maxWait: 700, leading: false }
-  );
+    const isJaHollDEInstance = () => instanceName === "jahollde" || instanceName === "jahollde_dev";
 
-  const debouncedJavaPathUpdate = useDebouncedCallback(
-    v => {
-      updateCustomJavaPath(v);
-    },
-    400,
-    { maxWait: 700, leading: false }
-  );
-
-  const resetJavaArguments = () => {
-    setJavaLocalArguments(DEFAULT_JAVA_ARGS);
-    updateJavaArguments(DEFAULT_JAVA_ARGS);
-  };
-
-  const resetCustomJavaPath = () => {
-    setCustomJavaPath(defaultJavaPath);
-    updateCustomJavaPath(defaultJavaPath);
-  };
-
-  const renameInstance = () => {
-    fss.rename(
-      path.join(instancesPath, instanceName),
-      path.join(instancesPath, newName)
+    const debouncedJavaPathUpdate = useDebouncedCallback(
+        v => {
+            updateCustomJavaPath(v);
+        },
+        400,
+        { maxWait: 700, leading: false }
     );
-  };
 
-  const computeLastPlayed = timestamp => {
-    const lastPlayed = new Date(timestamp);
-    const timeDiff = lastPlayed.getTime() - new Date(Date.now()).getTime();
-    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    switch (diffDays) {
-      case 0:
-        return 'Today';
-      case -1:
-        return 'Yesterday';
-      default:
-        return lastPlayed.toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric'
-        });
-    }
-  };
+    const resetJavaArguments = () => {
+        setJavaLocalArguments(DEFAULT_JAVA_ARGS);
+        updateJavaArguments(DEFAULT_JAVA_ARGS);
+    };
 
-  return (
-    <Container>
-      <Column>
-        <OverviewCard
-          css={`
+    const resetCustomJavaPath = () => {
+        setCustomJavaPath(defaultJavaPath);
+        updateCustomJavaPath(defaultJavaPath);
+    };
+
+    const renameInstance = () => {
+        fss.rename(
+            path.join(instancesPath, instanceName),
+            path.join(instancesPath, newName)
+        );
+    };
+
+    const computeLastPlayed = timestamp => {
+        const lastPlayed = new Date(timestamp);
+        const timeDiff = lastPlayed.getTime() - new Date(Date.now()).getTime();
+        const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        switch (diffDays) {
+            case 0:
+                return 'Today';
+            case -1:
+                return 'Yesterday';
+            default:
+                return lastPlayed.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric'
+                });
+        }
+    };
+
+    return (
+        <Container>
+            <Column>
+                <OverviewCard
+                    css={`
             display: flex;
             justify-content: space-between;
             width: 100%;
             margin-top: 20px;
           `}
-        >
-          <Card
-            title="Minecraft Version"
-            color={props => props.theme.palette.colors.jungleGreen}
-            instanceName={instanceName}
-            defaultValue={config?.loader}
-            icon={<FontAwesomeIcon icon={faCog} />}
-          >
-            {config?.loader?.mcVersion}
-          </Card>
-          <Card
-            title="Modloader"
-            color={props => props.theme.palette.colors.darkYellow}
-            instanceName={instanceName}
-            defaultValue={config?.loader}
-            icon={<FontAwesomeIcon icon={faCog} />}
-          >
-            {config?.loader?.loaderType}
-          </Card>
-          <Card
-            title="Modloader Version"
-            color={props => props.theme.palette.colors.lightBlue}
-            instanceName={instanceName}
-            defaultValue={config?.loader}
-            icon={
-              (config?.loader?.loaderVersion || '-') !== '-' ? (
-                <FontAwesomeIcon icon={faCog} />
-              ) : null
-            }
-          >
-            {config?.loader?.loaderType === 'forge'
-              ? config?.loader?.loaderVersion?.split('-')[1]
-              : config?.loader?.loaderVersion || '-'}
-          </Card>
-        </OverviewCard>
-        <OverviewCard
-          css={`
+                >
+                    <Card
+                        title="Minecraft Version"
+                        color={props => props.theme.palette.colors.jungleGreen}
+                        instanceName={instanceName}
+                        defaultValue={config?.loader}
+                        icon={<FontAwesomeIcon icon={faCog} />}
+                    >
+                        {config?.loader?.mcVersion}
+                    </Card>
+                    <Card
+                        title="Modloader"
+                        color={props => props.theme.palette.colors.darkYellow}
+                        instanceName={instanceName}
+                        defaultValue={config?.loader}
+                        icon={<FontAwesomeIcon icon={faCog} />}
+                    >
+                        {config?.loader?.loaderType}
+                    </Card>
+                    <Card
+                        title="Modloader Version"
+                        color={props => props.theme.palette.colors.lightBlue}
+                        instanceName={instanceName}
+                        defaultValue={config?.loader}
+                        icon={
+                            (config?.loader?.loaderVersion || '-') !== '-' ? (
+                                <FontAwesomeIcon icon={faCog} />
+                            ) : null
+                        }
+                    >
+                        {config?.loader?.loaderType === 'forge'
+                            ? config?.loader?.loaderVersion?.split('-')[1]
+                            : config?.loader?.loaderVersion || '-'}
+                    </Card>
+                </OverviewCard>
+                <OverviewCard
+                    css={`
             display: flex;
             justify-content: space-between;
             width: 100%;
             margin-bottom: 30px;
           `}
-        >
-          <Card
-            title="Mods"
-            color={props => props.theme.palette.colors.maximumRed}
-          >
-            {config?.mods?.length || '-'}
-          </Card>
-          <Card
-            title="Played Time"
-            color={props => props.theme.palette.colors.liberty}
-          >
-            {convertMinutesToHumanTime(config?.timePlayed)}
-          </Card>
-          <Card
-            title="Last Played"
-            color={props => props.theme.palette.colors.orange}
-          >
-            {config?.lastPlayed ? computeLastPlayed(config?.lastPlayed) : '-'}
-          </Card>
-        </OverviewCard>
-        {config?.loader.source === CURSEFORGE && manifest && (
-          <Card
-            title="Curse Modpack"
-            color={`linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${
-              background
-                ? `url(${background})`
-                : `url(${instanceDefaultBackground})`
-            }`}
-          >
-            {manifest?.name} - {manifest?.version}
-          </Card>
-        )}
-        <RenameRow>
-          <Input value={newName} onChange={e => setNewName(e.target.value)} />
-          <RenameButton onClick={() => renameInstance()} type="primary">
-            Rename&nbsp;
-            <FontAwesomeIcon icon={faSave} />
-          </RenameButton>
-        </RenameRow>
-        <OverviewCard>
-          <JavaManagerRow>
-            <div>Override Game Resolution</div>
-            <Switch
-              checked={height && width}
-              onChange={v => {
-                if (!v) {
-                  setHeight(null);
-                  setWidth(null);
-                  dispatch(
-                    updateInstanceConfig(instanceName, prev =>
-                      omit(prev, ['resolution'])
-                    )
-                  );
-                } else {
-                  updateGameResolution(854, 480);
-                  setHeight(480);
-                  setWidth(854);
+                >
+                    <Card
+                        title="Mods"
+                        color={props => props.theme.palette.colors.maximumRed}
+                    >
+                        {config?.mods?.length || '-'}
+                    </Card>
+                    <Card
+                        title="Played Time"
+                        color={props => props.theme.palette.colors.liberty}
+                    >
+                        {convertMinutesToHumanTime(config?.timePlayed)}
+                    </Card>
+                    <Card
+                        title="Last Played"
+                        color={props => props.theme.palette.colors.orange}
+                    >
+                        {config?.lastPlayed ? computeLastPlayed(config?.lastPlayed) : '-'}
+                    </Card>
+                </OverviewCard>
+                {config?.loader.source === CURSEFORGE && manifest && (
+                    <Card
+                        title="Curse Modpack"
+                        color={`linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), ${background
+                            ? `url(${background})`
+                            : `url(${instanceDefaultBackground})`
+                            }`}
+                    >
+                        {manifest?.name} - {manifest?.version}
+                    </Card>
+                )}
+                {
+                    !isJaHollDEInstance() ?
+                        <RenameRow>
+                            <Input value={newName} onChange={e => setNewName(e.target.value)} />
+                            <RenameButton onClick={() => renameInstance()} type="primary">
+                                Rename&nbsp;
+                                <FontAwesomeIcon icon={faSave} />
+                            </RenameButton>
+                        </RenameRow>
+                        : null
                 }
-              }}
-            />
-          </JavaManagerRow>
-          {height && width && (
-            <ResolutionInputContainer>
-              <div>
-                <Input
-                  placeholder="Width"
-                  value={width}
-                  onChange={e => {
-                    const w = parseInt(e.target.value, 10) || 854;
-                    setWidth(w);
-                    dispatch(
-                      updateInstanceConfig(instanceName, prev => ({
-                        ...prev,
-                        resolution: {
-                          height,
-                          width: w
-                        }
-                      }))
-                    );
-                  }}
-                />
-                &nbsp;X&nbsp;
-                <Input
-                  placeholder="Height"
-                  value={height}
-                  onChange={e => {
-                    const h = parseInt(e.target.value, 10) || 480;
-                    setHeight(h);
-                    dispatch(
-                      updateInstanceConfig(instanceName, prev => ({
-                        ...prev,
-                        resolution: {
-                          height: h,
-                          width
-                        }
-                      }))
-                    );
-                  }}
-                />
-              </div>
-              <Select
-                placeholder="Presets"
-                onChange={v => {
-                  const w = parseInt(v.split('x')[0], 10);
-                  const h = parseInt(v.split('x')[1], 10);
-                  setHeight(h);
-                  setWidth(w);
-                  dispatch(
-                    updateInstanceConfig(instanceName, prev => ({
-                      ...prev,
-                      resolution: {
-                        height: h,
-                        width: w
-                      }
-                    }))
-                  );
-                }}
-                virtual={false}
-              >
-                {resolutionPresets.map(v => {
-                  const w = parseInt(v.split('x')[0], 10);
-                  const h = parseInt(v.split('x')[1], 10);
+                <OverviewCard>
+                    <JavaManagerRow>
+                        <div>Override Game Resolution</div>
+                        <Switch
+                            checked={height && width}
+                            onChange={v => {
+                                if (!v) {
+                                    setHeight(null);
+                                    setWidth(null);
+                                    dispatch(
+                                        updateInstanceConfig(instanceName, prev =>
+                                            omit(prev, ['resolution'])
+                                        )
+                                    );
+                                } else {
+                                    updateGameResolution(854, 480);
+                                    setHeight(480);
+                                    setWidth(854);
+                                }
+                            }}
+                        />
+                    </JavaManagerRow>
+                    {height && width && (
+                        <ResolutionInputContainer>
+                            <div>
+                                <Input
+                                    placeholder="Width"
+                                    value={width}
+                                    onChange={e => {
+                                        const w = parseInt(e.target.value, 10) || 854;
+                                        setWidth(w);
+                                        dispatch(
+                                            updateInstanceConfig(instanceName, prev => ({
+                                                ...prev,
+                                                resolution: {
+                                                    height,
+                                                    width: w
+                                                }
+                                            }))
+                                        );
+                                    }}
+                                />
+                                &nbsp;X&nbsp;
+                                <Input
+                                    placeholder="Height"
+                                    value={height}
+                                    onChange={e => {
+                                        const h = parseInt(e.target.value, 10) || 480;
+                                        setHeight(h);
+                                        dispatch(
+                                            updateInstanceConfig(instanceName, prev => ({
+                                                ...prev,
+                                                resolution: {
+                                                    height: h,
+                                                    width
+                                                }
+                                            }))
+                                        );
+                                    }}
+                                />
+                            </div>
+                            <Select
+                                placeholder="Presets"
+                                onChange={v => {
+                                    const w = parseInt(v.split('x')[0], 10);
+                                    const h = parseInt(v.split('x')[1], 10);
+                                    setHeight(h);
+                                    setWidth(w);
+                                    dispatch(
+                                        updateInstanceConfig(instanceName, prev => ({
+                                            ...prev,
+                                            resolution: {
+                                                height: h,
+                                                width: w
+                                            }
+                                        }))
+                                    );
+                                }}
+                                virtual={false}
+                            >
+                                {resolutionPresets.map(v => {
+                                    const w = parseInt(v.split('x')[0], 10);
+                                    const h = parseInt(v.split('x')[1], 10);
 
-                  const isBiggerThanScreen = (screenResolution || []).every(
-                    bounds => {
-                      return bounds.width < w || bounds.height < h;
-                    }
-                  );
-                  if (isBiggerThanScreen) return null;
-                  return <Select.Option value={v}>{v}</Select.Option>;
-                })}
-              </Select>
-            </ResolutionInputContainer>
-          )}
-          <JavaManagerRow>
-            <div>Override Java Memory</div>
-            <Switch
-              checked={javaLocalMemory}
-              onChange={v => {
-                if (!v) {
-                  setJavaLocalMemory(null);
-                  dispatch(
-                    updateInstanceConfig(instanceName, prev =>
-                      omit(prev, ['javaMemory'])
-                    )
-                  );
-                } else if (v) {
-                  setJavaLocalMemory(4096);
-                  updateJavaMemory(4096);
-                }
-              }}
-            />
-          </JavaManagerRow>
-          {(javaLocalMemory || null) && (
-            <div
-              css={`
+                                    const isBiggerThanScreen = (screenResolution || []).every(
+                                        bounds => {
+                                            return bounds.width < w || bounds.height < h;
+                                        }
+                                    );
+                                    if (isBiggerThanScreen) return null;
+                                    return <Select.Option value={v}>{v}</Select.Option>;
+                                })}
+                            </Select>
+                        </ResolutionInputContainer>
+                    )}
+                    <JavaManagerRow>
+                        <div>Override Java Memory</div>
+                        <Switch
+                            checked={javaLocalMemory}
+                            onChange={v => {
+                                if (!v) {
+                                    setJavaLocalMemory(null);
+                                    dispatch(
+                                        updateInstanceConfig(instanceName, prev =>
+                                            omit(prev, ['javaMemory'])
+                                        )
+                                    );
+                                } else if (v) {
+                                    setJavaLocalMemory(4096);
+                                    updateJavaMemory(4096);
+                                }
+                            }}
+                        />
+                    </JavaManagerRow>
+                    {(javaLocalMemory || null) && (
+                        <div
+                            css={`
                 display: flex;
               `}
-            >
-              <JavaMemorySlider
-                onAfterChange={updateJavaMemory}
-                onChange={v => setJavaLocalMemory(Math.round(scaleMemInv(v)))}
-                value={scaleMem(javaLocalMemory)}
-                min={0}
-                max={sysMemScaled}
-                step={0.1}
-                marks={marks}
-                valueLabelDisplay="auto"
-              />
-              <div
-                css={`
+                        >
+                            <JavaMemorySlider
+                                onAfterChange={updateJavaMemory}
+                                onChange={v => setJavaLocalMemory(Math.round(scaleMemInv(v)))}
+                                value={scaleMem(javaLocalMemory)}
+                                min={0}
+                                max={sysMemScaled}
+                                step={0.1}
+                                marks={marks}
+                                valueLabelDisplay="auto"
+                            />
+                            <div
+                                css={`
                   display: grid;
                   place-items: center;
                   width: 100px;
                 `}
-              >
-                {javaLocalMemory} MB
-              </div>
-            </div>
-          )}
-          <JavaManagerRow>
-            <div>Override Java Arguments</div>
-            <Switch
-              checked={javaLocalArguments}
-              onChange={v => {
-                if (!v) {
-                  setJavaLocalArguments(null);
-                  dispatch(
-                    updateInstanceConfig(instanceName, prev =>
-                      omit(prev, ['javaArgs'])
-                    )
-                  );
-                } else if (v) {
-                  resetJavaArguments();
-                }
-              }}
-            />
-          </JavaManagerRow>
-          {javaLocalArguments && (
-            <JavaManagerRow>
-              <Input
-                value={javaLocalArguments}
-                onChange={e => {
-                  setJavaLocalArguments(e.target.value);
-                  debouncedArgumentsUpdate(e.target.value);
-                }}
-              />
-              <JavaResetButton onClick={resetJavaArguments}>
-                <FontAwesomeIcon icon={faUndo} />
-              </JavaResetButton>
-            </JavaManagerRow>
-          )}
-          <JavaManagerRow>
-            <div>Custom Java Path {`<Java ${javaVersion}>`} </div>
-            <Switch
-              checked={customJavaPath}
-              onChange={v => {
-                if (!v) {
-                  setCustomJavaPath(null);
-                  dispatch(
-                    updateInstanceConfig(instanceName, prev =>
-                      omit(prev, ['customJavaPath'])
-                    )
-                  );
-                } else if (v) {
-                  resetCustomJavaPath();
-                }
-              }}
-            />
-          </JavaManagerRow>
-          {customJavaPath && (
-            <JavaManagerRow>
-              <Input
-                value={customJavaPath}
-                onChange={e => {
-                  setCustomJavaPath(e.target.value);
-                  debouncedJavaPathUpdate(e.target.value);
-                }}
-              />
+                            >
+                                {javaLocalMemory} MB
+                            </div>
+                        </div>
+                    )}
+                    <JavaManagerRow>
+                        <div>Override Java Arguments</div>
+                        <Switch
+                            checked={javaLocalArguments}
+                            onChange={v => {
+                                if (!v) {
+                                    setJavaLocalArguments(null);
+                                    dispatch(
+                                        updateInstanceConfig(instanceName, prev =>
+                                            omit(prev, ['javaArgs'])
+                                        )
+                                    );
+                                } else if (v) {
+                                    resetJavaArguments();
+                                }
+                            }}
+                        />
+                    </JavaManagerRow>
+                    {javaLocalArguments && (
+                        <JavaManagerRow>
+                            <Input
+                                value={javaLocalArguments}
+                                onChange={e => {
+                                    setJavaLocalArguments(e.target.value);
+                                    debouncedArgumentsUpdate(e.target.value);
+                                }}
+                            />
+                            <JavaResetButton onClick={resetJavaArguments}>
+                                <FontAwesomeIcon icon={faUndo} />
+                            </JavaResetButton>
+                        </JavaManagerRow>
+                    )}
+                    <JavaManagerRow>
+                        <div>Custom Java Path {`<Java ${javaVersion}>`} </div>
+                        <Switch
+                            checked={customJavaPath}
+                            onChange={v => {
+                                if (!v) {
+                                    setCustomJavaPath(null);
+                                    dispatch(
+                                        updateInstanceConfig(instanceName, prev =>
+                                            omit(prev, ['customJavaPath'])
+                                        )
+                                    );
+                                } else if (v) {
+                                    resetCustomJavaPath();
+                                }
+                            }}
+                        />
+                    </JavaManagerRow>
+                    {customJavaPath && (
+                        <JavaManagerRow>
+                            <Input
+                                value={customJavaPath}
+                                onChange={e => {
+                                    setCustomJavaPath(e.target.value);
+                                    debouncedJavaPathUpdate(e.target.value);
+                                }}
+                            />
 
-              <Button
-                color="primary"
-                onClick={async () => {
-                  const { filePaths, canceled } = await ipcRenderer.invoke(
-                    'openFileDialog',
-                    defaultJavaPath
-                  );
-                  if (!filePaths[0] || canceled) return;
-                  setCustomJavaPath(filePaths[0]);
-                  updateCustomJavaPath(filePaths[0]);
-                }}
-              >
-                <FontAwesomeIcon icon={faFolder} />
-              </Button>
-              <JavaResetButton onClick={resetCustomJavaPath}>
-                <FontAwesomeIcon icon={faUndo} />
-              </JavaResetButton>
-            </JavaManagerRow>
-          )}
-        </OverviewCard>
-      </Column>
-    </Container>
-  );
+                            <Button
+                                color="primary"
+                                onClick={async () => {
+                                    const { filePaths, canceled } = await ipcRenderer.invoke(
+                                        'openFileDialog',
+                                        defaultJavaPath
+                                    );
+                                    if (!filePaths[0] || canceled) return;
+                                    setCustomJavaPath(filePaths[0]);
+                                    updateCustomJavaPath(filePaths[0]);
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faFolder} />
+                            </Button>
+                            <JavaResetButton onClick={resetCustomJavaPath}>
+                                <FontAwesomeIcon icon={faUndo} />
+                            </JavaResetButton>
+                        </JavaManagerRow>
+                    )}
+                </OverviewCard>
+            </Column>
+        </Container>
+    );
 };
 
 export default Overview;

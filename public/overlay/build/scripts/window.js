@@ -23,6 +23,10 @@ export class Window {
             focused = this.window?.isFocused();
         const alwaysOnTop = this.mcFocused || focused;
         const showWindow = !this.mcIconified;
+        this.application.mainWindow.webContents.send("overlay-shown", {
+            alwaysOnTop: alwaysOnTop,
+            showWindow: showWindow
+        });
         if (showWindow) {
             this.window?.showInactive();
         }
@@ -94,7 +98,9 @@ export class Window {
                 .getBrowserViews()
                 .forEach((obj) => this.window?.removeBrowserView(obj));
             this.window?.hide();
+            console.log("Loading JaHollDE-Page...");
             await this.window?.loadURL(`http://127.0.0.1:${this.application.express.port}/overlay`);
+            console.log("Loaded JaHolLDE-Page!");
             this.window?.showInactive();
             this.window?.setAlwaysOnTop(true, "screen-saver");
             this.siteActive = true;
