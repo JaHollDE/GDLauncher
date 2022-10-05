@@ -258,11 +258,12 @@ const Instances = () => {
     const [overlayConnected, setOverlayConnected] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(true);
     const [overlayHovered, setOverlayHovered] = useState(false);
+    const [overlayAlwaysOnTop, setOverlayAlwaysOnTop] = useState(true);
     const [showAllInstances, setShowAllInstances] = useState(false);
 
     ipcRenderer.on("overlay-shown", (event, data) => {
         setOverlayVisible(data.showWindow);
-        setOverlayHovered(data.alwaysOnTop);
+        setOverlayAlwaysOnTop(data.alwaysOnTop);
     });
     ipcRenderer.on("overlay-connected", (event, status) => {
         setOverlayConnected(status);
@@ -326,7 +327,7 @@ const Instances = () => {
                         <img src={boxArrowInDown} style={{
                             filter: "invert(1)",
                             height: "1.5rem",
-                            opacity: overlayHovered && overlayConnected ? "100%" : "0%",
+                            opacity: overlayAlwaysOnTop && overlayConnected ? "100%" : "0%",
                             transition: "all 0.5s"
                         }}></img>
                     </div>
