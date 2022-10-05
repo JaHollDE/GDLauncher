@@ -4,22 +4,22 @@ import { MINECRAFT_SERVICES_URL } from "../../../common/utils/constants";
 
 let c;
 export function onAccountChange(callback) {
-  c = callback;
+    c = callback;
 }
 export function accountChange() {
-  c?.();
+    c?.();
 }
 
 export async function verifyToken(mcToken) {
-  const url = await getURL();
+    const url = await getURL();
 
-  const request = `${url}/api/user/verify`;
+    const request = `${url}/api/user/verify`;
 
-  const data = await axios.get(request, {
-    headers: {
-      Authorization: `Bearer ${mcToken}`
-    }
-  });
+    const data = await axios.get(request, {
+        headers: {
+            Authorization: `Bearer ${mcToken}`
+        }
+    });
 
-  return data.data;
+    return data.data;
 }

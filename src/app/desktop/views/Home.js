@@ -12,13 +12,15 @@ import Instances from '../components/Instances';
 import News from '../components/News';
 import { openModal } from '../../../common/reducers/modals/actions';
 import {
-  _getCurrentAccount
-  // _getInstances
+    _getCurrentAccount
+    // _getInstances
 } from '../../../common/utils/selectors';
+import Logo from "../../../ui/Logo";
 import { extractFace } from '../utils';
 import { updateLastUpdateVersion } from '../../../common/reducers/actions';
 import * as jaholldeVerification from "../utils/jaholldeVerification";
 import { onAccountChange } from "../utils/jaholldeVerification";
+import "./Home.css"
 
 const AddInstanceIcon = styled(Button)`
   position: fixed;
@@ -52,135 +54,160 @@ const AccountBackground = styled(Button)`
 `
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const account = useSelector(_getCurrentAccount);
-  const news = useSelector(state => state.news);
-  const lastUpdateVersion = useSelector(state => state.app.lastUpdateVersion);
-  // const instances = useSelector(_getInstances);
+    const dispatch = useDispatch();
+    const account = useSelector(_getCurrentAccount);
+    const news = useSelector(state => state.news);
+    const lastUpdateVersion = useSelector(state => state.app.lastUpdateVersion);
+    // const instances = useSelector(_getInstances);
 
-  const openAddInstanceModal = defaultPage => {
-    dispatch(openModal('AddInstance', { defaultPage }));
-  };
-
-  const openAccountModal = () => {
-    dispatch(openModal('AccountsManager'));
-  };
-
-  const [profileImage, setProfileImage] = useState(null);
-  const [annoucement, setAnnoucement] = useState(null);
-
-  useEffect(() => {
-    const init = async () => {
-      const appVersion = await ipcRenderer.invoke('getAppVersion');
-      if (lastUpdateVersion !== appVersion) {
-        dispatch(updateLastUpdateVersion(appVersion));
-        dispatch(openModal('ChangeLogs'));
-      }
-      try {
-        const { data } = await axios.get(
-            'https://api.gdlauncher.com/announcement'
-        );
-        setAnnoucement(data || null);
-      } catch (e) {
-        console.log('No announcement to show');
-      }
+    const openAddInstanceModal = defaultPage => {
+        dispatch(openModal('AddInstance', { defaultPage }));
     };
 
-    init();
-  }, []);
+    const openAccountModal = () => {
+        dispatch(openModal('AccountsManager'));
+    };
 
-  useEffect(() => {
-    extractFace(account.skin).then(setProfileImage).catch(console.error);
-  }, [account]);
+    const [profileImage, setProfileImage] = useState(null);
+    const [annoucement, setAnnoucement] = useState(null);
 
-  const [jaholldeData, setJaholldeData] = useState(undefined);
-  const token = useSelector(state => state.app.currentAccountId);
+    useEffect(() => {
+        const init = async () => {
+            const appVersion = await ipcRenderer.invoke('getAppVersion');
+            if (lastUpdateVersion !== appVersion) {
+                dispatch(updateLastUpdateVersion(appVersion));
+                dispatch(openModal('ChangeLogs'));
+            }
+            try {
+                const { data } = await axios.get(
+                    'https://api.gdlauncher.com/announcement'
+                );
+                setAnnoucement(data || null);
+            } catch (e) {
+                console.log('No announcement to show');
+            }
+        };
 
-  const openRegisterScreen = () => {
-    // open modal
-    dispatch(openModal('JaHollDERegister'));
-  }
+        init();
+    }, []);
 
-  const updateData = () => {
-    setJaholldeData(null);
-    dispatch(async (dispatch, getState) => {
-      const state = getState();
-      const account = _getCurrentAccount(state);
+    useEffect(() => {
+        extractFace(account.skin).then(setProfileImage).catch(console.error);
+    }, [account]);
 
-      if (account.accessToken === undefined) {
-        console.log("Unable to get access token for account: ", account);
-        return;
-      }
+    const [jaholldeData, setJaholldeData] = useState(undefined);
+    const token = useSelector(state => state.app.currentAccountId);
 
-      const data = await jaholldeVerification.verifyToken(account.accessToken);
+    const openRegisterScreen = () => {
+        // open modal
+        dispatch(openModal('JaHollDERegister'));
+    }
 
-      if (data.registered) {
-        setJaholldeData(data);
-        ipcRenderer.invoke("jahollde-data", account.accessToken, data);
-      } else {
-        setJaholldeData(undefined);
-        openRegisterScreen();
-      }
-    });
-  }
 
-  useEffect(() => {
-    updateData();
-  }, [token]);
-  onAccountChange(() => updateData());
+    const [isDevInstance, setIsDevInstance] = useState(false);
 
-  return (
-      <div>
-        {annoucement ? (
-            <div
-                css={`
+    useEffect(() => {
+        ipcRenderer.invoke("is-dev-instance").then(s => setIsDevInstance(s));
+    }, []);
+
+    const toggleIsDevInstanceSave = () => {
+        const newState = !isDevInstance;
+        ipcRenderer.invoke("set-dev-instance", newState);
+        setIsDevInstance(newState);
+    }
+
+    const updateData = () => {
+        setJaholldeData(null);
+        dispatch(async (dispatch, getState) => {
+            const state = getState();
+            const account = _getCurrentAccount(state);
+
+            if (account.accessToken === undefined) {
+                console.log("Unable to get access token for account: ", account);
+                return;
+            }
+
+            const data = await jaholldeVerification.verifyToken(account.accessToken);
+
+            if (data.registered) {
+                setJaholldeData(data);
+                ipcRenderer.invoke("jahollde-data", account.accessToken, data);
+            } else {
+                setJaholldeData(undefined);
+                openRegisterScreen();
+            }
+        });
+    }
+
+    useEffect(() => {
+        updateData();
+    }, [token]);
+    onAccountChange(() => updateData());
+
+    return (
+        <div>
+            {annoucement ? (
+                <div
+                    css={`
             margin-top: 10px;
             padding: 30px;
             font-size: 18px;
             font-weight: bold;
             color: ${props => props.theme.palette.colors.yellow};
           `}
-            >
-              {annoucement}
+                >
+                    {annoucement}
+                </div>
+            ) : null}
+            <Instances />
+            <div className={"jahollde-symbol"} onClick={() => jaholldeData?.hasDevRights ? toggleIsDevInstanceSave() : null}>
+                <Logo size={35} />
+                {
+                    jaholldeData?.hasDevRights ?
+                        <span css={{
+                            paddingLeft: "1rem"
+                        }}>
+                            {isDevInstance ? "Development" : "Produktiv"}
+                        </span>
+                        : null
+                }
             </div>
-        ) : null}
-        <Instances />
-        <AccountContainer type="primary">
-          {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
-          {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
+            <AccountContainer type="primary">
+                {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
+                {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
 
-          <AccountBackground onClick={openAccountModal}>
-            {profileImage ? (
-                <img
-                    src={`data:image/jpeg;base64,${profileImage}`}
-                    css={`
+                <AccountBackground onClick={openAccountModal}>
+                    {profileImage ? (
+                        <img
+                            src={`data:image/jpeg;base64,${profileImage}`}
+                            css={`
               width: 15px;
               cursor: pointer;
               height: 15px;
               align-self: center;
             `}
-                    alt="profile"
-                />
-            ) : (
-                <div
-                    css={`
+                            alt="profile"
+                        />
+                    ) : (
+                        <div
+                            css={`
               width: 15px;
               height: 15px;
               background: ${props => props.theme.palette.grey[100]};
               margin-right: 10px;
             `}
-                />
-            )}
-            {
-                jaholldeData &&
-                <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
-            }
-          </AccountBackground>
+                        />
+                    )}
+                    {
+                        jaholldeData &&
+                        <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
+                    }
+                </AccountBackground>
 
 
-        </AccountContainer>
-      </div>
-  );
+            </AccountContainer>
+        </div>
+    );
 };
 //{account && account.selectedProfile.name}
 export default memo(Home);

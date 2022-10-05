@@ -52,6 +52,11 @@ export default class SocketManager {
                 webSocket.send(l);
             });
 
+            this.sendMessage(JSON.stringify({
+                type: "jahollde_url",
+                url: "wss://" + this.app.getURL(false) + "/api/ws"
+            }));
+
             this.updateWindow();
 
             webSocket.on("message", (msg: any) => {

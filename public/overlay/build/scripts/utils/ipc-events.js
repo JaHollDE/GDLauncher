@@ -25,4 +25,12 @@ export function initIPCEvents(application) {
     ipcMain.handle("restart-electron", (event) => {
         application.window.restart();
     });
+    ipcMain.handle("is-dev-instance", (event) => {
+        return application.config.config.isDevInstance;
+    });
+    ipcMain.handle("set-dev-instance", (event, state) => {
+        application.config.config.isDevInstance = state;
+        application.config.save();
+        application.mainWindow.webContents.send("dev-instance-update", state);
+    });
 }

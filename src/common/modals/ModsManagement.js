@@ -21,11 +21,11 @@ export async function installMods(modsData, instancesPath, instanceName, callbac
 
     const p = path.join(modFolder, mod.file);
 
-    if (mod.curseForgeID !== undefined && mod.curseForgeModID !== undefined) {
-      const { curseForgeID, curseForgeModID } = mod;
-      console.log("loading curse forge mod: ", curseForgeID, curseForgeModID);
+    if (mod.projectID !== undefined && mod.artifactID !== undefined) {
+      const { projectID, artifactID } = mod;
+      console.log("loading curse forge mod: ", projectID, artifactID);
 
-      const data = await getAddonFile(curseForgeModID, curseForgeID);
+      const data = await getAddonFile(projectID, artifactID);
 
       url = data.downloadUrl;
 

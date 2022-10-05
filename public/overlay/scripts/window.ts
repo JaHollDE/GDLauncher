@@ -1,7 +1,6 @@
 import { BrowserWindow, screen } from "electron";
 import { createWindow } from "./utils/create-window";
 import JaHollDEApplication from "./app";
-import { getURL } from "./utils/url";
 
 export class Window {
     public window?: BrowserWindow = undefined;
@@ -98,7 +97,7 @@ export class Window {
         this.window.setSize(...this.size);
         this.window.setPosition(...this.pos);
 
-        const website = (await getURL()) + "/overlay";
+        const website = this.application.getURL() + "/overlay";
         const debug = false;
         if (debug) {
             this.window?.hide();

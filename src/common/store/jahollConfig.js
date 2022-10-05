@@ -2,7 +2,9 @@ import fsa from "fs-extra";
 import path from "path";
 import { ipcRenderer } from "electron";
 
-let URL = "https://interface.jaholl.de"
+// let URL = "https://interface.jaholl.de"
+// TODO change back
+let URL = "https://devweb.jaholl.de"
 
 const urlProc = (async () => {
     const appData = await ipcRenderer.invoke('getAppdataPath');

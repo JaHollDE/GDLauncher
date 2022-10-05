@@ -3,23 +3,6 @@
     src: local("Roboto"), url("./Roboto-Regular.ttf"), format("truetype");
 }
 
-.jahollde-symbol {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 1rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    /*animation: update 1s infinite;*/
-    padding: .75rem;
-    border-radius: 50rem;
-
-    border: solid .3rem rgba(0, 0, 0, 0);
-}
-
-.jahollde-symbol:hover, .jahollde-symbol:hover > * {
-    cursor: pointer;
-}
-
 @keyframes update {
     0% {
         border-color: rgba(0, 220, 0, 0);

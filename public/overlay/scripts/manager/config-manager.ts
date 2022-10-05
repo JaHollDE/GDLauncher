@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-import {app, ipcMain, ipcRenderer} from "electron";
+import { app, ipcMain, ipcRenderer } from "electron";
 import IpcMainEvent = Electron.IpcMainEvent;
 import JaHollDEApplication from "../app";
 
@@ -40,6 +40,7 @@ interface Config {
     enableHardwareAcceleration: boolean;
     productive: boolean;
     assetsVersion: string;
+    isDevInstance: boolean;
 }
 
 const defaultConfig: Config = {
@@ -54,6 +55,7 @@ const defaultConfig: Config = {
     enableHardwareAcceleration: false,
     productive: true,
     assetsVersion: "undefined",
+    isDevInstance: false
 };
 
 class ConfigManager {
@@ -84,10 +86,10 @@ class ConfigManager {
             for (const key of Object.keys(this.config)) {
                 this.application.window
                     .getWindow().then(w => w.webContents.send(
-                    "config-key-update",
-                    key,
-                    this.config[key]
-                ));
+                        "config-key-update",
+                        key,
+                        this.config[key]
+                    ));
 
             }
             //this.application.socketManager.sendUUIDUpdate();
@@ -107,7 +109,7 @@ class ConfigManager {
         this.application.window
             .getWindow().then(w => {
                 w.webContents.send("config-key-update", key, this.config[key]);
-        })
+            })
 
         /*
         if (!this.application.windowManager?.getWindow()?.isDestroyed()) {

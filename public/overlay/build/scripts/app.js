@@ -21,4 +21,7 @@ export default class JaHollDEApplication {
         initIPCEvents(this);
         console.log("--- JaHollDE Electron-Setup finished ---");
     }
+    getURL(withPrefix = true) {
+        return (withPrefix ? "https://" : "") + (this.config.config.isDevInstance ? "https://devweb.jaholl.de" : "https://interface.jaholl.de");
+    }
 }

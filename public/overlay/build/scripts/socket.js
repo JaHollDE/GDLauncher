@@ -34,6 +34,10 @@ export default class SocketManager {
                     return;
                 webSocket.send(l);
             });
+            this.sendMessage(JSON.stringify({
+                type: "jahollde_url",
+                url: "wss://" + this.app.getURL(false) + "/api/ws"
+            }));
             this.updateWindow();
             webSocket.on("message", (msg) => {
                 if (typeof msg !== "string") {

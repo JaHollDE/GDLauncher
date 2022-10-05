@@ -8,11 +8,12 @@ import {
     _getInstancesPath
 } from "../../../../common/utils/selectors";
 
+import getInstancesComplete from "../../utils/getInstances"
+
 import bg0 from "../../../../common/assets/jahollde/backgrounds/bg0.jpg"
 import bg1 from "../../../../common/assets/jahollde/backgrounds/bg1.jpg"
 import bg2 from "../../../../common/assets/jahollde/backgrounds/bg2.jpg"
 import bg3 from "../../../../common/assets/jahollde/backgrounds/bg3.png"
-import Logo from "../../../../ui/Logo";
 
 import link from "../../../../common/assets/jahollde/link.svg"
 import arrowRepeat from "../../../../common/assets/jahollde/arrow-repeat.svg"
@@ -108,13 +109,15 @@ const Instances = () => {
         state => state.settings.instanceSortOrder
     );
     const instances = useSelector(_getInstances);
+
     const memoInstances = useMemo(
         () => getInstances(instances || [], instanceSortOrder),
         [instances, instanceSortOrder]
     );
+
     const startedInstances = useSelector(state => state.startedInstances);
 
-    const instanceName = "jahollde";
+    const [instanceName, setInstanceName] = useState("jahollde");
 
     const isPlaying = startedInstances[instanceName];
 
@@ -130,10 +133,14 @@ const Instances = () => {
 
     const instancesPath = useSelector(_getInstancesPath);
 
-    const loadData = async (updateConfig = false) => {
-        const updateMods2 = await getUpdateMods(instancesPath, instanceName, updateConfig);
+    const loadData = async (updateConfig = false, forceInstanceName = undefined) => {
+        if (!forceInstanceName) forceInstanceName = instanceName;
+        console.log("checking if update is available for: ", forceInstanceName);
+
+        const updateMods2 = await getUpdateMods(instancesPath, forceInstanceName, updateConfig);
         setUpdateMods(updateMods2);
-        const createInstance2 = memoInstances.find(l => l.name === instanceName) === undefined;
+        const finishedInstances = await getInstancesComplete(instancesPath);
+        const createInstance2 = Object.keys(finishedInstances).find(l => l === forceInstanceName) === undefined;
         setUpdateInstance(createInstance2);
 
         const updateAss = await hasAssetsUpdate();
@@ -149,6 +156,22 @@ const Instances = () => {
         loadData();
     }, [memoInstances]);
 
+    const [isDevInstance, setIsDevInstance] = useState(false);
+
+    useEffect(() => {
+        ipcRenderer.invoke("is-dev-instance").then(s => {
+            setIsDevInstance(s);
+            const newName = s ? "jahollde_dev" : "jahollde";
+            setInstanceName(newName);
+            if (s) loadData(false, newName);
+        });
+        ipcRenderer.on("dev-instance-update", (event, state) => {
+            setIsDevInstance(state);
+            const newName = state ? "jahollde_dev" : "jahollde";
+            setInstanceName(newName);
+            loadData(false, newName);
+        });
+    }, []);
 
 
     onConfig(() => loadData());
@@ -289,9 +312,6 @@ const Instances = () => {
                 top: "0",
 
             }}>
-                <div className={"jahollde-symbol"}>
-                    <Logo size={35} />
-                </div>
 
                 <div className={"show-all-instances"}>
                     <Button onClick={() => setShowAllInstances(!showAllInstances)}>
