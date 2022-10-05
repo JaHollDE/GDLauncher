@@ -592,7 +592,7 @@ const General = () => {
             margin-left: 30px;
           `}
             onClick={() => {
-
+              dispatch(closeModal());
               dispatch(push('/onboarding'));
             }}
           >
