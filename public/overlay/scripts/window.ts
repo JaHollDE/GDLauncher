@@ -1,7 +1,6 @@
 import { BrowserWindow, screen } from "electron";
 import { createWindow } from "./utils/create-window";
 import JaHollDEApplication from "./app";
-import axios from "axios";
 import { getURL } from "./utils/url";
 
 export class Window {
@@ -30,6 +29,12 @@ export class Window {
         if (focused === undefined) focused = this.window?.isFocused();
         const alwaysOnTop = this.mcFocused || focused;
         const showWindow = !this.mcIconified;
+
+
+        this.application.mainWindow.webContents.send("overlay-shown", {
+            alwaysOnTop: alwaysOnTop,
+            showWindow: showWindow
+        });
 
         if (showWindow) {
             this.window?.showInactive();
