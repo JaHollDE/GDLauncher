@@ -27,7 +27,11 @@ export async function initConfig() {
     await urlProc;
     const json = await (await fetch(`${URL}/launcher/mods.json`)).json();
     const appData = await ipcRenderer.invoke('getAppdataPath');
-    const p = path.join(appData, "gdlauncher_next", "jahollde.json");
+
+    const devInstance = await ipcRenderer.invoke("is-dev-instance");
+
+    const p = path.join(appData, "gdlauncher_next", devInstance ? "jahollde_dev.json" : "jahollde.json");
+
     if (fsa.existsSync(p)) {
         config = JSON.parse(fsa.readFileSync(p, "utf-8"));
     } else {
@@ -35,7 +39,7 @@ export async function initConfig() {
     }
     webData = json;
     fillConfig();
-    setConfig(config);
+
 }
 
 function fillConfig() {
@@ -63,6 +67,10 @@ const loadingConfig = initConfig();
 export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
     const promise = updateConfig ? initConfig() : loadingConfig;
     await promise;
+
+    //await initConfig();
+
+    await setConfig(config);
 
     const toUpdate = [];
 
@@ -133,8 +141,10 @@ export async function getConfig() {
 export async function setConfig(newConfig) {
     await loadingConfig;
 
+    const devInstance = await ipcRenderer.invoke("is-dev-instance");
+
     config = newConfig;
     handlers.forEach(l => l(newConfig));
     const appData = await ipcRenderer.invoke('getAppdataPath');
-    await fsa.writeFile(path.join(appData, "gdlauncher_next", "jahollde.json"), JSON.stringify(config, undefined, 2));
+    await fsa.writeFile(path.join(appData, "gdlauncher_next", devInstance ? "jahollde_dev.json" : "jahollde.json"), JSON.stringify(config, undefined, 2));
 }

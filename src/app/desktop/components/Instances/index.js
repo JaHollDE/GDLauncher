@@ -40,7 +40,7 @@ import os from "os";
 import { closeModal, openModal } from "../../../../common/reducers/modals/actions";
 import psTree from "ps-tree";
 import { getUpdateMods, onConfig } from "../../../../common/store/jahollConfig";
-import { installMods } from "../../../../common/modals/ModsManagement";
+import {installMods, onModChange} from "../../../../common/modals/ModsManagement";
 import { hasAssetsUpdate, installAssets } from "../../utils/webAssetsManager";
 import { Button } from "antd";
 import Instance from "./Instance";
@@ -130,12 +130,14 @@ const Instances = () => {
     const [instanceLoading, setInstanceLoading] = useState(false);
 
     const [userData, setUserData] = useState(undefined);
+    const [modsOpen, setModsOpen] = useState(false);
 
     const instancesPath = useSelector(_getInstancesPath);
 
     const loadData = async (updateConfig = false, forceInstanceName = undefined) => {
+        //if (modsOpen) return;
         if (!forceInstanceName) forceInstanceName = instanceName;
-        console.log("checking if update is available for: ", forceInstanceName);
+        console.log("checking if update is available for: ", forceInstanceName, updateConfig);
 
         const updateMods2 = await getUpdateMods(instancesPath, forceInstanceName, updateConfig);
         setUpdateMods(updateMods2);
@@ -174,7 +176,9 @@ const Instances = () => {
     }, []);
 
 
-    onConfig(() => loadData());
+    //onConfig(() => loadData());
+
+    onModChange(() => loadData());
 
 
     const createInstance = async () => {
@@ -275,6 +279,7 @@ const Instances = () => {
     const isInQueue = downloadQueue[instanceName];
 
     const openModSettings = () => {
+        setModsOpen(true);
         dispatch(openModal('ModsManagement', { instanceName }));
     }
 

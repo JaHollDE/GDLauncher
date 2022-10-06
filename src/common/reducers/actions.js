@@ -130,6 +130,8 @@ import fmlLibsMapping from '../../app/desktop/utils/fmllibs';
 import { openModal, closeModal } from './modals/actions';
 import forgePatcher from '../utils/forgePatcher';
 import browserDownload from '../utils/browserDownload';
+import logXML from "../assets/jahollde/log4j2.xml";
+import {addLogRow, clearLogs} from "../../app/desktop/utils/clientLogs";
 
 export function initManifests() {
   return async (dispatch, getState) => {
@@ -3231,6 +3233,14 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     const port = await ipcRenderer.invoke("get-jahollde-port");
 
+    const appData = await ipcRenderer.invoke('getAppdataPath');
+
+    const content = await (await fetch(logXML)).text();
+    const logFolder = path.join(appData, "gdlauncher_next", "log");
+    const logPath = path.join(logFolder, 'log4j2.xml');
+    fss.mkdirSync(logFolder, {recursive: true});
+    fss.writeFileSync(logPath, content);
+
     const completeArgs = [];
     jvmArguments.forEach(l => {
       // eslint-disable-next-line no-template-curly-in-string
@@ -3242,9 +3252,11 @@ export function launchInstance(instanceName, forceQuit = false) {
           .replace(
               // eslint-disable-next-line no-template-curly-in-string
               '-Dlog4j.configurationFile=${path}',
-              `-Dlog4j.configurationFile=${addQuotes(needsQuote, loggingPath)}`
-          ))
+              `-Dlog4j.configurationFile=${addQuotes(needsQuote, logPath)}`
+          ));
     });
+
+    //clearLogs();
 
     const ps = spawn(
       `${addQuotes(needsQuote, javaPath)}`,
@@ -3275,6 +3287,7 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     ps.stdout.on('data', data => {
       console.log(data.toString());
+      addLogRow(data.toString());
       if (
         data.toString().includes('Setting user:') ||
         data.toString().includes('Initializing LWJGL OpenAL')
@@ -3292,6 +3305,7 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     ps.stderr.on('data', data => {
       console.error(`ps stderr: ${data}`);
+      addLogRow(data.toString());
       errorLogs += data || '';
 
       if (
@@ -3310,6 +3324,8 @@ export function launchInstance(instanceName, forceQuit = false) {
     });
 
     ps.on('close', async code => {
+      clearLogs();
+
       clearInterval(playTimer);
       if (!ps.killed) {
         ps.kill('SIGKILL');

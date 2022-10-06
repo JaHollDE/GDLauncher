@@ -87,4 +87,5 @@ const Modal = ({
   );
 };
 
-export default memo(Modal);
+export default Modal;
+//export default memo(Modal);

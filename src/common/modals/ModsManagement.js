@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from '../components/Modal';
 import styled from "styled-components";
-import { getConfig, getWebData, setConfig, setConfig as saveConfig } from "../store/jahollConfig";
+import {getConfig, getWebData, initConfig, setConfig, setConfig as saveConfig} from "../store/jahollConfig";
 import { useDispatch } from "react-redux";
 import path from "path";
 import fsa from "fs-extra";
@@ -41,8 +41,17 @@ export async function installMods(modsData, instancesPath, instanceName, callbac
       continue;
     }
 
-    await setConfig((await getConfig()).map(l => l.file === mod.file ? mod : l))
+    await initConfig();
+    const newConfig = (await getConfig()).map(l => l.file === mod.file ? {...mod, active: true} : l);
+    console.log("NEW CONFIG: ", newConfig, mod);
+    await setConfig(newConfig)
   }
+}
+
+const modChangeEvents = [];
+
+export function onModChange(cb) {
+  modChangeEvents.push(cb);
 }
 
 const ModsManagement = () => {
@@ -50,9 +59,15 @@ const ModsManagement = () => {
   const [webData, setWebData] = useState([]);
 
   useEffect(() => {
-    getConfig().then(data => setConfig(data)).catch(console.warn);
-    getWebData().then(data => setWebData(data)).catch(console.warn);
+
     }, []);
+
+  getConfig().then(data => {
+    setConfig(data)
+  }).catch(console.warn);
+  getWebData().then(data => {
+    setWebData(data)
+  }).catch(console.warn);
 
   const setModChecked = (name, state) => {
     const toActive = [];
@@ -72,7 +87,7 @@ const ModsManagement = () => {
     }).map(l => toActive.includes(l.file) ? {...l, active: true} : l);
 
     setConfig(res);
-    saveConfig(res);
+    saveConfig(res).then(() => modChangeEvents.forEach(cb => cb()));
   };
 
   const hasActivatedDependency = (element) => {

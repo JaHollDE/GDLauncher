@@ -1,27 +1,17 @@
-import React, { memo } from 'react';
+import React, {memo, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import { LoadingOutlined } from '@ant-design/icons';
 import Modal from '../components/Modal';
 import { closeModal, openModal } from '../reducers/modals/actions';
 import BisectHosting from '../../ui/BisectHosting';
 import ga from '../utils/analytics';
+import {getLogs, onAddLog} from "../../app/desktop/utils/clientLogs";
 
 let timer;
 
-const InstanceStartupAd = ({ instanceName }) => {
+const InstanceStartupAd = function ({ instanceName }) {
   const dispatch = useDispatch();
 
-  const openBisectHostingModal = () => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    dispatch(closeModal());
-    setTimeout(() => {
-      ga.sendCustomEvent('BHAdViewNavbar');
-      dispatch(openModal('BisectHosting'));
-    }, 225);
-  };
 
   return (
     <Modal
@@ -38,6 +28,8 @@ const InstanceStartupAd = ({ instanceName }) => {
           justify-content: center;
           flex-direction: column;
           text-align: center;
+          position: relative;
+          height: 100%;
         `}
       >
         <span
@@ -61,4 +53,4 @@ const InstanceStartupAd = ({ instanceName }) => {
   );
 };
 
-export default memo(InstanceStartupAd);
+export default InstanceStartupAd;
