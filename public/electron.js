@@ -297,9 +297,9 @@ function createWindow() {
       mainWindow.reload();
     });
 
-    globalShortcut.register('F5', () => {
+    /*globalShortcut.register('F5', () => {
       mainWindow.reload();
-    });
+    });*/
   }
 
   mainWindow.webContents.session.webRequest.onHeadersReceived(
