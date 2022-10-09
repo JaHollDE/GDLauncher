@@ -117,7 +117,7 @@ const OptedOutModsList = ({
     const listener = () => {
       dispatch(closeModal());
       setTimeout(() => {
-        reject('Download window closed unexpectedly');
+        reject('Das Download-Fenster wurde unerwartet beendet!');
       }, 300);
     };
 
@@ -171,7 +171,7 @@ const OptedOutModsList = ({
       preventClose={preventClose}
       closeCallback={() => {
         setTimeout(
-          () => reject(new Error('Download Aborted by the user')),
+          () => reject(new Error('Der Download wurde vom User abgebrochen.')),
           300
         );
       }}
@@ -184,10 +184,11 @@ const OptedOutModsList = ({
             margin-bottom: 2rem;
           `}
         >
-          Hey oh! It looks like some developers opted out from showing their
-          mods on third-party launchers. We can still attempt to download them
-          automatically. Please click continue and wait for all downloads to
-          finish. Please don&apos;t click anything inside the browser.
+          Hey! Sieht so aus als ob einige Developer ihre Mods vom Anzeigen in Launchern ausgeschlossen haben.
+          Wir können diese immer noch automatisch für dich herunterladen.
+          Bitte klicke auf "fortfahren" und warte bis die Downloads abgeschlossen sind.
+          Bitte klicke nichts in den Fenstern, die sich während dem Download öffnen.
+          Wenn alle Mods heruntergeladen wurden schließen sich die Fenster von allein.
         </div>
         <ModsContainer>
           {optedOutMods &&
@@ -222,7 +223,7 @@ const OptedOutModsList = ({
               );
             }}
           >
-            Cancel
+            Abbrechen
           </Button>
           {missingMods.length === 0 && (
             <Button
@@ -254,7 +255,7 @@ const OptedOutModsList = ({
                 background-color: ${props => props.theme.palette.colors.green};
               `}
             >
-              Confirm
+              fortfahren
             </Button>
           )}
           {missingMods.length > 0 && (
@@ -269,7 +270,7 @@ const OptedOutModsList = ({
                 background-color: ${props => props.theme.palette.colors.green};
               `}
             >
-              Continue
+              fortfahren
             </Button>
           )}
         </div>

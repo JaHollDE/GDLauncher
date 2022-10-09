@@ -321,8 +321,7 @@ const General = () => {
       <Title>Release Channel</Title>
       <Content>
         <p>
-          Stable updates once a month. Beta updates more often, but it may have
-          more bugs.
+          Empfohlen wird: Stable.
         </p>
         <Select
           css={`
@@ -379,7 +378,7 @@ const General = () => {
             width: 400px;
           `}
         >
-          Select the method in which instances should be sorted.
+          Wähle aus, wie die Instanzen sortert sein sollen.
         </p>
 
         <Select
@@ -390,18 +389,17 @@ const General = () => {
             text-align: start;
           `}
         >
-          <Select.Option value={0}>Alphabetical</Select.Option>
-          <Select.Option value={1}>Last Played</Select.Option>
-          <Select.Option value={2}>Most Played</Select.Option>
+          <Select.Option value={0}>Alphabetisch</Select.Option>
+          <Select.Option value={1}>Zuletzt gespielt</Select.Option>
+          <Select.Option value={2}>Am meißten gespielt</Select.Option>
         </Select>
       </Content>
       <Title>
-        Preferred Curse Release Channel &nbsp; <FontAwesomeIcon icon={faFire} />
+        Bevorzugter Release Channel &nbsp; <FontAwesomeIcon icon={faFire} />
       </Title>
       <Content>
         <p>
-          Select the preferred release channel for downloading Curse projects.
-          This also applies for mod updates.
+          Wähle deinen Bevorzugten Release Channel für updates von Mods aus.
         </p>
         <Select
           css={`
@@ -422,8 +420,7 @@ const General = () => {
       </Title>
       <Content>
         <p>
-          Enable / disable Discord Integration. This displays what you are
-          playing in Discord.
+          Aktiviere / deaktiviere die Discord Integration. Diese zeigt in Discord an, was du spielst.
         </p>
         <Switch
           onChange={e => {
@@ -441,7 +438,7 @@ const General = () => {
         Minecraft News &nbsp; <FontAwesomeIcon icon={faNewspaper} />
       </Title>
       <Content>
-        <p>Enable / disable Minecraft news.</p>
+        <p>Aktiviere / deaktiviere Minecraft News.</p>
         <Switch
           onChange={e => {
             dispatch(updateShowNews(e));
@@ -450,12 +447,12 @@ const General = () => {
         />
       </Content>
       <Title>
-        Hide Launcher While Playing &nbsp; <FontAwesomeIcon icon={faPlay} />
+        Launcher verstecken, während des spielens &nbsp; <FontAwesomeIcon icon={faPlay} />
       </Title>
       <Content>
         <p>
-          Automatically hide the launcher when launching an instance. You will
-          still be able to open it from the icon tray.
+          Soll der Launcher versteckt währen, während du spielst?
+          Er kann weiterhin über das Systemicon geöffnet werden.
         </p>
         <Switch
           onChange={e => {
@@ -465,12 +462,12 @@ const General = () => {
         />
       </Content>
       <Title>
-        Potato PC Mode &nbsp; <FontAwesomeIcon icon={faToilet} />
+        KartoffelPC Modus &nbsp; <FontAwesomeIcon icon={faToilet} />
       </Title>
       <Content>
         <p>
-          You got a potato PC? Don&apos;t worry! We got you covered. Enable this
-          and all animations and special effects will be disabled.
+          Du hast einen KartoffelPC? Keine Sorge! Wir kümmern uns. Aktiviere diese Option
+          und alle Animationen und Spezialeffekte werden deaktiviert sein.
         </p>
         <Switch
           onChange={e => {
@@ -480,12 +477,12 @@ const General = () => {
         />
       </Content>
       <Title>
-        Clear Shared Data&nbsp; <FontAwesomeIcon icon={faTrash} />
+        Geteilte Daten löschen&nbsp; <FontAwesomeIcon icon={faTrash} />
       </Title>
       <Content>
         <p>
-          Deletes all the shared files between instances. Doing this will remove
-          ALL instance data.
+          Warnung: Diese Option lösche alle geteilten Daten zwischen den Instanzen
+          und wird alle Instanz-Daten löschen.
         </p>
         <Button
           onClick={() => {
@@ -504,7 +501,7 @@ const General = () => {
         </Button>
       </Content>
       <Title>
-        User Data Path&nbsp; <FontAwesomeIcon icon={faFolder} />
+        Nutzer-Daten-Pfad&nbsp; <FontAwesomeIcon icon={faFolder} />
         <a
           css={`
             margin-left: 30px;
@@ -515,7 +512,7 @@ const General = () => {
             setDataPath(appDataPath);
           }}
         >
-          Reset Path
+          Pfad zurücksetzen
         </a>
       </Title>
       <CustomDataPathContainer>
@@ -565,7 +562,7 @@ const General = () => {
             }
             loading={loadingMoveUserData}
           >
-            Apply & Restart
+            Anwenden & Neustarten
           </Button>
         </div>
         <div
@@ -580,7 +577,7 @@ const General = () => {
               setMoveUserData(e.target.checked);
             }}
           >
-            Copy current data to the new directory
+            Alle Daten in ein neues Verzeichnis kopieren
           </Checkbox>
         </div>
       </CustomDataPathContainer>
@@ -621,8 +618,8 @@ const General = () => {
         </div>
         <p>
           {updateAvailable
-            ? 'There is an update available to be installed. Click on update to install it and restart the launcher.'
-            : 'You’re currently on the latest version. We automatically check for updates and we will inform you whenever one is available.'}
+            ? 'Ein Update des Launchers ist verfügbar.. Klicke auf "aktualisieren" um den Launcher zu Updaten.'
+            : 'Du benutzt die neuste Version unseres Launchers. Wenn ein Update möglich ist informieren wir dich automatisch.'}
         </p>
         <div
           css={`
@@ -642,7 +639,7 @@ const General = () => {
               `}
               type="primary"
             >
-              Update &nbsp;
+              aktualisieren &nbsp;
               <FontAwesomeIcon icon={faDownload} />
             </Button>
           ) : (

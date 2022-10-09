@@ -243,7 +243,7 @@ const ModsListWrapper = ({
                     setLoading(false);
                     setError('Mod Not Available');
                     console.error(
-                      `Could not find any release candidate for addon: ${item?.id} / ${gameVersions}`
+                      `Es konnte kein Release für das Addon: ${item?.id} / ${gameVersions} gefunden werden.`
                     );
                     return;
                   }
@@ -523,7 +523,7 @@ const ModsBrowser = ({ instanceName, gameVersions }) => {
                   margin-top: 70px;
                 `}
               >
-                No mods has been found with the current filters.
+                Keine Mods wurden mit den aktuellen Filtern gefunden.
               </div>
             </div>
           ) : (
@@ -562,7 +562,7 @@ const ModsBrowser = ({ instanceName, gameVersions }) => {
                 margin-top: 70px;
               `}
             >
-              An error occurred while loading the mods list...
+              Ein Fehler trat auf, während die Modliste geladen wurde...
             </div>
           </div>
         )}

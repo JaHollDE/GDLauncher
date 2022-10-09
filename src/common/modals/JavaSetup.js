@@ -90,9 +90,10 @@ const JavaSetup = () => {
                 text-align: justify;
               `}
             >
-              For an optimal experience, we suggest letting us take care of java
-              for you. Only manually manage java if you know what you&apos;re
-              doing, it may result in GDLauncher not working!
+              Für ein fehlerfreies Nutzen dieses Launchers empfehlen wir dir unser automatisches Java Setup.
+              Mit diesem kümmern wir uns um alle nötigen Java Installationen und Einstellungen.
+              Benutze das manuelle Setup nur, wenn du genau weißt, was du tust.
+              Es könnte dazu führen, dass der JaHollDELauncher nicht funktioniert.
             </div>
 
             <div
@@ -113,7 +114,7 @@ const JavaSetup = () => {
                 }
               `}
             >
-              <h3>Missing Versions:</h3>
+              <h3>Fehlende Versionen:</h3>
               <div
                 css={`
                   display: flex;
@@ -164,7 +165,7 @@ const JavaSetup = () => {
                     setChoice(0);
                   }}
                 >
-                  Automatic Setup
+                  Automatisches Setup
                 </Button>
               </div>
               <div>
@@ -178,7 +179,7 @@ const JavaSetup = () => {
                     setChoice(1);
                   }}
                 >
-                  Manual Setup
+                  Manuelles Setup
                 </Button>
               </div>
             </div>
