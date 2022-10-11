@@ -48,16 +48,6 @@ const SocialButtons = () => {
           <FontAwesomeIcon icon={faGithub} size="lg" />
         </div>
       </a>
-      /*<a href="https://twitter.com/gdlauncher">
-        <div>
-          <FontAwesomeIcon icon={faTwitter} size="lg" />
-        </div>
-      </a>*/
-      /*<a href="https://facebook.com/gorilladevs">
-        <div>
-          <FontAwesomeIcon icon={faFacebook} size="lg" />
-        </div>
-      </a>*/
       <a href="https://instagram.com/jahollde">
         <div>
           <FontAwesomeIcon icon={faInstagram} size="lg" />
