@@ -369,7 +369,7 @@ const ChangeLogs = () => {
             color: ${props => props.theme.palette.text.secondary};
           `}
         >
-          Follow us for more updates
+          Folge und für mehr Updates
         </span>
       </div>
     </Modal>

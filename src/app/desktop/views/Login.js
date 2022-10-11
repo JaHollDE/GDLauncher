@@ -215,20 +215,13 @@ const Login = () => {
                   width: 100%;
                 `}
               >
-                <FooterLinks>
-                  <div>
-                    <a href="https://www.minecraft.net/it-it/password/forgot">
-                      FORGOT PASSWORD
-                    </a>
-                  </div>
-                </FooterLinks>
                 <div
                   css={`
                     cursor: pointer;
                   `}
                   onClick={() => dispatch(openModal('ChangeLogs'))}
                 >
-                  v{version}
+                  Version {version}
                 </div>
               </div>
               <p
@@ -236,8 +229,7 @@ const Login = () => {
                   font-size: 10px;
                 `}
               >
-                Sign in with your Mojang Account. By doing so, you accept all
-                our policies and terms stated below.
+                Durch das Einloggen mit deinem Microsoft Account stimmst du allen folgenden Nutzungsbedingungen und Datenschutzrichtlinien zu.
               </p>
               <div
                 css={`
