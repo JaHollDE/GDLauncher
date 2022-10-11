@@ -81,7 +81,7 @@ const CurseForgeModpacks = ({ setStep, setVersion, setModpack }) => {
           defaultValue={null}
           virtual={false}
         >
-          <Select.Option value={null}>All Versions</Select.Option>
+          <Select.Option value={null}>Alle Versionen</Select.Option>
           {(mcVersions || [])
             .filter(v => v?.type === 'release')
             .map(v => (
@@ -97,7 +97,7 @@ const CurseForgeModpacks = ({ setStep, setVersion, setModpack }) => {
           virtual={false}
         >
           <Select.Option key="allcategories" value={null}>
-            All Categories
+            Alle Kategorien
           </Select.Option>
           {(categories || [])
             .filter(v => v?.classId === 4471)
@@ -133,13 +133,13 @@ const CurseForgeModpacks = ({ setStep, setVersion, setModpack }) => {
           virtual={false}
         >
           <Select.Option key="Featured" value="Featured">
-            Featured
+            Hervorgehoben
           </Select.Option>
           <Select.Option key="Popularity" value="Popularity">
-            Popularity
+            Bekanntheit
           </Select.Option>
           <Select.Option key="LastUpdated" value="LastUpdated">
-            Last Updated
+            Letztes Update
           </Select.Option>
           <Select.Option key="Name" value="Name">
             Name
@@ -148,7 +148,7 @@ const CurseForgeModpacks = ({ setStep, setVersion, setModpack }) => {
             Author
           </Select.Option>
           <Select.Option key="TotalDownloads" value="TotalDownloads">
-            Total Downloads
+            Gesamte Downloads
           </Select.Option>
         </StyledSelect>
         <StyledInput
@@ -177,7 +177,7 @@ const CurseForgeModpacks = ({ setStep, setVersion, setModpack }) => {
                   margin-top: 70px;
                 `}
               >
-                No modpack has been found with the current filters.
+                Es wurde kein Modpack mit diesen Filtern gefunden.
               </div>
             </div>
           ) : (

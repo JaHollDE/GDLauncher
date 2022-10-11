@@ -72,7 +72,7 @@ const ModChangelog = ({ modpackId, files, type, modpackName }) => {
             setSelectedId(v);
             loadChangelog(v);
           }}
-          placeholder="Select a version"
+          placeholder="Wähle eine Version"
           virtual={false}
         >
           {(files || []).map(v => (

@@ -80,7 +80,7 @@ const ChangeLogs = () => {
     });
 
   const typingSequence = useMemo(() => {
-    const completText = 'Merry Christmas!';
+    const completText = 'Fröhliche Weihnachten!';
     let textSoFar = '';
     const newArr = [];
     let timeToWait = 1300;
@@ -143,7 +143,7 @@ const ChangeLogs = () => {
         height: 550px;
         width: 475px;
       `}
-      title={`What's new in ${version}`}
+      title={`Neues in Version ${version}`}
       removePadding
     >
       <Container>
@@ -187,7 +187,7 @@ const ChangeLogs = () => {
               width: 401px;
             `}
             src={isChristmas ? UpdateIllustrationChristmas : UpdateIllustration}
-            alt="New Version"
+            alt="Neue Version"
           />
           <div
             css={`
@@ -200,9 +200,8 @@ const ChangeLogs = () => {
               }
             `}
           >
-            If you appreciate our work, please consider supporting us through a
-            donation or grab a server from our official partner{' '}
-            <span onClick={openBisectModal}>BisectHosting</span>
+            Wenn Dir dieser Launcher gefällt überlege dir doch
+            die GorillaDevs finanziell zu Unterstützen
           </div>
           <div
             css={`
@@ -237,8 +236,8 @@ const ChangeLogs = () => {
             onClick={() => setShowAdvanced(!showAdvanced)}
           >
             {showAdvanced
-              ? 'Hide extended information'
-              : 'Show extended information'}
+              ? 'weniger Informationen anzeigen'
+              : 'mehr Informationen anzeigen'}
           </a>
         </Header>
         <Section>
