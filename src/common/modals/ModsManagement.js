@@ -7,6 +7,7 @@ import path from "path";
 import fsa from "fs-extra";
 import { getAddonFile } from "../api";
 import { downloadFile } from "../../app/desktop/utils/downloader";
+import {ipcRenderer} from "electron";
 
 export async function installMods(modsData, instancesPath, instanceName, callback) {
   const modFolder = path.join(instancesPath, instanceName);
@@ -41,17 +42,17 @@ export async function installMods(modsData, instancesPath, instanceName, callbac
       continue;
     }
 
-    await initConfig();
+    await initConfig(instanceName);
     const newConfig = (await getConfig()).map(l => l.file === mod.file ? {...mod, active: true} : l);
     console.log("NEW CONFIG: ", newConfig, mod);
-    await setConfig(newConfig)
+    await setConfig(newConfig, instanceName)
   }
 }
 
-const modChangeEvents = [];
+let modChangeEvent = undefined;
 
 export function onModChange(cb) {
-  modChangeEvents.push(cb);
+  modChangeEvent = cb;
 }
 
 const ModsManagement = () => {
@@ -62,14 +63,18 @@ const ModsManagement = () => {
 
     }, []);
 
-  getConfig().then(data => {
-    setConfig(data)
-  }).catch(console.warn);
+  ipcRenderer.invoke("is-dev-instance").then(async isDevInstance => {
+    const instanceName = isDevInstance ? "jahollde_dev" : "jahollde";
+    await initConfig(instanceName);
+    setConfig(await getConfig());
+  });
+
+
   getWebData().then(data => {
     setWebData(data)
   }).catch(console.warn);
 
-  const setModChecked = (name, state) => {
+  const setModChecked = async (name, state) => {
     const toActive = [];
 
     const res = config.map(l => {
@@ -87,7 +92,8 @@ const ModsManagement = () => {
     }).map(l => toActive.includes(l.file) ? {...l, active: true} : l);
 
     setConfig(res);
-    saveConfig(res).then(() => modChangeEvents.forEach(cb => cb()));
+    const s = await ipcRenderer.invoke("is-dev-instance");
+    saveConfig(res, s ? "jahollde_dev" : "jahollde").then(() => modChangeEvent?.());
   };
 
   const hasActivatedDependency = (element) => {

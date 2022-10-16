@@ -20,17 +20,15 @@ export async function getURL() {
     return URL;
 }
 
-let config;
+let config = undefined;
 let webData;
 
-export async function initConfig() {
+export async function initConfig(instanceName) {
     await urlProc;
     const json = await (await fetch(`${URL}/launcher/mods.json`)).json();
     const appData = await ipcRenderer.invoke('getAppdataPath');
 
-    const devInstance = await ipcRenderer.invoke("is-dev-instance");
-
-    const p = path.join(appData, "gdlauncher_next", devInstance ? "jahollde_dev.json" : "jahollde.json");
+    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "mods.json");
 
     if (fsa.existsSync(p)) {
         config = JSON.parse(fsa.readFileSync(p, "utf-8"));
@@ -62,15 +60,15 @@ function fillConfig() {
 
 }
 
-const loadingConfig = initConfig();
+let loadingConfig = undefined;
 
 export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
-    const promise = updateConfig ? initConfig() : loadingConfig;
-    await promise;
+    loadingConfig = initConfig(instanceName);
+    await loadingConfig;
 
     //await initConfig();
 
-    await setConfig(config);
+    await setConfig(config, instanceName);
 
     const toUpdate = [];
 
@@ -94,7 +92,7 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
         return found;
     });
 
-    if (deleteMod) await setConfig(config);
+    if (deleteMod) await setConfig(config, instanceName);
 
     config.forEach(element => {
 
@@ -138,13 +136,15 @@ export async function getConfig() {
     await loadingConfig;
     return config;
 }
-export async function setConfig(newConfig) {
+export async function setConfig(newConfig, instanceName) {
     await loadingConfig;
+
+    console.log("set config: ", newConfig, instanceName, new Error());
 
     const devInstance = await ipcRenderer.invoke("is-dev-instance");
 
     config = newConfig;
     handlers.forEach(l => l(newConfig));
     const appData = await ipcRenderer.invoke('getAppdataPath');
-    await fsa.writeFile(path.join(appData, "gdlauncher_next", devInstance ? "jahollde_dev.json" : "jahollde.json"), JSON.stringify(config, undefined, 2));
+    await fsa.writeFile(path.join(appData, "gdlauncher_next", "instances", instanceName, "mods.json"), JSON.stringify(config, undefined, 2));
 }

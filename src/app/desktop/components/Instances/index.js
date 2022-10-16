@@ -136,7 +136,10 @@ const Instances = () => {
 
     const loadData = async (updateConfig = false, forceInstanceName = undefined) => {
         //if (modsOpen) return;
-        if (!forceInstanceName) forceInstanceName = instanceName;
+        if (!forceInstanceName) {
+            forceInstanceName = instanceName;
+            console.log("Forcing instance name: ", instanceName);
+        }
         console.log("checking if update is available for: ", forceInstanceName, updateConfig);
 
         const updateMods2 = await getUpdateMods(instancesPath, forceInstanceName, updateConfig);
@@ -156,7 +159,7 @@ const Instances = () => {
 
     useEffect(() => {
         loadData();
-    }, [memoInstances]);
+    }, []);
 
     const [isDevInstance, setIsDevInstance] = useState(false);
 
