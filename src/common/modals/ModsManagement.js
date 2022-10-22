@@ -44,7 +44,6 @@ export async function installMods(modsData, instancesPath, instanceName, callbac
 
     await initConfig(instanceName);
     const newConfig = (await getConfig()).map(l => l.file === mod.file ? {...mod, active: true} : l);
-    console.log("NEW CONFIG: ", newConfig, mod);
     await setConfig(newConfig, instanceName)
   }
 }
@@ -55,19 +54,14 @@ export function onModChange(cb) {
   modChangeEvent = cb;
 }
 
-const ModsManagement = () => {
+const ModsManagement = ({instanceName}) => {
   const [config, setConfig] = useState([]);
   const [webData, setWebData] = useState([]);
 
-  useEffect(() => {
-
-    }, []);
-
-  ipcRenderer.invoke("is-dev-instance").then(async isDevInstance => {
-    const instanceName = isDevInstance ? "jahollde_dev" : "jahollde";
+  useEffect(async () => {
     await initConfig(instanceName);
     setConfig(await getConfig());
-  });
+  }, []);
 
 
   getWebData().then(data => {
@@ -92,8 +86,8 @@ const ModsManagement = () => {
     }).map(l => toActive.includes(l.file) ? {...l, active: true} : l);
 
     setConfig(res);
-    const s = await ipcRenderer.invoke("is-dev-instance");
-    saveConfig(res, s ? "jahollde_dev" : "jahollde").then(() => modChangeEvent?.());
+    //const s = await ipcRenderer.invoke("get-dev-instance-name");
+    saveConfig(res, instanceName).then(() => modChangeEvent?.());
   };
 
   const hasActivatedDependency = (element) => {

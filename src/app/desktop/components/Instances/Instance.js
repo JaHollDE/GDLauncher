@@ -1,7 +1,8 @@
 import React, { useState, useEffect, memo } from 'react';
 import { transparentize } from 'polished';
 import styled, { keyframes } from 'styled-components';
-import { promises as fs } from 'fs';
+import { promises as fsPromises } from 'fs';
+import fs from "fs";
 import { LoadingOutlined } from '@ant-design/icons';
 import path from 'path';
 import { ipcRenderer } from 'electron';
@@ -36,6 +37,10 @@ import { openModal } from '../../../../common/reducers/modals/actions';
 import instanceDefaultBackground from '../../../../common/assets/instance_default.png';
 import { convertMinutesToHumanTime } from '../../../../common/utils';
 import { FABRIC, FORGE, VANILLA } from '../../../../common/utils/constants';
+import {getUpdateMods} from "../../../../common/store/jahollConfig";
+import getInstancesComplete from "../../utils/getInstances";
+import {hasAssetsUpdate, installAssets} from "../../utils/webAssetsManager";
+import {installMods} from "../../../../common/modals/ModsManagement";
 
 const Container = styled.div`
   position: relative;
@@ -136,6 +141,13 @@ const MCVersion = styled.div`
   font-size: 11px;
   color: ${props => props.theme.palette.text.third};
 `;
+const JaHollDEIdentifier = styled.div`
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  font-size: 11px;
+  color: ${props => props.theme.palette.text.third};
+`;
 
 const TimePlayed = styled.div`
   position: absolute;
@@ -170,11 +182,31 @@ const Instance = ({ instanceName }) => {
 
     const isPlaying = startedInstances[instanceName];
 
-    const isJaHollDEInstance = () => instanceName === "jahollde" || instanceName === "jahollde_dev";
+    const isJaHollDEInstance = () => instanceName === "jahollde";
+
+    const [isInstance, setIsInstance] = useState(false);
+    const [isDevInstance, setIsDevInstance] = useState(false);
+
+    useEffect(async () => {
+        const appData = await ipcRenderer.invoke('getAppdataPath');
+        const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_instance.txt");
+
+        if (fs.existsSync(p)) {
+            setIsInstance(true);
+            const content = fs.readFileSync(p).toString();
+            if (content === "dev") setIsDevInstance(true);
+        }
+    }, []);
+
+    const openModSettings = () => {
+        dispatch(openModal('ModsManagement', { instanceName }));
+    };
+
+
 
     useEffect(() => {
         if (instance.background) {
-            fs.readFile(path.join(instancesPath, instanceName, instance.background))
+            fsPromises.readFile(path.join(instancesPath, instanceName, instance.background))
                 .then(res =>
                     setBackground(`data:image/png;base64,${res.toString('base64')}`)
                 )
@@ -184,8 +216,29 @@ const Instance = ({ instanceName }) => {
         }
     }, [instance.background, instancesPath, instanceName]);
 
-    const startInstance = () => {
+    const [modStatus, setModStatus] = useState(undefined);
+
+    const startInstance = async () => {
         if (isInQueue || isPlaying) return;
+
+
+        if (isInstance) {
+            const updateMods2 = await getUpdateMods(instancesPath, instanceName, false);
+            const updateAss = await hasAssetsUpdate();
+
+            if (updateMods2.length > 0) {
+                await installMods(updateMods2, instancesPath, instanceName, (status) => {
+                    setModStatus("Mod: " + status);
+                });
+            }
+            if (updateAss) {
+                await installAssets((data) => setModStatus(data));
+            }
+            setModStatus(undefined);
+
+            if (updateMods2.length > 0 || updateAss) return;
+        }
+
         dispatch(addStartedInstance({ instanceName }));
         dispatch(launchInstance(instanceName));
     };
@@ -239,11 +292,11 @@ const Instance = ({ instanceName }) => {
         <>
             <ContextMenuTrigger id={instanceName}>
                 <Container
-                    installing={isInQueue}
+                    installing={isInQueue || modStatus}
                     onClick={startInstance}
                     isHovered={isHovered || isPlaying}
                 >
-                    <InstanceContainer installing={isInQueue} background={background}>
+                    <InstanceContainer installing={isInQueue || modStatus} background={background}>
                         <TimePlayed>
                             <FontAwesomeIcon
                                 icon={faClock}
@@ -256,21 +309,25 @@ const Instance = ({ instanceName }) => {
                         </TimePlayed>
                         <MCVersion>{instance.loader?.mcVersion}</MCVersion>
                         {instanceName}
+                        {isInstance &&
+                            <JaHollDEIdentifier>JaHollDE-{isDevInstance ? "Development" : "Produktiv"}</JaHollDEIdentifier>
+                        }
+
                     </InstanceContainer>
                     <HoverContainer
-                        installing={isInQueue}
+                        installing={isInQueue || modStatus}
                         isHovered={isHovered || isPlaying}
                     >
-                        {currentDownload === instanceName ? (
+                        {currentDownload === instanceName || modStatus ? (
                             <>
                                 <div
                                     css={`
                           font-size: 14px;
                         `}
                                 >
-                                    {isInQueue ? isInQueue.status : null}
+                                    {isInQueue ? isInQueue.status : (modStatus ? modStatus : null)}
                                 </div>
-                                {`${isInQueue.percentage}%`}
+                                {isInQueue && `${isInQueue.percentage}%`}
                                 <LoadingOutlined
                                     css={`
                           position: absolute;
@@ -394,7 +451,7 @@ const Instance = ({ instanceName }) => {
                             let manifest = null;
                             try {
                                 manifest = JSON.parse(
-                                    await fs.readFile(
+                                    await fsPromises.readFile(
                                         path.join(instancesPath, instanceName, 'manifest.json')
                                     )
                                 );
@@ -424,6 +481,9 @@ const Instance = ({ instanceName }) => {
                         />
                         Repair
                     </MenuItem>
+
+
+
                     {!isJaHollDEInstance() ?
                         <MenuItem
                             disabled={Boolean(isInQueue) || Boolean(isPlaying)}
@@ -442,6 +502,15 @@ const Instance = ({ instanceName }) => {
                     }
 
                     <MenuItem divider />
+
+                    {isInstance && <MenuItem onClick={() => openModSettings()}>
+                        JaHollDE-Mods
+                    </MenuItem>}
+
+
+                    <MenuItem divider />
+
+
                     <MenuItem
                         onClick={openBisectModal}
                         preventClose

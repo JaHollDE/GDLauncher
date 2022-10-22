@@ -44,6 +44,7 @@ import {installMods, onModChange} from "../../../../common/modals/ModsManagement
 import { hasAssetsUpdate, installAssets } from "../../utils/webAssetsManager";
 import { Button } from "antd";
 import Instance from "./Instance";
+import {createInstance} from "../../utils/instanceCreation";
 
 const Container = styled.div`
   display: flex;
@@ -104,7 +105,14 @@ fetch("https://api.mcsrvstat.us/2/prodnode.jaholl.de:25566").then(data => data.j
     return null;
 }).catch(l => console.warn(l));
 
-const Instances = () => {
+const Instances = (data) => {
+
+    const [isDevInstance, setIsDevInstance] = useState(false);
+
+    useEffect(() => {
+        setIsDevInstance(!!data?.data?.hasDevRights);
+    }, [data]);
+
     const instanceSortOrder = useSelector(
         state => state.settings.instanceSortOrder
     );
@@ -134,18 +142,14 @@ const Instances = () => {
 
     const instancesPath = useSelector(_getInstancesPath);
 
-    const loadData = async (updateConfig = false, forceInstanceName = undefined) => {
+    const loadData = async (updateConfig = false) => {
         //if (modsOpen) return;
-        if (!forceInstanceName) {
-            forceInstanceName = instanceName;
-            console.log("Forcing instance name: ", instanceName);
-        }
-        console.log("checking if update is available for: ", forceInstanceName, updateConfig);
+        console.log("checking if update is available for: ", instanceName, updateConfig);
 
-        const updateMods2 = await getUpdateMods(instancesPath, forceInstanceName, updateConfig);
+        const updateMods2 = await getUpdateMods(instancesPath, instanceName, updateConfig);
         setUpdateMods(updateMods2);
         const finishedInstances = await getInstancesComplete(instancesPath);
-        const createInstance2 = Object.keys(finishedInstances).find(l => l === forceInstanceName) === undefined;
+        const createInstance2 = Object.keys(finishedInstances).find(l => l === instanceName) === undefined;
         setUpdateInstance(createInstance2);
 
         const updateAss = await hasAssetsUpdate();
@@ -161,55 +165,11 @@ const Instances = () => {
         loadData();
     }, []);
 
-    const [isDevInstance, setIsDevInstance] = useState(false);
-
-    useEffect(() => {
-        ipcRenderer.invoke("is-dev-instance").then(s => {
-            setIsDevInstance(s);
-            const newName = s ? "jahollde_dev" : "jahollde";
-            setInstanceName(newName);
-            if (s) loadData(false, newName);
-        });
-        ipcRenderer.on("dev-instance-update", (event, state) => {
-            setIsDevInstance(state);
-            const newName = state ? "jahollde_dev" : "jahollde";
-            setInstanceName(newName);
-            loadData(false, newName);
-        });
-    }, []);
-
 
     //onConfig(() => loadData());
 
     onModChange(() => loadData());
 
-
-    const createInstance = async () => {
-        const initTimestamp = Date.now();
-
-        // If it's a curseforge modpack grab the manfiest and detect the loader
-        // type as we don't yet know what it is.
-
-        const wait = t => {
-            return new Promise(resolve => {
-                setTimeout(() => resolve(), t);
-            });
-        };
-
-        dispatch(
-            addToQueue(instanceName, {
-                loaderType: FABRIC,
-                mcVersion: "1.18.2",
-                loaderVersion: "0.14.9"
-            })
-        );
-
-        if (Date.now() - initTimestamp < 2000) {
-            await wait(2000 - (Date.now() - initTimestamp));
-        }
-
-        dispatch(closeModal());
-    };
 
     const startInstance = () => {
         if (isInQueue || isPlaying) return;
@@ -249,7 +209,7 @@ const Instances = () => {
     const [modStatus, setModStatus] = useState(undefined);
 
     const runInstall = async () => {
-        if (updateInstance) await createInstance();
+        if (updateInstance) await createInstance(dispatch, instanceName);
         if (updateMods.length > 0) {
             await installMods(updateMods, instancesPath, instanceName, (status) => {
                 setModStatus("Mod: " + status);
@@ -309,6 +269,9 @@ const Instances = () => {
         ipcRenderer.invoke("restart-electron");
     }
 
+    const createJaHollDEInstance = () => {
+        dispatch(openModal('JaHollDEInstanceCreation', {}));
+    };
 
     return (
         <Container>
@@ -327,6 +290,9 @@ const Instances = () => {
                     </Button>
                     {showAllInstances ? <Button onClick={openAddInstanceModal}>
                         Instanz erstellen
+                    </Button> : null}
+                    {showAllInstances && isDevInstance ? <Button onClick={createJaHollDEInstance}>
+                        JaHollDE-Instanz erstellen
                     </Button> : null}
 
                 </div>

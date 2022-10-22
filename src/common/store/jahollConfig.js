@@ -141,8 +141,6 @@ export async function setConfig(newConfig, instanceName) {
 
     console.log("set config: ", newConfig, instanceName, new Error());
 
-    const devInstance = await ipcRenderer.invoke("is-dev-instance");
-
     config = newConfig;
     handlers.forEach(l => l(newConfig));
     const appData = await ipcRenderer.invoke('getAppdataPath');

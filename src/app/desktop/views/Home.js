@@ -103,18 +103,7 @@ const Home = () => {
         dispatch(openModal('JaHollDERegister'));
     }
 
-
-    const [isDevInstance, setIsDevInstance] = useState(false);
-
-    useEffect(() => {
-        ipcRenderer.invoke("is-dev-instance").then(s => setIsDevInstance(s));
-    }, []);
-
-    const toggleIsDevInstanceSave = () => {
-        const newState = !isDevInstance;
-        ipcRenderer.invoke("set-dev-instance", newState);
-        setIsDevInstance(newState);
-    }
+    const [devInstanceName, setDevInstanceName] = useState("jahollde");
 
     const updateData = () => {
         setJaholldeData(null);
@@ -159,15 +148,15 @@ const Home = () => {
                     {annoucement}
                 </div>
             ) : null}
-            <Instances />
-            <div className={"jahollde-symbol"} onClick={() => jaholldeData?.hasDevRights ? toggleIsDevInstanceSave() : null}>
+            <Instances data={jaholldeData} />
+            <div className={"jahollde-symbol"}>
                 <Logo size={35} />
                 {
                     jaholldeData?.hasDevRights ?
                         <span css={{
                             paddingLeft: "1rem"
                         }}>
-                            {isDevInstance ? "Development" : "Produktiv"}
+                            Development
                         </span>
                         : null
                 }

@@ -32,12 +32,20 @@ export function initIPCEvents(application: JaHollDEApplication): void {
         application.window.restart();
     });
 
-    ipcMain.handle("is-dev-instance", (event) => {
-        return application.config.config.isDevInstance;
-    });
-    ipcMain.handle("set-dev-instance", (event, state: boolean) => {
-        application.config.config.isDevInstance = state;
+    /*
+    ipcMain.handle("toggle-dev-instance-name", (event) => {
+        let index = application.config.config.instances.findIndex(n => n === application.config.config.instanceName);
+        if (index >= application.config.config.instances.length) index = 0;
+        application.config.config.instanceName = application.config.config.instances[index];
         application.config.save();
-        application.mainWindow.webContents.send("dev-instance-update", state);
-    })
+        application.mainWindow.webContents.send("dev-instance-name-update", application.config.config.instanceName);
+        return application.config.config.instanceName;
+    });*/
+    /*
+    ipcMain.handle("get-dev-instance-names", (event) => {
+        return {
+            prod: application.config.config.instances,
+            dev: application.config.config.devInstances
+        };
+    });*/
 }

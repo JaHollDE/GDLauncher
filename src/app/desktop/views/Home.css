@@ -10,7 +10,3 @@
 
     border: solid .3rem rgba(0, 0, 0, 0);
 }
-
-.jahollde-symbol:hover, .jahollde-symbol:hover > * {
-    cursor: pointer;
-}

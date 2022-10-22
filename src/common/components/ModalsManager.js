@@ -91,6 +91,9 @@ const modalsComponentLookupTable = {
   InstanceDownloadFailed: AsyncComponent(
       lazy(() => import('../modals/InstanceDownloadFailed'))
   ),
+  JaHollDEInstanceCreation: AsyncComponent(
+      lazy(() => import("../modals/JaHollDEInstanceCreation"))
+  ),
   InfoModal: AsyncComponent(lazy(() => import('../modals/InfoModal')))
 };
 

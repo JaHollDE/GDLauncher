@@ -41,6 +41,8 @@ interface Config {
     productive: boolean;
     assetsVersion: string;
     isDevInstance: boolean;
+    instances: string[];
+    devInstances: string[];
 }
 
 const defaultConfig: Config = {
@@ -55,7 +57,9 @@ const defaultConfig: Config = {
     enableHardwareAcceleration: false,
     productive: true,
     assetsVersion: "undefined",
-    isDevInstance: false
+    isDevInstance: false,
+    instances: ["jahollde"],
+    devInstances: []
 };
 
 class ConfigManager {
