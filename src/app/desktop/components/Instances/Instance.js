@@ -235,8 +235,6 @@ const Instance = ({ instanceName }) => {
                 await installAssets((data) => setModStatus(data));
             }
             setModStatus(undefined);
-
-            if (updateMods2.length > 0 || updateAss) return;
         }
 
         dispatch(addStartedInstance({ instanceName }));

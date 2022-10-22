@@ -3241,11 +3241,22 @@ export function launchInstance(instanceName, forceQuit = false) {
     fss.mkdirSync(logFolder, {recursive: true});
     fss.writeFileSync(logPath, content);
 
+    let isDevInstance = false;
+
+    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_instance.txt");
+    if (fss.existsSync(p)) {
+      const content = fss.readFileSync(p).toString();
+      if (content === "dev") isDevInstance = true;
+    }
+
+    const jaholldeURL = isDevInstance ? "wss://devweb.jaholl.de/api/ws" : "wss://interface.jaholl.de/api/ws";
+
     const completeArgs = [];
     jvmArguments.forEach(l => {
       // eslint-disable-next-line no-template-curly-in-string
       if (l.includes('-Dlog4j.configurationFile=${path}')) {
         completeArgs.push(`-Djahollde.port=${port}`);
+        completeArgs.push(`-Djahollde.url=${addQuotes(needsQuote, jaholldeURL)}`)
       }
       completeArgs.push(l.toString()
           .replace(...replaceRegex)
@@ -3255,6 +3266,8 @@ export function launchInstance(instanceName, forceQuit = false) {
               `-Dlog4j.configurationFile=${addQuotes(needsQuote, logPath)}`
           ));
     });
+
+    console.log(completeArgs);
 
     //clearLogs();
 
