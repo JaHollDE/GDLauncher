@@ -37,4 +37,8 @@ export class ExpressManager {
             });
         });
     }
+    async restart() {
+        this.server.close();
+        await this.start();
+    }
 }

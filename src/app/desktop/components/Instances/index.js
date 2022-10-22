@@ -142,6 +142,35 @@ const Instances = (data) => {
 
     const instancesPath = useSelector(_getInstancesPath);
 
+    useEffect(() => {
+        ipcRenderer.removeAllListeners("check-for-texturepack-updates");
+        ipcRenderer.on("check-for-texturepack-updates", async (event) => {
+            let updateMods = false;
+            let updateAssets = false;
+
+            const updateAss = await hasAssetsUpdate();
+            if (updateAss) {
+                await installAssets((data) => setModStatus(data));
+                updateAssets = true;
+            }
+
+            for (const instanceName of Object.keys(startedInstances)) {
+                const updateMods2 = await getUpdateMods(instancesPath, instanceName, false);
+
+                if (updateMods2.length > 0) {
+                    await installMods(updateMods2, instancesPath, instanceName, (status) => {
+                        setModStatus("Mod: " + status);
+                    });
+                    updateMods = true;
+                }
+
+                setModStatus(undefined);
+            }
+
+            await ipcRenderer.invoke("reload-data", updateMods, updateAssets);
+        });
+    }, [startedInstances]);
+
     const loadData = async (updateConfig = false) => {
         //if (modsOpen) return;
         console.log("checking if update is available for: ", instanceName, updateConfig);
@@ -360,8 +389,7 @@ const Instances = (data) => {
                 }
 
 
-
-                <div className={"start-instance"}>
+                <div className={"start-instance " + (data.data === false || data.data === null ? 'disable-start-instance' : '')}>
                     <div>
                         {(!isInQueue) && <button css={`
             font-size: .5em;  

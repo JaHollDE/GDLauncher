@@ -15,11 +15,16 @@ export async function verifyToken(mcToken) {
 
     const request = `${url}/api/user/verify`;
 
-    const data = await axios.get(request, {
-        headers: {
-            Authorization: `Bearer ${mcToken}`
-        }
-    });
+    let data;
+    try {
+        data = await axios.get(request, {
+            headers: {
+                Authorization: `Bearer ${mcToken}`
+            }
+        });
+    } catch (err) {
+        return false;
+    }
 
     return data.data;
 }

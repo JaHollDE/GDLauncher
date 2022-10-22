@@ -25,6 +25,27 @@ export function initIPCEvents(application) {
     ipcMain.handle("restart-electron", (event) => {
         application.window.restart();
     });
+    let cb;
+    ipcMain.handle("update-texture-pack", async (event) => {
+        const promise = new Promise((resolve) => {
+            cb = () => resolve(undefined);
+        });
+        application.mainWindow.webContents.send("check-for-texturepack-updates");
+        await promise;
+    });
+    ipcMain.handle("reload-data", async (event, texturepackUpdated, assetsUpdated) => {
+        if (assetsUpdated) {
+            await application.express.restart();
+            await application.window.restart();
+        }
+        if (texturepackUpdated) {
+            application.socket.sendMessage(JSON.stringify({
+                type: "reload-assets"
+            }));
+        }
+        cb?.();
+        console.log("RELOAD!");
+    });
     /*
     ipcMain.handle("toggle-dev-instance-name", (event) => {
         let index = application.config.config.instances.findIndex(n => n === application.config.config.instanceName);
@@ -34,10 +55,11 @@ export function initIPCEvents(application) {
         application.mainWindow.webContents.send("dev-instance-name-update", application.config.config.instanceName);
         return application.config.config.instanceName;
     });*/
+    /*
     ipcMain.handle("get-dev-instance-names", (event) => {
         return {
             prod: application.config.config.instances,
             dev: application.config.config.devInstances
         };
-    });
+    });*/
 }

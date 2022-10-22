@@ -32,6 +32,29 @@ export function initIPCEvents(application: JaHollDEApplication): void {
         application.window.restart();
     });
 
+    let cb: (() => void) | undefined;
+    ipcMain.handle("update-texture-pack", async (event) => {
+        const promise = new Promise((resolve) => {
+            cb = () => resolve(undefined);
+        });
+        application.mainWindow.webContents.send("check-for-texturepack-updates");
+        await promise;
+    });
+
+    ipcMain.handle("reload-data", async (event, texturepackUpdated, assetsUpdated) => {
+        if (assetsUpdated) {
+            await application.express.restart();
+            await application.window.restart();
+        }
+        if (texturepackUpdated) {
+            application.socket.sendMessage(JSON.stringify({
+                type: "reload-assets"
+            }));
+        }
+        cb?.();
+        console.log("RELOAD!");
+    });
+
     /*
     ipcMain.handle("toggle-dev-instance-name", (event) => {
         let index = application.config.config.instances.findIndex(n => n === application.config.config.instanceName);

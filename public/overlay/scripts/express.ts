@@ -42,6 +42,10 @@ export class ExpressManager {
         resolve(undefined);
       });
     });
+  }
 
+  public async restart(): Promise<void> {
+    this.server.close();
+    await this.start();
   }
 }

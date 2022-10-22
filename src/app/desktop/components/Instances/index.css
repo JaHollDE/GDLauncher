@@ -37,6 +37,8 @@
 
     display: flex;
     flex-direction: column-reverse;
+
+    transition: all 0.5s;
 }
 .start-instance > button, .start-instance > div > button {
     border: none;
@@ -47,6 +49,10 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+}
+.start-instance.disable-start-instance {
+    filter: brightness(50%);
+    pointer-events: none;
 }
 
 .start-instance:hover, .start-instance:hover > *, .start-instance:hover > * > * {

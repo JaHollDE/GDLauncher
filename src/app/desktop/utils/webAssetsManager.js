@@ -27,10 +27,10 @@ export async function loadWebData() {
 }
 
 
-const loadingConfig = Promise.all([loadConfig(), loadWebData()]);
+const loadingConfig = Promise.all([loadConfig()]);
 
 export async function hasAssetsUpdate() {
-  await loadingConfig;
+  await loadWebData();
 
   return webData.version !== config.version;
 }

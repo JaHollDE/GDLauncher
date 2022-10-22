@@ -107,7 +107,7 @@ const Home = () => {
 
     const updateData = () => {
         setJaholldeData(null);
-        dispatch(async (dispatch, getState) => {
+        return dispatch(async (dispatch, getState) => {
             const state = getState();
             const account = _getCurrentAccount(state);
 
@@ -121,10 +121,20 @@ const Home = () => {
             if (data.registered) {
                 setJaholldeData(data);
                 ipcRenderer.invoke("jahollde-data", account.accessToken, data);
+            } else if (data === false) {
+                setJaholldeData(false);
+                window.setTimeout(() => {
+                    updateData();
+                }, 10*1000);
+                return;
             } else {
                 setJaholldeData(undefined);
                 openRegisterScreen();
             }
+
+            window.setTimeout(() => {
+                updateData();
+            }, 60*1000);
         });
     }
 
@@ -164,6 +174,7 @@ const Home = () => {
             <AccountContainer type="primary">
                 {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
                 {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
+                {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
 
                 <AccountBackground onClick={openAccountModal}>
                     {profileImage ? (
