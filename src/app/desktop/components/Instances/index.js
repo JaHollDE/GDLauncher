@@ -167,7 +167,11 @@ const Instances = (data) => {
                 setModStatus(undefined);
             }
 
-            await ipcRenderer.invoke("reload-data", updateMods, updateAssets);
+            try {
+                await ipcRenderer.invoke("reload-data", updateMods, updateAssets);
+            } catch (err) {
+                console.warn(err);
+            }
         });
     }, [startedInstances]);
 
