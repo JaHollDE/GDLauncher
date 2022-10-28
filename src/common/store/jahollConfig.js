@@ -35,6 +35,7 @@ export async function initConfig(instanceName) {
     } else {
         config = [];
     }
+
     webData = json;
     fillConfig();
 
@@ -139,10 +140,17 @@ export async function getConfig() {
 export async function setConfig(newConfig, instanceName) {
     await loadingConfig;
 
-    console.log("set config: ", newConfig, instanceName, new Error());
+    console.log("set config: ", instanceName, newConfig);
 
     config = newConfig;
     handlers.forEach(l => l(newConfig));
     const appData = await ipcRenderer.invoke('getAppdataPath');
-    await fsa.writeFile(path.join(appData, "gdlauncher_next", "instances", instanceName, "mods.json"), JSON.stringify(config, undefined, 2));
+
+    const instanceFolder = path.join(appData, "gdlauncher_next", "instances", instanceName);
+
+    if (fsa.existsSync(instanceFolder)) {
+        await fsa.writeFile(path.join(instanceFolder, "mods.json"), JSON.stringify(config, undefined, 2));
+    } else {
+        console.warn(`Skipping setting config for ${instanceName}, folder not existing.`);
+    }
 }

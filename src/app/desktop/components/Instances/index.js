@@ -242,7 +242,10 @@ const Instances = (data) => {
     const [modStatus, setModStatus] = useState(undefined);
 
     const runInstall = async () => {
-        if (updateInstance) await createInstance(dispatch, instanceName);
+        if (updateInstance) {
+            await createInstance(dispatch, instanceName);
+            setUpdateInstance(false);
+        }
         if (updateMods.length > 0) {
             await installMods(updateMods, instancesPath, instanceName, (status) => {
                 setModStatus("Mod: " + status);

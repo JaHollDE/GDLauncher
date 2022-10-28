@@ -45,3 +45,4 @@ yarn-error.log*
 signCertificate.pfx
 
 /public/overlay/build/
+public/overlay/build
