@@ -9,6 +9,7 @@ export class Window {
     onReady = [];
     mcFocused = false;
     mcIconified = false;
+    mouseEventsEnabled = true;
     constructor(application) {
         this.application = application;
     }
@@ -53,25 +54,20 @@ export class Window {
             return;
         await this.deleteHomePage();
         await this.loadHomePage();
+        this.mouseEventsEnabled ? this.enableMouseEvents() : this.disableMouseEvents();
     }
     enableMouseEvents() {
-        /*
-        if (!this.siteActive) return;
-        if (this.mouseEventsOn) return;
-        this.mouseEventsOn = true;*/
         this.window?.setIgnoreMouseEvents(false);
         this.window?.focus();
         this.application.socket.sendMessage("enable mouse events");
+        this.mouseEventsEnabled = true;
     }
     disableMouseEvents() {
-        /*
-        if (!this.siteActive) return;
-        if (!this.mouseEventsOn) return;
-        this.mouseEventsOn = false;*/
         this.window?.setIgnoreMouseEvents(true);
         this.window?.blur();
         this.window?.blurWebView();
         this.application.socket.sendMessage("disable mouse events");
+        this.mouseEventsEnabled = false;
     }
     async loadHomePage() {
         if (this.window !== undefined) {

@@ -14,6 +14,8 @@ export class Window {
     private mcFocused = false;
     private mcIconified = false;
 
+    private mouseEventsEnabled: boolean = true;
+
     constructor(private application: JaHollDEApplication) {
     }
 
@@ -61,28 +63,25 @@ export class Window {
         if (this.window === undefined) return;
         await this.deleteHomePage();
         await this.loadHomePage();
+        this.mouseEventsEnabled ? this.enableMouseEvents() : this.disableMouseEvents();
     }
 
     public enableMouseEvents(): void {
-        /*
-        if (!this.siteActive) return;
-        if (this.mouseEventsOn) return;
-        this.mouseEventsOn = true;*/
         this.window?.setIgnoreMouseEvents(false);
         this.window?.focus();
 
         this.application.socket.sendMessage("enable mouse events");
+
+        this.mouseEventsEnabled = true;
     }
     public disableMouseEvents(): void {
-        /*
-        if (!this.siteActive) return;
-        if (!this.mouseEventsOn) return;
-        this.mouseEventsOn = false;*/
         this.window?.setIgnoreMouseEvents(true);
         this.window?.blur();
         this.window?.blurWebView();
 
         this.application.socket.sendMessage("disable mouse events");
+
+        this.mouseEventsEnabled = false;
     }
 
     public async loadHomePage(): Promise<void> {
