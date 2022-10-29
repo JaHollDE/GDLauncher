@@ -1,6 +1,7 @@
 import { BrowserWindow, screen } from "electron";
 import { createWindow } from "./utils/create-window";
 import JaHollDEApplication from "./app";
+import { SocketInstance } from "./socket";
 
 export class Window {
     public window?: BrowserWindow = undefined;
@@ -17,7 +18,7 @@ export class Window {
     private mouseEventsEnabled: boolean = true;
     private windowHidden = false;
 
-    constructor(private application: JaHollDEApplication) {
+    constructor(private application: JaHollDEApplication, private socketInstance: SocketInstance) {
     }
 
     public updateMCFocusedState(focused: boolean, iconified: boolean): void {
@@ -76,7 +77,7 @@ export class Window {
         this.window?.setIgnoreMouseEvents(false);
         this.window?.focus();
 
-        this.application.socket.sendMessage("enable mouse events");
+        this.socketInstance.sendMessage("enable mouse events");
 
         this.mouseEventsEnabled = true;
     }
@@ -85,7 +86,7 @@ export class Window {
         this.window?.blur();
         this.window?.blurWebView();
 
-        this.application.socket.sendMessage("disable mouse events");
+        this.socketInstance.sendMessage("disable mouse events");
 
         this.mouseEventsEnabled = false;
     }
@@ -122,7 +123,7 @@ export class Window {
             this.window?.hide();
             console.log("Loading JaHollDE-Page...");
             await this.window?.loadURL(
-                `http://127.0.0.1:${this.application.express.port}/overlay`
+                `http://127.0.0.1:${this.socketInstance.expressInstance.port}/overlay`
             );
             console.log("Loaded JaHolLDE-Page!");
             this.window?.showInactive();
@@ -172,7 +173,7 @@ export class Window {
     }
 
     private sendReadyState() {
-        this.application.socket.sendMessage(
+        this.socketInstance.sendMessage(
             JSON.stringify({
                 type: "ready",
             })

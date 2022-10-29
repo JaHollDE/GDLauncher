@@ -88,12 +88,14 @@ class ConfigManager {
         ipcMain.handle("config-update", this.updateConfig.bind(this));
         ipcMain.handle("get-config", (event) => {
             for (const key of Object.keys(this.config)) {
-                this.application.window
-                    .getWindow().then(w => w.webContents.send(
-                        "config-key-update",
-                        key,
-                        this.config[key]
+                this.application.socket.getAllInstances().forEach(win => {
+                    win.window?.getWindow().then(w => w.webContents.send(
+                      "config-key-update",
+                      key,
+                      this.config[key]
                     ));
+                });
+
 
             }
             //this.application.socketManager.sendUUIDUpdate();
@@ -110,10 +112,14 @@ class ConfigManager {
         this.config[key] = value;
         this.save();
         console.log("received config update: ", key, value);
-        this.application.window
-            .getWindow().then(w => {
-                w.webContents.send("config-key-update", key, this.config[key]);
-            })
+
+        this.application.socket.getAllInstances().forEach(win => {
+            win.window?.getWindow().then(w => w.webContents.send(
+              "config-key-update",
+              key,
+              this.config[key]
+            ));
+        });
 
         /*
         if (!this.application.windowManager?.getWindow()?.isDestroyed()) {

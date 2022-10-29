@@ -45,6 +45,7 @@ import { hasAssetsUpdate, installAssets } from "../../utils/webAssetsManager";
 import { Button } from "antd";
 import Instance from "./Instance";
 import {createInstance} from "../../utils/instanceCreation";
+import { checkDevInstance } from "../../utils/jaholldeVerification";
 
 const Container = styled.div`
   display: flex;
@@ -148,9 +149,11 @@ const Instances = (data) => {
             let updateMods = false;
             let updateAssets = false;
 
-            const updateAss = await hasAssetsUpdate();
+            const isDevInstance = await checkDevInstance(instanceName);
+
+            const updateAss = await hasAssetsUpdate(instanceName, isDevInstance);
             if (updateAss) {
-                await installAssets((data) => setModStatus(data));
+                await installAssets(instanceName, isDevInstance, (data) => setModStatus(data));
                 updateAssets = true;
             }
 
@@ -168,7 +171,7 @@ const Instances = (data) => {
             }
 
             try {
-                await ipcRenderer.invoke("reload-data", updateMods, updateAssets);
+                await ipcRenderer.invoke("reload-data", updateMods, updateAssets, instanceName);
             } catch (err) {
                 console.warn(err);
             }
@@ -185,7 +188,9 @@ const Instances = (data) => {
         const createInstance2 = Object.keys(finishedInstances).find(l => l === instanceName) === undefined;
         setUpdateInstance(createInstance2);
 
-        const updateAss = await hasAssetsUpdate();
+        const isDevInstance = await checkDevInstance(instanceName);
+
+        const updateAss = await hasAssetsUpdate(instanceName, isDevInstance);
 
         setUpdateAssets(updateAss);
 
@@ -254,7 +259,8 @@ const Instances = (data) => {
             setUpdateMods([]);
         }
         if (updateAssets) {
-            await installAssets((data) => setModStatus(data));
+            const isDevInstance = await checkDevInstance(instanceName);
+            await installAssets(instanceName, isDevInstance, (data) => setModStatus(data));
             setUpdateAssets(false);
             setModStatus(undefined);
         }
@@ -302,7 +308,7 @@ const Instances = (data) => {
 
     const restartElectron = () => {
         if (!overlayConnected) return;
-        ipcRenderer.invoke("restart-electron");
+        //ipcRenderer.invoke("restart-electron"); // TODO verlegen auf instanz-rechtsklick menü
     }
 
     const createJaHollDEInstance = () => {

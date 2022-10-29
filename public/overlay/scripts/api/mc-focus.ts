@@ -1,5 +1,6 @@
 import ElectronEvent from "../electron-event";
 import JaHollDEApplication from "../app";
+import { SocketInstance } from "../socket";
 
 export default class OnMcFocus implements ElectronEvent {
     public readonly name = "set_mc_focus";
@@ -7,9 +8,9 @@ export default class OnMcFocus implements ElectronEvent {
     constructor(private application: JaHollDEApplication) {
     }
 
-    public run(jsonMessage: any): void {
+    public run(jsonMessage: any, socketInstance: SocketInstance): void {
         const focused = jsonMessage.focused;
         const iconified = jsonMessage.iconfied;
-        this.application.window.updateMCFocusedState(focused, iconified);
+        socketInstance.window.updateMCFocusedState(focused, iconified);
     }
 }

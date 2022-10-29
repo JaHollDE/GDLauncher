@@ -8,7 +8,7 @@ import { BrowserWindow } from "electron";
 export default class JaHollDEApplication {
     public socket!: SocketManager;
     public express!: ExpressManager;
-    public window!: Window;
+    //public window!: Window;
     public config!: ConfigManager;
     public mainWindow!: BrowserWindow;
 
@@ -17,9 +17,7 @@ export default class JaHollDEApplication {
         this.socket = new SocketManager(this);
         await this.socket.init();
         this.express = new ExpressManager(this);
-        await this.express.init();
-        await this.express.start();
-        this.window = new Window(this);
+        //this.window = new Window(this);
 
         this.mainWindow = mainWindow;
 

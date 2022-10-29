@@ -20,16 +20,16 @@ export function initIPCEvents(application: JaHollDEApplication): void {
     });
 
     ipcMain.handle("trigger-device", (event, state: boolean) => {
-
-        state ? application.window.enableMouseEvents() : application.window.disableMouseEvents();
+        const window = application.socket.getInstanceBySender(event.sender)?.window;
+        state ? window?.enableMouseEvents() : window?.disableMouseEvents();
     });
 
     ipcMain.handle("transmit-mod", (event, data) => {
-        application.socket.sendMessage(JSON.stringify(data));
+        application.socket.sendMessageToSender(JSON.stringify(data), event.sender);
     });
 
-    ipcMain.handle("restart-electron", (event) => {
-        application.window.restart();
+    ipcMain.handle("restart-electron", (event, instanceName) => {
+        return application.socket.getInstanceBySender(event.sender)?.window?.restart();
     });
 
     let cb: (() => void) | undefined;
@@ -41,23 +41,25 @@ export function initIPCEvents(application: JaHollDEApplication): void {
         await promise;
     });
 
-    ipcMain.handle("reload-data", async (event, texturepackUpdated, assetsUpdated) => {
+    ipcMain.handle("reload-data", async (event, texturepackUpdated, assetsUpdated, instanceName: string) => {
         if (assetsUpdated) {
-            await application.express.restart();
-            await application.window.restart();
+            const instance = application.socket.getInstanceByName(instanceName);
+
+            await instance?.expressInstance?.restart();
+            await instance?.window?.restart();
         }
         if (texturepackUpdated) {
-            application.socket.sendMessage(JSON.stringify({
+            application.socket.sendMessageToSender(JSON.stringify({
                 type: "reload-assets"
-            }));
+            }), event.sender);
         }
         cb?.();
     });
 
     ipcMain.handle("get-mod-version", (event) => {
-        application.socket.sendMessage(JSON.stringify({
+        application.socket.sendMessageToSender(JSON.stringify({
             type: "get-mod-version"
-        }));
+        }), event.sender);
         return new Promise(resolve => {
             application.socket.registerEvent({
                 name: "get-mod-version",

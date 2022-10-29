@@ -17,13 +17,14 @@ export function initIPCEvents(application) {
         return application.socket.port;
     });
     ipcMain.handle("trigger-device", (event, state) => {
-        state ? application.window.enableMouseEvents() : application.window.disableMouseEvents();
+        const window = application.socket.getInstanceBySender(event.sender)?.window;
+        state ? window?.enableMouseEvents() : window?.disableMouseEvents();
     });
     ipcMain.handle("transmit-mod", (event, data) => {
-        application.socket.sendMessage(JSON.stringify(data));
+        application.socket.sendMessageToSender(JSON.stringify(data), event.sender);
     });
     ipcMain.handle("restart-electron", (event) => {
-        application.window.restart();
+        //application.window.restart(); // TODO look
     });
     let cb;
     ipcMain.handle("update-texture-pack", async (event) => {
@@ -35,21 +36,20 @@ export function initIPCEvents(application) {
     });
     ipcMain.handle("reload-data", async (event, texturepackUpdated, assetsUpdated) => {
         if (assetsUpdated) {
-            await application.express.restart();
-            await application.window.restart();
+            //await application.express.restart(); // TODO UPDATE
+            // await application.window.restart();
         }
         if (texturepackUpdated) {
-            application.socket.sendMessage(JSON.stringify({
+            application.socket.sendMessageToSender(JSON.stringify({
                 type: "reload-assets"
-            }));
+            }), event.sender);
         }
         cb?.();
-        console.log("RELOAD!");
     });
     ipcMain.handle("get-mod-version", (event) => {
-        application.socket.sendMessage(JSON.stringify({
+        application.socket.sendMessageToSender(JSON.stringify({
             type: "get-mod-version"
-        }));
+        }), event.sender);
         return new Promise(resolve => {
             application.socket.registerEvent({
                 name: "get-mod-version",

@@ -2,6 +2,7 @@ import { screen } from "electron";
 import { createWindow } from "./utils/create-window";
 export class Window {
     application;
+    socketInstance;
     window = undefined;
     siteActive = false;
     size = [0, 0];
@@ -11,8 +12,9 @@ export class Window {
     mcIconified = false;
     mouseEventsEnabled = true;
     windowHidden = false;
-    constructor(application) {
+    constructor(application, socketInstance) {
         this.application = application;
+        this.socketInstance = socketInstance;
     }
     updateMCFocusedState(focused, iconified) {
         this.mcFocused = focused;
@@ -64,14 +66,14 @@ export class Window {
     enableMouseEvents() {
         this.window?.setIgnoreMouseEvents(false);
         this.window?.focus();
-        this.application.socket.sendMessage("enable mouse events");
+        this.socketInstance.sendMessage("enable mouse events");
         this.mouseEventsEnabled = true;
     }
     disableMouseEvents() {
         this.window?.setIgnoreMouseEvents(true);
         this.window?.blur();
         this.window?.blurWebView();
-        this.application.socket.sendMessage("disable mouse events");
+        this.socketInstance.sendMessage("disable mouse events");
         this.mouseEventsEnabled = false;
     }
     async loadHomePage() {
@@ -102,7 +104,7 @@ export class Window {
                 .forEach((obj) => this.window?.removeBrowserView(obj));
             this.window?.hide();
             console.log("Loading JaHollDE-Page...");
-            await this.window?.loadURL(`http://127.0.0.1:${this.application.express.port}/overlay`);
+            await this.window?.loadURL(`http://127.0.0.1:${this.socketInstance.expressInstance.port}/overlay`);
             console.log("Loaded JaHolLDE-Page!");
             this.window?.showInactive();
             this.window?.setAlwaysOnTop(true, "screen-saver");
@@ -143,7 +145,7 @@ export class Window {
         console.log("deleted window");
     }
     sendReadyState() {
-        this.application.socket.sendMessage(JSON.stringify({
+        this.socketInstance.sendMessage(JSON.stringify({
             type: "ready",
         }));
     }

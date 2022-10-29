@@ -2,43 +2,60 @@ import * as express from "express";
 import path from "path";
 import * as tcpPortUsed from "tcp-port-used";
 import { app } from "electron";
+export class ExpressInstance {
+    port;
+    app;
+    server;
+    constructor(port, app) {
+        this.port = port;
+        this.app = app;
+    }
+    start() {
+        return new Promise(resolve => {
+            this.server = this.app.listen(this.port, () => {
+                console.log("Started express app!");
+                resolve(this.server);
+            });
+        });
+    }
+    stop() {
+        this.server?.close();
+    }
+}
 export class ExpressManager {
     application;
-    app = express();
-    server;
-    port;
+    expressServers = {};
     constructor(application) {
         this.application = application;
     }
-    async init() {
-        const appData = app.getPath('appData');
-        const p = path.join(appData, "gdlauncher_next", "jahollde_assets");
-        this.app.get("/", (req, res) => {
-            res.sendFile(path.join(p, "./index.html"));
-        });
-        this.app.use("/assets", express.static(path.join(p, "./assets")));
-        this.app.use("/static", express.static(p));
-        this.app.use((req, res) => {
-            res.sendFile(path.join(p, "./index.html"));
-        });
+    async createServer(instanceName) {
+        if (this.expressServers[instanceName] !== undefined) {
+            this.expressServers[instanceName].stop();
+            delete this.expressServers[instanceName];
+        }
         let port = 5050;
         let used = true;
         while (used) {
             port++;
             used = await tcpPortUsed.check(port, "127.0.0.1");
         }
-        this.port = port;
+        const app = express();
+        await this.init(app, instanceName);
+        const instance = new ExpressInstance(port, app);
+        await instance.start();
+        this.expressServers[instanceName] = instance;
+        return instance;
     }
-    start() {
-        return new Promise(resolve => {
-            this.server = this.app.listen(this.port, () => {
-                console.log("Started express app!");
-                resolve(undefined);
-            });
+    async init(expressApp, instanceName) {
+        const appData = app.getPath('appData');
+        const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets");
+        expressApp.get("/", (req, res) => {
+            res.sendFile(path.join(p, "./index.html"));
         });
-    }
-    async restart() {
-        this.server.close();
-        await this.start();
+        expressApp.use("/assets", express.static(path.join(p, "./assets")));
+        expressApp.use("/static", express.static(p));
+        expressApp.use((req, res) => {
+            res.sendFile(path.join(p, "./index.html"));
+        });
     }
 }

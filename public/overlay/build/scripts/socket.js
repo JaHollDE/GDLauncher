@@ -3,85 +3,51 @@ import * as tcpPortUsed from "tcp-port-used";
 import OnScreenUpdate from "./api/screen-update";
 import ElectronEventTransmitter from "./api/electron-event";
 import OnMcFocus from "./api/mc-focus";
-export default class SocketManager {
-    app;
-    port;
-    webSocketServer;
-    webSockets = [];
-    events = [];
-    queue = [];
-    constructor(app) {
-        this.app = app;
-        this.events.push(new OnScreenUpdate(this.app), new ElectronEventTransmitter(this.app), new OnMcFocus(this.app));
-    }
-    async init() {
-        let port = 5050;
-        let used = true;
-        while (used) {
-            port++;
-            used = await tcpPortUsed.check(port, "127.0.0.1");
-        }
-        this.port = port;
-        this.webSocketServer = new WebSocketServer({ port: this.port });
-        this.initWebSocketServer();
-    }
-    initWebSocketServer() {
-        this.webSocketServer.on("connection", (webSocket) => {
-            this.webSockets.push(webSocket);
-            console.log("WebSocket connection open.");
-            this.queue.forEach(l => {
-                if (webSocket.readyState !== webSocket.OPEN)
-                    return;
-                webSocket.send(l);
-            });
-            this.sendMessage(JSON.stringify({
-                type: "jahollde_url",
-                url: "wss://" + this.app.getURL(false) + "/api/ws"
-            }));
-            this.updateWindow();
-            webSocket.on("message", (msg) => {
-                if (typeof msg !== "string") {
-                    try {
-                        msg = new TextDecoder().decode(msg);
-                    }
-                    catch (err) {
-                        console.warn(err);
-                    }
-                }
-                this.onMessage(msg);
-            });
-            webSocket.on("close", () => {
-                this.webSockets = this.webSockets.filter(l => l !== webSocket);
-                console.log("Websocket connection closed.");
-                this.updateWindow();
-            });
+import { Window } from "./window";
+export class SocketInstance {
+    instanceName;
+    socketManager;
+    webSocket;
+    expressInstance;
+    window;
+    constructor(webSocket, instanceName, socketManager) {
+        this.instanceName = instanceName;
+        this.socketManager = socketManager;
+        this.attach(webSocket);
+        this.window = new Window(this.socketManager.app, this);
+        this.socketManager.app.express.createServer(this.instanceName).then(async (server) => {
+            this.expressInstance = server;
+            await this.window.loadHomePage();
         });
+        this.sendMessage(JSON.stringify({
+            type: "jahollde_url",
+            url: "wss://" + this.socketManager.app.getURL(false) + "/api/ws"
+        }));
     }
-    registerEvent(event) {
-        this.events.push(event);
-    }
-    removeEvent(event) {
-        this.events = this.events.filter(ev => ev.name !== event);
-    }
-    async updateWindow() {
-        this.app.mainWindow.webContents.send("overlay-connected", this.webSockets.length !== 0);
-        if (this.webSockets.length === 0) {
-            await this.app.window.hideHomePage();
-            // check if websockets are empty after 5 seconds, then quit
-            setTimeout(async () => {
-                if (this.webSockets.length === 0) {
-                    await this.app.window.deleteHomePage();
+    attach(webSocket) {
+        webSocket.on("message", (msg) => {
+            if (typeof msg !== "string") {
+                try {
+                    msg = new TextDecoder().decode(msg);
                 }
+                catch (err) {
+                    console.warn(err);
+                    return;
+                }
+            }
+            this.onMessage(msg);
+        });
+        webSocket.on("close", async () => {
+            this.webSocket = undefined;
+            await this.window.hideHomePage();
+            setTimeout(async () => {
+                if (this.webSocket === undefined)
+                    await this.destroy();
+                else
+                    await this.window.loadHomePage();
             }, 5000);
-        }
-        else {
-            await this.app.window.loadHomePage();
-        }
-    }
-    sendMessage(message, query = true) {
-        if (query)
-            this.queue.push(message);
-        this.webSockets.forEach(webSocket => webSocket.send(message));
+        });
+        this.webSocket = webSocket;
     }
     onMessage(msg) {
         console.log(msg);
@@ -97,10 +63,113 @@ export default class SocketManager {
     }
     onJSONMessage(message) {
         const type = message.type;
-        this.events.forEach(event => {
+        this.socketManager.events.forEach(event => {
             if (event.name === type) {
-                event.run(message);
+                event.run(message, this);
             }
         });
+    }
+    async destroy() {
+        await this.window.deleteHomePage();
+        this.expressInstance?.stop();
+        this.socketManager.removeWebSocket(this.instanceName);
+    }
+    sendMessage(message, query = true) {
+        this.webSocket?.send(message);
+    }
+}
+export default class SocketManager {
+    app;
+    port;
+    webSocketServer;
+    webSockets = {};
+    events = [];
+    queue = [];
+    constructor(app) {
+        this.app = app;
+        this.events.push(new OnScreenUpdate(this.app), new ElectronEventTransmitter(this.app), new OnMcFocus(this.app));
+    }
+    removeWebSocket(instanceName) {
+        delete this.webSockets[instanceName];
+        console.log("Removed instance: ", instanceName);
+    }
+    async init() {
+        let port = 5050;
+        let used = true;
+        while (used) {
+            port++;
+            used = await tcpPortUsed.check(port, "127.0.0.1");
+        }
+        this.port = port;
+        this.webSocketServer = new WebSocketServer({ port: this.port });
+        this.initWebSocketServer();
+    }
+    initWebSocketServer() {
+        this.webSocketServer.on("connection", (webSocket) => {
+            console.log("WebSocket connection open.");
+            this.queue.forEach(l => {
+                if (webSocket.readyState !== webSocket.OPEN)
+                    return;
+                webSocket.send(l);
+            });
+            //this.updateWindow();
+            webSocket.on("message", (msg) => {
+                if (typeof msg !== "string") {
+                    try {
+                        msg = new TextDecoder().decode(msg);
+                    }
+                    catch (err) {
+                        console.warn(err);
+                        return;
+                    }
+                }
+                msg = JSON.parse(msg);
+                console.log("Received: ", msg);
+                if (msg.type === "register-instance-name") {
+                    const instanceName = msg.instanceName;
+                    console.log("Received instance name: ", instanceName);
+                    if (this.webSockets[instanceName] !== undefined) {
+                        this.webSockets[instanceName].attach(webSocket);
+                        return;
+                    }
+                    this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, this);
+                }
+            });
+        });
+    }
+    registerEvent(event) {
+        this.events.push(event);
+    }
+    removeEvent(event) {
+        this.events = this.events.filter(ev => ev.name !== event);
+    }
+    getInstanceBySender(sender) {
+        for (const val of Object.values(this.webSockets)) {
+            if (val.window?.window?.webContents === sender)
+                return val;
+        }
+        return undefined;
+    }
+    /*
+    public async updateWindow(): Promise<void> {
+        this.app.mainWindow.webContents.send("overlay-connected", this.webSockets.length !== 0);
+        if (this.webSockets.length === 0) {
+
+            await this.app.window.hideHomePage();
+            // check if websockets are empty after 5 seconds, then quit
+            setTimeout(async () => {
+                if (this.webSockets.length === 0) {
+                    await this.app.window.deleteHomePage();
+                }
+            }, 5000);
+        } else {
+            await this.app.window.loadHomePage();
+        }
+    }*/
+    sendMessageToSender(message, sender) {
+        this.getInstanceBySender(sender)?.sendMessage(message);
+    }
+    getAllInstances() {
+        return Object.values(this.webSockets);
     }
 }

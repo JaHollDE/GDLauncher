@@ -224,7 +224,7 @@ const Instance = ({ instanceName }) => {
 
         if (isInstance) {
             const updateMods2 = await getUpdateMods(instancesPath, instanceName, false);
-            const updateAss = await hasAssetsUpdate();
+            const updateAss = await hasAssetsUpdate(instanceName, isDevInstance);
 
             if (updateMods2.length > 0) {
                 await installMods(updateMods2, instancesPath, instanceName, (status) => {
@@ -232,7 +232,7 @@ const Instance = ({ instanceName }) => {
                 });
             }
             if (updateAss) {
-                await installAssets((data) => setModStatus(data));
+                await installAssets(instanceName, isDevInstance, (data) => setModStatus(data));
             }
             setModStatus(undefined);
         }

@@ -4,11 +4,11 @@ export default class OnScreenUpdate {
     constructor(application) {
         this.application = application;
     }
-    run(jsonMessage) {
+    run(jsonMessage, socketInstance) {
         const width = jsonMessage.width;
         const height = jsonMessage.height;
         const x = jsonMessage.x;
         const y = jsonMessage.y;
-        this.application.window.setGeometry(width, height, x, y);
+        socketInstance.window.setGeometry(width, height, x, y);
     }
 }

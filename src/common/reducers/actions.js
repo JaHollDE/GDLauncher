@@ -3262,6 +3262,7 @@ export function launchInstance(instanceName, forceQuit = false) {
         completeArgs.push(`-Djahollde.port=${port}`);
         completeArgs.push(`-Djahollde.url=${addQuotes(needsQuote, jaholldeURL)}`);
         completeArgs.push(`-Djahollde.version=${modVersion}`);
+        completeArgs.push(`-Djahollde.instance=${instanceName}`);
       }
       completeArgs.push(l.toString()
           .replace(...replaceRegex)

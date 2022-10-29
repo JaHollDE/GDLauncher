@@ -3,13 +3,14 @@ import path from "path";
 import fsa from "fs-extra";
 import { getURL } from "../../../common/store/jahollConfig";
 import { downloadFile } from "./downloader";
+import { getDevURL } from "./jaholldeVerification";
 
-let config = undefined;
-let webData = undefined;
-
-export async function loadConfig() {
+export async function loadConfig(instanceName) {
   const appData = await ipcRenderer.invoke('getAppdataPath');
-  const p = path.join(appData, "gdlauncher_next", "jahollde_assets.json");
+
+  const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets.json");
+
+  let config = undefined;
 
   if (fsa.existsSync(p)) {
     config = JSON.parse(fsa.readFileSync(p, "utf-8"));
@@ -18,30 +19,30 @@ export async function loadConfig() {
       version: "-1"
     };
   }
+  return config;
 }
 
-export async function loadWebData() {
-  const url = await getURL();
+export async function loadWebData(isDevInstance) {
+  const url = await getDevURL(isDevInstance);
 
-  webData = await (await fetch(`${url}/api/assets`)).json();
+  return await (await fetch(`${url}/api/assets`)).json();
 }
 
-
-const loadingConfig = Promise.all([loadConfig()]);
-
-export async function hasAssetsUpdate() {
-  await loadWebData();
+export async function hasAssetsUpdate(instanceName, isDevInstance) {
+  const webData = await loadWebData(isDevInstance);
+  const config = await loadConfig(instanceName);
 
   return webData.version !== config.version;
 }
 
-export async function installAssets(callback) {
-  await loadingConfig;
+export async function installAssets(instanceName, isDevInstance, callback) {
+  const config = await loadConfig(instanceName);
+  const webData = await loadWebData(isDevInstance);
 
   const url = await getURL();
 
   const appData = await ipcRenderer.invoke('getAppdataPath');
-  const p = path.join(appData, "gdlauncher_next", "jahollde_assets");
+  const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets");
 
   if (!fsa.existsSync(p)) fsa.mkdirsSync(p);
 
@@ -59,6 +60,6 @@ export async function installAssets(callback) {
 
   config.version = webData.version;
 
-  const p2 = path.join(appData, "gdlauncher_next", "jahollde_assets.json");
+  const p2 = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets.json");
   fsa.writeFileSync(p2, JSON.stringify(webData, undefined, 2));
 }
