@@ -57,6 +57,9 @@ export class Window {
         await this.deleteHomePage();
         await this.loadHomePage();
         this.mouseEventsEnabled ? this.enableMouseEvents() : this.disableMouseEvents();
+        this.window?.setMinimumSize(...this.size);
+        this.window?.setSize(...this.size);
+        this.window?.setPosition(...this.pos);
     }
     enableMouseEvents() {
         this.window?.setIgnoreMouseEvents(false);
