@@ -219,7 +219,7 @@ const Instance = ({ instanceName }) => {
     const [modStatus, setModStatus] = useState(undefined);
 
     const startInstance = async () => {
-        if (isInQueue || isPlaying) return;
+        if (isInQueue || modStatus || isPlaying) return;
 
 
         if (isInstance) {
