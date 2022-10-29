@@ -186,7 +186,7 @@ const Home = () => {
                 {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
                 {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
                 {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
-                <AccountBackground onClick={openAccountModal}>
+                {jaholldeData !== undefined && jaholldeData !== null && jaholldeData !== false && <AccountBackground onClick={openAccountModal}>
                     {profileImage ? (
                         <img
                             src={`data:image/jpeg;base64,${profileImage}`}
@@ -212,7 +212,7 @@ const Home = () => {
                         jaholldeData &&
                         <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
                     }
-                </AccountBackground>
+                </AccountBackground>}
 
                 {isDevInstance && <div>
                     <span css={`
@@ -222,7 +222,7 @@ const Home = () => {
                     {devInstanceData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(true)}>Registrieren</AccountBackground>}
                     {devInstanceData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(true)}><Spin /></AccountBackground>}
                     {devInstanceData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
-                    <AccountBackground onClick={openAccountModal}>
+                    {devInstanceData !== undefined && devInstanceData !== null && devInstanceData !== false && <AccountBackground onClick={openAccountModal}>
                         {profileImage ? (
                           <img
                             src={`data:image/jpeg;base64,${profileImage}`}
@@ -248,8 +248,9 @@ const Home = () => {
                           devInstanceData &&
                           <div css={`margin-left: .5rem; align-self: end`}>{devInstanceData.rpName}</div>
                         }
-                    </AccountBackground>
-                </div>}
+                    </AccountBackground>}
+                </div>
+                }
 
 
 
