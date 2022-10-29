@@ -20,13 +20,13 @@ import "tinycolor2"
 import { Option } from "antd/es/mentions";
 import { getURL } from "../../store/jahollConfig";
 import axios from "axios";
-import { accountChange } from "../../../app/desktop/utils/jaholldeVerification";
+import { accountChange, getDevURL } from "../../../app/desktop/utils/jaholldeVerification";
 
 const inputStyle = `
   flex-grow: 1;
 `;
 
-const JaHollDERegister = () => {
+const JaHollDERegister = ({devInstance}) => {
   const dispatch = useDispatch();
 
   const account = useSelector(_getCurrentAccount);
@@ -48,7 +48,7 @@ const JaHollDERegister = () => {
       birthdayYear: birthday.getFullYear()
     }
 
-    const url = await getURL();
+    const url = await getDevURL(devInstance);
 
     const request = `${url}/api/user/register`;
 

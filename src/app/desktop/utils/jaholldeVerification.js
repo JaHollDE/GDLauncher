@@ -10,8 +10,16 @@ export function accountChange() {
     c?.();
 }
 
-export async function verifyToken(mcToken) {
-    const url = await getURL();
+const forceDevURL = true;
+
+export function getDevURL(isDevInstance) {
+    if (forceDevURL) isDevInstance = true;
+
+    return isDevInstance ? "https://devweb.jaholl.de" : "https://interface.jaholl.de";
+}
+
+export async function verifyToken(mcToken, isDevInstance) {
+    const url = getDevURL(isDevInstance);
 
     const request = `${url}/api/user/verify`;
 

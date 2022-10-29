@@ -33,7 +33,6 @@ const AccountContainer = styled.div`
   top: 1rem;
   right: 1rem;
   display: flex;
-  align-items: center;
   
   row-gap: .5rem;
   
@@ -41,6 +40,8 @@ const AccountContainer = styled.div`
   border: none;
   
   flex-wrap: nowrap;
+    
+    flex-direction: column;
 `;
 
 const AccountBackground = styled(Button)`
@@ -96,14 +97,15 @@ const Home = () => {
     }, [account]);
 
     const [jaholldeData, setJaholldeData] = useState(undefined);
+    const [devInstanceData, setDevInstanceData] = useState(undefined);
+    const [isDevInstance, setDevInstance] = useState(false);
+
     const token = useSelector(state => state.app.currentAccountId);
 
-    const openRegisterScreen = () => {
+    const openRegisterScreen = (devInstance = false) => {
         // open modal
-        dispatch(openModal('JaHollDERegister'));
+        dispatch(openModal('JaHollDERegister', {devInstance}));
     }
-
-    const [devInstanceName, setDevInstanceName] = useState("jahollde");
 
     const updateData = () => {
         setJaholldeData(null);
@@ -116,25 +118,33 @@ const Home = () => {
                 return;
             }
 
-            const data = await jaholldeVerification.verifyToken(account.accessToken);
+            let timeout = 60;
 
-            if (data.registered) {
-                setJaholldeData(data);
-                ipcRenderer.invoke("jahollde-data", account.accessToken, data);
-            } else if (data === false) {
-                setJaholldeData(false);
-                window.setTimeout(() => {
-                    updateData();
-                }, 10*1000);
-                return;
-            } else {
-                setJaholldeData(undefined);
-                openRegisterScreen();
+            for (const isDevInstance of [false, true]) {
+                const data = await jaholldeVerification.verifyToken(account.accessToken, isDevInstance);
+
+                if (data.registered) {
+                    isDevInstance ? setDevInstanceData(data) : setJaholldeData(data);
+                    ipcRenderer.invoke("jahollde-data", account.accessToken, data);
+
+                    setDevInstance(!!data.hasDevRights);
+                    if (!data.hasDevRights) {
+                        break;
+                    }
+                } else if (data === false) {
+                    isDevInstance ? setDevInstanceData(false) : setJaholldeData(false);
+                    timeout = 10;
+                    break;
+                } else {
+                    isDevInstance ? setDevInstanceData(undefined) : setJaholldeData(undefined);
+                    !isDevInstance && openRegisterScreen();
+                    break;
+                }
             }
 
             window.setTimeout(() => {
                 updateData();
-            }, 60*1000);
+            }, timeout*1000);
         });
     }
 
@@ -172,30 +182,30 @@ const Home = () => {
                 }
             </div>
             <AccountContainer type="primary">
+
                 {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
                 {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
                 {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
-
                 <AccountBackground onClick={openAccountModal}>
                     {profileImage ? (
                         <img
                             src={`data:image/jpeg;base64,${profileImage}`}
                             css={`
-              width: 15px;
-              cursor: pointer;
-              height: 15px;
-              align-self: center;
-            `}
+                              width: 15px;
+                              cursor: pointer;
+                              height: 15px;
+                              align-self: center;
+                            `}
                             alt="profile"
                         />
                     ) : (
                         <div
                             css={`
-              width: 15px;
-              height: 15px;
-              background: ${props => props.theme.palette.grey[100]};
-              margin-right: 10px;
-            `}
+                              width: 15px;
+                              height: 15px;
+                              background: ${props => props.theme.palette.grey[100]};
+                              margin-right: 10px;
+                            `}
                         />
                     )}
                     {
@@ -203,6 +213,44 @@ const Home = () => {
                         <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
                     }
                 </AccountBackground>
+
+                {isDevInstance && <div>
+                    <span css={`
+                        font-weight: bold;
+                        margin-right: .5rem;
+                    `}>Development</span>
+                    {devInstanceData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(true)}>Registrieren</AccountBackground>}
+                    {devInstanceData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(true)}><Spin /></AccountBackground>}
+                    {devInstanceData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
+                    <AccountBackground onClick={openAccountModal}>
+                        {profileImage ? (
+                          <img
+                            src={`data:image/jpeg;base64,${profileImage}`}
+                            css={`
+                              width: 15px;
+                              cursor: pointer;
+                              height: 15px;
+                              align-self: center;
+                            `}
+                            alt="profile"
+                          />
+                        ) : (
+                          <div
+                            css={`
+                              width: 15px;
+                              height: 15px;
+                              background: ${props => props.theme.palette.grey[100]};
+                              margin-right: 10px;
+                            `}
+                          />
+                        )}
+                        {
+                          devInstanceData &&
+                          <div css={`margin-left: .5rem; align-self: end`}>{devInstanceData.rpName}</div>
+                        }
+                    </AccountBackground>
+                </div>}
+
 
 
             </AccountContainer>
