@@ -132,6 +132,7 @@ import forgePatcher from '../utils/forgePatcher';
 import browserDownload from '../utils/browserDownload';
 import logXML from "../assets/jahollde/log4j2.xml";
 import {addLogRow, clearLogs} from "../../app/desktop/utils/clientLogs";
+import { getModVersions } from "../store/jahollConfig";
 
 export function initManifests() {
   return async (dispatch, getState) => {
@@ -3251,12 +3252,16 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     const jaholldeURL = isDevInstance ? "wss://devweb.jaholl.de/api/ws" : "wss://interface.jaholl.de/api/ws";
 
+    // get jahollde-mod version
+    const modVersion = (await getModVersions(instanceName)).find(element => element.file?.includes("jahollde-mod.jar")).version;
+
     const completeArgs = [];
     jvmArguments.forEach(l => {
       // eslint-disable-next-line no-template-curly-in-string
       if (l.includes('-Dlog4j.configurationFile=${path}')) {
         completeArgs.push(`-Djahollde.port=${port}`);
-        completeArgs.push(`-Djahollde.url=${addQuotes(needsQuote, jaholldeURL)}`)
+        completeArgs.push(`-Djahollde.url=${addQuotes(needsQuote, jaholldeURL)}`);
+        completeArgs.push(`-Djahollde.version=${modVersion}`);
       }
       completeArgs.push(l.toString()
           .replace(...replaceRegex)

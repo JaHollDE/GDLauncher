@@ -46,6 +46,20 @@ export function initIPCEvents(application) {
         cb?.();
         console.log("RELOAD!");
     });
+    ipcMain.handle("get-mod-version", (event) => {
+        application.socket.sendMessage(JSON.stringify({
+            type: "get-mod-version"
+        }));
+        return new Promise(resolve => {
+            application.socket.registerEvent({
+                name: "get-mod-version",
+                run: (message) => {
+                    application.socket.removeEvent("get-mod-version");
+                    resolve(message.version);
+                }
+            });
+        });
+    });
     /*
     ipcMain.handle("toggle-dev-instance-name", (event) => {
         let index = application.config.config.instances.findIndex(n => n === application.config.config.instanceName);

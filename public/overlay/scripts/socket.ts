@@ -16,7 +16,7 @@ export default class SocketManager {
     private webSocketServer!: WebSocketServer;
 
     private webSockets: WebSocket[] = [];
-    private readonly events: ElectronEvent[] = [];
+    private events: ElectronEvent[] = [];
 
     private readonly queue: string[] = [];
 
@@ -80,6 +80,9 @@ export default class SocketManager {
 
     public registerEvent(event: ElectronEvent): void {
         this.events.push(event);
+    }
+    public removeEvent(event: string): void {
+        this.events = this.events.filter(ev => ev.name !== event);
     }
 
     public async updateWindow(): Promise<void> {

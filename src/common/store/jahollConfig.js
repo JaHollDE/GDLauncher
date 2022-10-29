@@ -63,11 +63,16 @@ function fillConfig() {
 
 let loadingConfig = undefined;
 
-export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
+export async function getModVersions(instanceName) {
     loadingConfig = initConfig(instanceName);
     await loadingConfig;
 
-    //await initConfig();
+    return config;
+}
+
+export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
+    loadingConfig = initConfig(instanceName);
+    await loadingConfig;
 
     await setConfig(config, instanceName);
 

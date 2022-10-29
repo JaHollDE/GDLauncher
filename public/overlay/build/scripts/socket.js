@@ -60,6 +60,9 @@ export default class SocketManager {
     registerEvent(event) {
         this.events.push(event);
     }
+    removeEvent(event) {
+        this.events = this.events.filter(ev => ev.name !== event);
+    }
     async updateWindow() {
         this.app.mainWindow.webContents.send("overlay-connected", this.webSockets.length !== 0);
         if (this.webSockets.length === 0) {
