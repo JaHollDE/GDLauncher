@@ -15,6 +15,7 @@ export class Window {
     private mcIconified = false;
 
     private mouseEventsEnabled: boolean = true;
+    private windowHidden = false;
 
     constructor(private application: JaHollDEApplication) {
     }
@@ -29,8 +30,9 @@ export class Window {
     private updateShowState(focused?: boolean): void {
         if (focused === undefined) focused = this.window?.isFocused();
         const alwaysOnTop = this.mcFocused || focused;
-        const showWindow = !this.mcIconified;
+        const showWindow = !this.mcIconified && !this.windowHidden;
 
+        console.log("[WARN] Window hidden:", this.windowHidden);
 
         this.application.mainWindow.webContents.send("overlay-shown", {
             alwaysOnTop: alwaysOnTop,
@@ -85,10 +87,14 @@ export class Window {
     }
 
     public async loadHomePage(): Promise<void> {
+        this.setWindowHidden(false);
         if (this.window !== undefined) {
             this.window.showInactive();
             return;
         }
+
+        this.mcIconified = false;
+        this.setWindowHidden(false);
 
         this.window = await createWindow();
 
@@ -123,19 +129,27 @@ export class Window {
 
             console.log("loaded window");
 
+            this.setWindowHidden(false);
+
             this.window.on("focus", () => this.updateShowState(true));
             this.window.on("blur", () => this.updateShowState(false));
 
             this.onReady = this.onReady.filter(l => {
                 l();
                 return false;
-            })
+            });
         }
+    }
+
+    private setWindowHidden(state: boolean) {
+        this.windowHidden = state;
+        this.updateShowState();
     }
 
     public async hideHomePage() {
         if (this.window.isDestroyed()) return;
         this.window.hide();
+        this.setWindowHidden(true);
     }
 
     public async deleteHomePage() {
@@ -147,6 +161,8 @@ export class Window {
             this.window.destroy();
         }
         this.window = undefined;
+
+        //this.setWindowHidden(true);
 
         console.log("deleted window");
     }
@@ -178,6 +194,6 @@ export class Window {
         this.window?.setSize(width, height);
         this.window?.setPosition(x, y);
 
-        if (showWindow) this.loadHomePage();
+        if (showWindow && !this.windowHidden) this.loadHomePage();
     }
 }

@@ -71,6 +71,9 @@ export default class SocketManager {
                 }
             }, 5000);
         }
+        else {
+            await this.app.window.loadHomePage();
+        }
     }
     sendMessage(message, query = true) {
         if (query)

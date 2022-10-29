@@ -93,6 +93,8 @@ export default class SocketManager {
                     await this.app.window.deleteHomePage();
                 }
             }, 5000);
+        } else {
+            await this.app.window.loadHomePage();
         }
     }
 
