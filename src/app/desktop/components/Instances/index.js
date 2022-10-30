@@ -106,13 +106,13 @@ fetch("https://api.mcsrvstat.us/2/prodnode.jaholl.de:25566").then(data => data.j
     return null;
 }).catch(l => console.warn(l));
 
-const Instances = (data) => {
+const Instances = ({ jaholldeData }) => {
 
     const [isDevInstance, setIsDevInstance] = useState(false);
 
     useEffect(() => {
-        setIsDevInstance(!!data?.data?.hasDevRights);
-    }, [data]);
+        setIsDevInstance(!!jaholldeData?.hasDevRights);
+    }, [jaholldeData]);
 
     const instanceSortOrder = useSelector(
         state => state.settings.instanceSortOrder
@@ -203,8 +203,8 @@ const Instances = (data) => {
         return updateAv;
     };
 
-    useEffect(() => {
-        loadData();
+    useEffect(async () => {
+        await loadData();
     }, []);
 
 
@@ -406,7 +406,7 @@ const Instances = (data) => {
                 }
 
 
-                <div className={"start-instance " + (data.data === false || data.data === null ? 'disable-start-instance' : '')}>
+                <div className={"start-instance " + (jaholldeData === undefined || jaholldeData === false ? 'disable-start-instance' : '')}>
                     <div>
                         {(!isInQueue) && <button css={`
             font-size: .5em;  

@@ -53,6 +53,9 @@ let modChangeEvent = undefined;
 export function onModChange(cb) {
   modChangeEvent = cb;
 }
+export function triggerModChangeEvent() {
+  modChangeEvent?.();
+}
 
 const ModsManagement = ({instanceName}) => {
   const [config, setConfig] = useState([]);

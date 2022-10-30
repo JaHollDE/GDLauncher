@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef } from "react";
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -21,6 +21,7 @@ import { updateLastUpdateVersion } from '../../../common/reducers/actions';
 import * as jaholldeVerification from "../utils/jaholldeVerification";
 import { onAccountChange } from "../utils/jaholldeVerification";
 import "./Home.css"
+import { triggerModChangeEvent } from "../../../common/modals/ModsManagement";
 
 const AddInstanceIcon = styled(Button)`
   position: fixed;
@@ -97,6 +98,7 @@ const Home = () => {
     }, [account]);
 
     const [jaholldeData, setJaholldeData] = useState(undefined);
+    const connected = useRef(false);
     const [devInstanceData, setDevInstanceData] = useState(undefined);
     const [isDevInstance, setDevInstance] = useState(false);
 
@@ -107,7 +109,7 @@ const Home = () => {
         dispatch(openModal('JaHollDERegister', {devInstance}));
     }
 
-    const updateData = () => {
+    const updateData = async (reconnect = false) => {
         setJaholldeData(null);
         return dispatch(async (dispatch, getState) => {
             const state = getState();
@@ -118,33 +120,44 @@ const Home = () => {
                 return;
             }
 
-            let timeout = 60;
-
             for (const isDevInstance of [false, true]) {
                 const data = await jaholldeVerification.verifyToken(account.accessToken, isDevInstance);
 
+                const setInstanceData = isDevInstance ? setDevInstanceData : setJaholldeData;
+
+                if (data !== false && connected.current === false) {
+                    triggerModChangeEvent();
+                }
+
                 if (data.registered) {
-                    isDevInstance ? setDevInstanceData(data) : setJaholldeData(data);
-                    ipcRenderer.invoke("jahollde-data", account.accessToken, data);
+                    setInstanceData(data);
+                    connected.current = true;
+
+                    await ipcRenderer.invoke("jahollde-data", account.accessToken, data);
 
                     setDevInstance(!!data.hasDevRights);
                     if (!data.hasDevRights) {
                         break;
                     }
                 } else if (data === false) {
-                    isDevInstance ? setDevInstanceData(false) : setJaholldeData(false);
-                    timeout = 10;
-                    break;
+                    setInstanceData(data);
+                    setDevInstanceData(data);
+                    connected.current = false;
+                    window.setTimeout(() => {
+                        updateData(true);
+                    }, 10*1000);
+                    return;
                 } else {
-                    isDevInstance ? setDevInstanceData(undefined) : setJaholldeData(undefined);
+                    setInstanceData(undefined);
+                    connected.current = true;
                     !isDevInstance && openRegisterScreen();
                     break;
                 }
             }
 
             window.setTimeout(() => {
-                updateData();
-            }, timeout*1000);
+                updateData(false);
+            }, 60*1000);
         });
     }
 
@@ -168,7 +181,7 @@ const Home = () => {
                     {annoucement}
                 </div>
             ) : null}
-            <Instances data={jaholldeData} />
+            <Instances jaholldeData={jaholldeData} />
             <div className={"jahollde-symbol"}>
                 <Logo size={35} />
                 {

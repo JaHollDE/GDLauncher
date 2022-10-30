@@ -44,9 +44,10 @@ export async function createWindow(): Promise<BrowserWindow> {
 
   win.setMenu(null);
 
+  /*
   win.webContents.openDevTools({
     mode: "undocked"
-  });
+  });*/
 
   return win;
 }

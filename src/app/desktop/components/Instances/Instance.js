@@ -198,10 +198,21 @@ const Instance = ({ instanceName }) => {
         }
     }, []);
 
+    const [instanceConnected, setInstanceConnected] = useState(false);
+
+    const checkIfInstanceIsConnected = async () => {
+      const result = await ipcRenderer.invoke("instance-connected", instanceName);
+      setInstanceConnected(result);
+    }
+
     const openModSettings = () => {
         dispatch(openModal('ModsManagement', { instanceName }));
     };
 
+
+    const openDevTools = async () => {
+      await ipcRenderer.invoke("trigger-devtools", instanceName);
+    }
 
 
     useEffect(() => {
@@ -371,7 +382,10 @@ const Instance = ({ instanceName }) => {
             <Portal>
                 <ContextMenu
                     id={instance.name}
-                    onShow={() => setIsHovered(true)}
+                    onShow={() => {
+                      setIsHovered(true);
+                      checkIfInstanceIsConnected();
+                    }}
                     onHide={() => setIsHovered(false)}
                 >
                     <MenuInstanceName>{instanceName}</MenuInstanceName>
@@ -505,6 +519,23 @@ const Instance = ({ instanceName }) => {
                         JaHollDE-Mods
                     </MenuItem>}
 
+
+                    <MenuItem divider />
+
+                    {!instanceConnected ? (
+                      <MenuItem>
+                        <span css={`color: red !important`}>Getrennt</span>
+                      </MenuItem>
+                    ) : (
+                      <>
+                        <MenuItem>
+                          <span css={`color: lime !important`}>Verbunden</span>
+                        </MenuItem>
+                        <MenuItem onClick={openDevTools}>
+                          Konsole öffnen
+                        </MenuItem>
+                      </>
+                    )}
 
                     <MenuItem divider />
 

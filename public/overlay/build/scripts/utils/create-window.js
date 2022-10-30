@@ -38,8 +38,9 @@ export async function createWindow() {
     win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     is.macos ? app.dock.show() : undefined;
     win.setMenu(null);
+    /*
     win.webContents.openDevTools({
-        mode: "undocked"
-    });
+      mode: "undocked"
+    });*/
     return win;
 }
