@@ -253,7 +253,7 @@ const Instances = ({ jaholldeData }) => {
 
     const runInstall = async () => {
         if (launcherUpdateAvailable) {
-            ipcRenderer.invoke('installUpdateAndQuitOrRestart', true);
+            ipcRenderer.invoke('installUpdateAndQuitOrRestart', false);
             return;
         }
 
@@ -278,6 +278,7 @@ const Instances = ({ jaholldeData }) => {
     }
 
     const getStatus = () => {
+        if (launcherUpdateAvailable) return "Launcher aktualisieren";
         if (isInQueue || modStatus) return "Installiere";
         if (updateInstance) return "Installieren";
         if (updateMods.length > 0 || updateAssets || launcherUpdateAvailable) return "Aktualisieren";
