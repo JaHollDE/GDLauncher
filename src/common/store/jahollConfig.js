@@ -1,6 +1,7 @@
 import fsa from "fs-extra";
 import path from "path";
 import { ipcRenderer } from "electron";
+import { checkDevInstance, getDevURL } from "../../app/desktop/utils/jaholldeVerification";
 
 // let URL = "https://interface.jaholl.de"
 // TODO change back
@@ -25,7 +26,11 @@ let webData;
 
 export async function initConfig(instanceName) {
     await urlProc;
-    const json = await (await fetch(`${URL}/launcher/mods.json`)).json();
+
+    const isDevUrl = await checkDevInstance(instanceName);
+    const url = getDevURL(isDevUrl);
+
+    const json = await (await fetch(`${url}/launcher/mods.json`)).json();
     const appData = await ipcRenderer.invoke('getAppdataPath');
 
     const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "mods.json");
