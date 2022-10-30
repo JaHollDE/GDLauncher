@@ -6,12 +6,14 @@ import OnMcFocus from "./api/mc-focus";
 import { Window } from "./window";
 export class SocketInstance {
     instanceName;
+    token;
     socketManager;
     webSocket;
     expressInstance;
     window;
-    constructor(webSocket, instanceName, socketManager) {
+    constructor(webSocket, instanceName, token, socketManager) {
         this.instanceName = instanceName;
+        this.token = token;
         this.socketManager = socketManager;
         this.attach(webSocket);
         this.window = new Window(this.socketManager.app, this);
@@ -125,12 +127,13 @@ export default class SocketManager {
                 msg = JSON.parse(msg);
                 if (msg.type === "register-instance-name") {
                     const instanceName = msg.instanceName;
+                    const token = msg.token;
                     console.log("Received instance name: ", instanceName);
                     if (this.webSockets[instanceName] !== undefined) {
                         this.webSockets[instanceName].attach(webSocket);
                         return;
                     }
-                    this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, this);
+                    this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, token, this);
                 }
             });
         });

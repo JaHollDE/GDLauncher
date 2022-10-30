@@ -20,6 +20,7 @@ export class SocketInstance {
     constructor(
       webSocket: WebSocket,
       public readonly instanceName: string,
+      public readonly token: string,
       private socketManager: SocketManager
     ) {
         this.attach(webSocket);
@@ -155,13 +156,14 @@ export default class SocketManager {
                 msg = JSON.parse(msg);
                 if (msg.type === "register-instance-name") {
                     const instanceName: string = msg.instanceName;
+                    const token: string = msg.token;
                     console.log("Received instance name: ", instanceName);
 
                     if (this.webSockets[instanceName] !== undefined) {
                         this.webSockets[instanceName].attach(webSocket);
                         return;
                     }
-                    this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, this);
+                    this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, token, this);
                 }
             });
 

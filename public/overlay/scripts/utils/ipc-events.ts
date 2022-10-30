@@ -9,10 +9,7 @@ export function initIPCEvents(application: JaHollDEApplication): void {
         callback?.();
     });
     ipcMain.handle("get-jahollde-token", (event) => {
-        return new Promise(resolve => {
-            if (token) resolve(token);
-            callback = () => resolve(token);
-        })
+        return application.socket.getInstanceBySender(event.sender)?.token;
     });
 
     ipcMain.handle("get-jahollde-port", (event) => {
