@@ -20,8 +20,10 @@ const JaHollDEInstanceCreation = function () {
     const finish = async ({instanceName, isDevInstance}) => {
         isDevInstance = !!isDevInstance;
 
+        const updatedInstanceName = instanceName.trim().split(" ").join("_");
+
         setIsCreating(true);
-        await createInstance(dispatch, instanceName, isDevInstance);
+        await createInstance(dispatch, updatedInstanceName, isDevInstance);
         setIsCreating(false);
 
         dispatch(closeModal());

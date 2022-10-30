@@ -137,6 +137,7 @@ const Instances = ({ jaholldeData }) => {
     const [updateAssets, setUpdateAssets] = useState(false);
     const [updateInstance, setUpdateInstance] = useState(false);
     const [instanceLoading, setInstanceLoading] = useState(false);
+    const launcherUpdateAvailable = useSelector(state => state.updateAvailable);
 
     const [userData, setUserData] = useState(undefined);
     const [modsOpen, setModsOpen] = useState(false);
@@ -251,6 +252,11 @@ const Instances = ({ jaholldeData }) => {
     const [modStatus, setModStatus] = useState(undefined);
 
     const runInstall = async () => {
+        if (launcherUpdateAvailable) {
+            ipcRenderer.invoke('installUpdateAndQuitOrRestart', true);
+            return;
+        }
+
         if (updateInstance) {
             await createInstance(dispatch, instanceName);
             setUpdateInstance(false);
@@ -274,7 +280,7 @@ const Instances = ({ jaholldeData }) => {
     const getStatus = () => {
         if (isInQueue || modStatus) return "Installiere";
         if (updateInstance) return "Installieren";
-        if (updateMods.length > 0 || updateAssets) return "Aktualisieren";
+        if (updateMods.length > 0 || updateAssets || launcherUpdateAvailable) return "Aktualisieren";
         if (instanceLoading) return "Lade Instanz...";
         if (isPlaying) return "Beenden";
         return "Starten";
@@ -422,7 +428,7 @@ const Instances = ({ jaholldeData }) => {
                             const oldStatus = updateAvailable;
                             const result = await loadData(true);
                             if (!oldStatus && result) return;
-                            if (updateAvailable && !(isInQueue || modStatus)) {
+                            if ((updateAvailable || launcherUpdateAvailable) && !(isInQueue || modStatus)) {
                                 runInstall();
                             } else if (isPlaying) {
                                 killProcess();

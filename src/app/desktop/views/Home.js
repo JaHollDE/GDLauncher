@@ -109,7 +109,11 @@ const Home = () => {
         dispatch(openModal('JaHollDERegister', {devInstance}));
     }
 
+    const updateDataTimeout = useRef(undefined);
+
     const updateData = async (reconnect = false) => {
+        if (updateDataTimeout.current !== undefined) window.clearTimeout(updateDataTimeout.current);
+
         setJaholldeData(null);
         return dispatch(async (dispatch, getState) => {
             const state = getState();
@@ -119,6 +123,7 @@ const Home = () => {
                 console.log("Unable to get access token for account: ", account);
                 return;
             }
+
 
             for (const isDevInstance of [false, true]) {
                 const data = await jaholldeVerification.verifyToken(account.accessToken, isDevInstance);
@@ -143,7 +148,7 @@ const Home = () => {
                     setInstanceData(data);
                     setDevInstanceData(data);
                     connected.current = false;
-                    window.setTimeout(() => {
+                    updateDataTimeout.current = window.setTimeout(() => {
                         updateData(true);
                     }, 10*1000);
                     return;
@@ -155,7 +160,7 @@ const Home = () => {
                 }
             }
 
-            window.setTimeout(() => {
+            updateDataTimeout.current = window.setTimeout(() => {
                 updateData(false);
             }, 60*1000);
         });
@@ -196,42 +201,54 @@ const Home = () => {
             </div>
             <AccountContainer type="primary">
                 <div>
-                    {isDevInstance && (
-                      <span css={`
+                    <span css={`
                         font-weight: bold;
                         margin-right: .5rem;
-                    `}>Produktiv</span>
-                    )}
+                    `}>MC-Profil</span>
 
-
-                    {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
-                    {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
-                    {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
-                    {jaholldeData !== undefined && jaholldeData !== null && jaholldeData !== false && <AccountBackground onClick={openAccountModal}>
+                    {<AccountBackground onClick={openAccountModal}>
                         {profileImage ? (
                           <img
                             src={`data:image/jpeg;base64,${profileImage}`}
                             css={`
-                              width: 15px;
-                              cursor: pointer;
-                              height: 15px;
-                              align-self: center;
+                                width: 15px;
+                                cursor: pointer;
+                                height: 15px;
+                                align-self: center;
                             `}
                             alt="profile"
                           />
                         ) : (
                           <div
                             css={`
-                              width: 15px;
-                              height: 15px;
-                              background: ${props => props.theme.palette.grey[100]};
-                              margin-right: 10px;
+                                width: 15px;
+                                height: 15px;
+                                background: ${props => props.theme.palette.grey[100]};
+                                margin-right: 10px;
                             `}
                           />
                         )}
                         {
                           jaholldeData &&
-                          <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
+                          <div css={`margin-left: .5rem; align-self: end`}>{account.user.username}</div>
+                        }
+                    </AccountBackground>}
+                </div>
+
+                <div>
+                    <span css={`
+                        font-weight: bold;
+                        margin-right: .5rem;
+                    `}>Roleplay</span>
+
+
+                    {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
+                    {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
+                    {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
+                    {jaholldeData !== undefined && jaholldeData !== null && jaholldeData !== false && <AccountBackground onClick={openAccountModal}>
+                        {
+                          jaholldeData &&
+                          <div css={`align-self: end`}>{jaholldeData.rpName}</div>
                         }
                     </AccountBackground>}
                 </div>
@@ -246,30 +263,10 @@ const Home = () => {
                     {devInstanceData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(true)}><Spin /></AccountBackground>}
                     {devInstanceData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
                     {devInstanceData !== undefined && devInstanceData !== null && devInstanceData !== false && <AccountBackground onClick={openAccountModal}>
-                        {profileImage ? (
-                          <img
-                            src={`data:image/jpeg;base64,${profileImage}`}
-                            css={`
-                              width: 15px;
-                              cursor: pointer;
-                              height: 15px;
-                              align-self: center;
-                            `}
-                            alt="profile"
-                          />
-                        ) : (
-                          <div
-                            css={`
-                              width: 15px;
-                              height: 15px;
-                              background: ${props => props.theme.palette.grey[100]};
-                              margin-right: 10px;
-                            `}
-                          />
-                        )}
+
                         {
                           devInstanceData &&
-                          <div css={`margin-left: .5rem; align-self: end`}>{devInstanceData.rpName}</div>
+                          <div css={`align-self: end`}>{devInstanceData.rpName}</div>
                         }
                     </AccountBackground>}
                 </div>
