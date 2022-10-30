@@ -298,13 +298,20 @@ const Instances = ({ jaholldeData }) => {
     const [overlayAlwaysOnTop, setOverlayAlwaysOnTop] = useState(true);
     const [showAllInstances, setShowAllInstances] = useState(false);
 
-    ipcRenderer.on("overlay-shown", (event, data) => {
-        setOverlayVisible(data.showWindow);
-        setOverlayAlwaysOnTop(data.alwaysOnTop);
-    });
-    ipcRenderer.on("overlay-connected", (event, status) => {
-        setOverlayConnected(status);
-    });
+    useEffect(() => {
+        ipcRenderer.on("overlay-shown", (event, data) => {
+            setOverlayVisible(data.showWindow);
+            setOverlayAlwaysOnTop(data.alwaysOnTop);
+        });
+        ipcRenderer.on("overlay-connected", (event, status) => {
+            setOverlayConnected(status);
+        });
+
+        return () => {
+            ipcRenderer.removeAllListeners("overlay-shown");
+            ipcRenderer.removeAllListeners("overlay-connected");
+        }
+    }, []);
 
     const openAddInstanceModal = defaultPage => {
         dispatch(openModal('AddInstance', { defaultPage }));

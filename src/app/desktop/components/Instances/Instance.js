@@ -209,6 +209,10 @@ const Instance = ({ instanceName }) => {
         dispatch(openModal('ModsManagement', { instanceName }));
     };
 
+    const openMinecraftLogs = () => {
+        dispatch(openModal('InstanceLog', { instanceName }));
+    }
+
 
     const openDevTools = async () => {
       await ipcRenderer.invoke("trigger-devtools", instanceName);
@@ -455,6 +459,9 @@ const Instance = ({ instanceName }) => {
                   `}
                         />
                         Duplicate
+                    </MenuItem>
+                    <MenuItem onClick={openMinecraftLogs}>
+                      Logs
                     </MenuItem>
                     <MenuItem divider />
                     <MenuItem

@@ -3304,9 +3304,13 @@ export function launchInstance(instanceName, forceQuit = false) {
     );
     dispatch(updateStartedInstance({ instanceName, pid: ps.pid }));
 
+    ipcRenderer.invoke("send-log", instanceName, "\n\n\n --- " + new Date().toString() + " --- \n\n");
+
     ps.stdout.on('data', data => {
       console.log(data.toString());
-      addLogRow(data.toString());
+
+      ipcRenderer.invoke("send-log", instanceName, data.toString());
+
       if (
         data.toString().includes('Setting user:') ||
         data.toString().includes('Initializing LWJGL OpenAL')

@@ -14,6 +14,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
+    console.log(error);
     this.setState(prevState => {
       return {
         ...prevState,

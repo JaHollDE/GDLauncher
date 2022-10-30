@@ -76,4 +76,6 @@ export function initIPCEvents(application) {
             mode: "undocked"
         });
     });
+    ipcMain.handle("get-logs", application.log.getLog.bind(application.log));
+    ipcMain.handle("send-log", application.log.onLog.bind(application.log));
 }

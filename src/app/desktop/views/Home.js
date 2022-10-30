@@ -195,13 +195,21 @@ const Home = () => {
                 }
             </div>
             <AccountContainer type="primary">
+                <div>
+                    {isDevInstance && (
+                      <span css={`
+                        font-weight: bold;
+                        margin-right: .5rem;
+                    `}>Produktiv</span>
+                    )}
 
-                {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
-                {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
-                {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
-                {jaholldeData !== undefined && jaholldeData !== null && jaholldeData !== false && <AccountBackground onClick={openAccountModal}>
-                    {profileImage ? (
-                        <img
+
+                    {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
+                    {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
+                    {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
+                    {jaholldeData !== undefined && jaholldeData !== null && jaholldeData !== false && <AccountBackground onClick={openAccountModal}>
+                        {profileImage ? (
+                          <img
                             src={`data:image/jpeg;base64,${profileImage}`}
                             css={`
                               width: 15px;
@@ -210,22 +218,24 @@ const Home = () => {
                               align-self: center;
                             `}
                             alt="profile"
-                        />
-                    ) : (
-                        <div
+                          />
+                        ) : (
+                          <div
                             css={`
                               width: 15px;
                               height: 15px;
                               background: ${props => props.theme.palette.grey[100]};
                               margin-right: 10px;
                             `}
-                        />
-                    )}
-                    {
-                        jaholldeData &&
-                        <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
-                    }
-                </AccountBackground>}
+                          />
+                        )}
+                        {
+                          jaholldeData &&
+                          <div css={`margin-left: .5rem; align-self: end`}>{jaholldeData.rpName}</div>
+                        }
+                    </AccountBackground>}
+                </div>
+
 
                 {isDevInstance && <div>
                     <span css={`

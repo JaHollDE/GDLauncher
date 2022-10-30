@@ -88,6 +88,10 @@ const modalsComponentLookupTable = {
   InstanceStartupAd: AsyncComponent(
       lazy(() => import('../modals/InstanceStartupAd'))
   ),
+
+  InstanceLog: AsyncComponent(
+    lazy(() => import('../modals/InstanceLog'))
+  ),
   InstanceDownloadFailed: AsyncComponent(
       lazy(() => import('../modals/InstanceDownloadFailed'))
   ),
