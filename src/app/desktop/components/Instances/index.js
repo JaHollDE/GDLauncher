@@ -145,7 +145,7 @@ const Instances = (data) => {
 
     useEffect(() => {
         ipcRenderer.removeAllListeners("check-for-texturepack-updates");
-        ipcRenderer.on("check-for-texturepack-updates", async (event) => {
+        ipcRenderer.on("check-for-texturepack-updates", async (event, instanceName) => {
             let updateMods = false;
             let updateAssets = false;
 
@@ -176,6 +176,10 @@ const Instances = (data) => {
                 console.warn(err);
             }
         });
+
+        return () => {
+            ipcRenderer.removeAllListeners("check-for-texturepack-updates");
+        }
     }, [startedInstances]);
 
     const loadData = async (updateConfig = false) => {

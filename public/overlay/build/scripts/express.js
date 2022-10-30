@@ -21,6 +21,10 @@ export class ExpressInstance {
     stop() {
         this.server?.close();
     }
+    async restart() {
+        this.server?.close();
+        await this.start();
+    }
 }
 export class ExpressManager {
     application;

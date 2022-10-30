@@ -19,7 +19,7 @@ export class SocketInstance {
 
     constructor(
       webSocket: WebSocket,
-      private readonly instanceName: string,
+      public readonly instanceName: string,
       private socketManager: SocketManager
     ) {
         this.attach(webSocket);
@@ -62,7 +62,6 @@ export class SocketInstance {
     }
 
     private onMessage(msg: string): void {
-        console.log(msg);
         let content: { [key: string]: any } | undefined = undefined;
         try {
             content = JSON.parse(msg);
@@ -154,7 +153,6 @@ export default class SocketManager {
                     }
                 }
                 msg = JSON.parse(msg);
-                console.log("Received: ", msg);
                 if (msg.type === "register-instance-name") {
                     const instanceName: string = msg.instanceName;
                     console.log("Received instance name: ", instanceName);
@@ -207,6 +205,9 @@ export default class SocketManager {
 
     public sendMessageToSender(message: string, sender: WebContents) {
         this.getInstanceBySender(sender)?.sendMessage(message);
+    }
+    public sendMessageToInstanceName(message: string, instance: string) {
+        this.getInstanceByName(instance)?.sendMessage(message);
     }
 
 

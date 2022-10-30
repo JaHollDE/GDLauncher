@@ -50,7 +50,6 @@ export class SocketInstance {
         this.webSocket = webSocket;
     }
     onMessage(msg) {
-        console.log(msg);
         let content = undefined;
         try {
             content = JSON.parse(msg);
@@ -124,7 +123,6 @@ export default class SocketManager {
                     }
                 }
                 msg = JSON.parse(msg);
-                console.log("Received: ", msg);
                 if (msg.type === "register-instance-name") {
                     const instanceName = msg.instanceName;
                     console.log("Received instance name: ", instanceName);
@@ -150,6 +148,9 @@ export default class SocketManager {
         }
         return undefined;
     }
+    getInstanceByName(instanceName) {
+        return this.webSockets[instanceName];
+    }
     /*
     public async updateWindow(): Promise<void> {
         this.app.mainWindow.webContents.send("overlay-connected", this.webSockets.length !== 0);
@@ -168,6 +169,9 @@ export default class SocketManager {
     }*/
     sendMessageToSender(message, sender) {
         this.getInstanceBySender(sender)?.sendMessage(message);
+    }
+    sendMessageToInstanceName(message, instance) {
+        this.getInstanceByName(instance)?.sendMessage(message);
     }
     getAllInstances() {
         return Object.values(this.webSockets);

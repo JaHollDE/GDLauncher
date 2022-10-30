@@ -26,7 +26,6 @@ export class Window {
             focused = this.window?.isFocused();
         const alwaysOnTop = this.mcFocused || focused;
         const showWindow = !this.mcIconified && !this.windowHidden;
-        console.log("[WARN] Window hidden:", this.windowHidden);
         this.application.mainWindow.webContents.send("overlay-shown", {
             alwaysOnTop: alwaysOnTop,
             showWindow: showWindow
