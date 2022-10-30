@@ -51,7 +51,7 @@ export default class ErrorBoundary extends React.Component {
               color: ${props => props.theme.palette.text.primary};
             `}
           >
-            WE’RE SSSSSSORRY. GDLauncher ran into a creeper and blew up..
+            SSSSSSORRY. Der JaHollDE-Launcher ist ein einen Creeper gerannt und explodiert..
           </h1>
           <div
             css={`
@@ -73,7 +73,7 @@ export default class ErrorBoundary extends React.Component {
               margin-top: 30px;
             `}
           >
-            Restart GDLauncher
+            JaHollDE-Launcher neustarten
           </Button>
         </div>
       );
