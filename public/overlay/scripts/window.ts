@@ -62,13 +62,7 @@ export class Window {
 
     public async restart(): Promise<void> {
         if (this.window === undefined) return;
-        await this.deleteHomePage();
-        await this.loadHomePage();
-        this.mouseEventsEnabled ? this.enableMouseEvents() : this.disableMouseEvents();
-
-        this.window?.setMinimumSize(...this.size);
-        this.window?.setSize(...this.size);
-        this.window?.setPosition(...this.pos);
+        await this.window?.reload();
     }
 
     public enableMouseEvents(): void {
@@ -130,12 +124,14 @@ export class Window {
             this.disableMouseEvents();
             this.sendReadyState();
 
-            console.log("loaded window");
+            this.windowHidden = false;
 
-            this.setWindowHidden(false);
+            console.log("loaded window");
 
             this.window.on("focus", () => this.updateShowState(true));
             this.window.on("blur", () => this.updateShowState(false));
+
+            this.window?.moveTop();
 
             this.onReady = this.onReady.filter(l => {
                 l();

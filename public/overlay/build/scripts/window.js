@@ -55,12 +55,7 @@ export class Window {
     async restart() {
         if (this.window === undefined)
             return;
-        await this.deleteHomePage();
-        await this.loadHomePage();
-        this.mouseEventsEnabled ? this.enableMouseEvents() : this.disableMouseEvents();
-        this.window?.setMinimumSize(...this.size);
-        this.window?.setSize(...this.size);
-        this.window?.setPosition(...this.pos);
+        await this.window?.reload();
     }
     enableMouseEvents() {
         this.window?.setIgnoreMouseEvents(false);
@@ -110,10 +105,11 @@ export class Window {
             this.siteActive = true;
             this.disableMouseEvents();
             this.sendReadyState();
+            this.windowHidden = false;
             console.log("loaded window");
-            this.setWindowHidden(false);
             this.window.on("focus", () => this.updateShowState(true));
             this.window.on("blur", () => this.updateShowState(false));
+            this.window?.moveTop();
             this.onReady = this.onReady.filter(l => {
                 l();
                 return false;
