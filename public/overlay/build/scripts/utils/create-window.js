@@ -6,7 +6,7 @@ export async function createWindow() {
         titleBarStyle: "customButtonsOnHover",
         backgroundColor: "#00000000",
         acceptFirstMouse: true,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         frame: false,
         hasShadow: false,
         closable: true,
@@ -30,8 +30,7 @@ export async function createWindow() {
             //preload: path.join(__dirname, "./preload.js"),
         },
     };
-    if (is.windows)
-        options.type = "toolbar";
+    //if (is.windows) options.type = "toolbar";
     const win = new BrowserWindow(options);
     is.macos ? app.dock.hide() : undefined;
     win.setFullScreenable(false);

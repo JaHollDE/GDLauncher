@@ -34,7 +34,12 @@ import {
 } from "../../utils";
 import path from "path";
 import { downloadFile } from "../../utils/downloader";
-import { addStartedInstance, addToQueue, launchInstance } from "../../../../common/reducers/actions";
+import {
+    addStartedInstance,
+    addToQueue, checkForPortableUpdates, isNewVersionAvailable,
+    launchInstance,
+    updateUpdateAvailable
+} from "../../../../common/reducers/actions";
 import { getFTBModpackVersionData } from "../../../../common/api";
 import os from "os";
 import { closeModal, openModal } from "../../../../common/reducers/modals/actions";
@@ -143,6 +148,9 @@ const Instances = ({ jaholldeData }) => {
     const [modsOpen, setModsOpen] = useState(false);
 
     const instancesPath = useSelector(_getInstancesPath);
+
+
+
 
     useEffect(() => {
         ipcRenderer.removeAllListeners("check-for-texturepack-updates");
@@ -253,7 +261,13 @@ const Instances = ({ jaholldeData }) => {
 
     const runInstall = async () => {
         if (launcherUpdateAvailable) {
-            ipcRenderer.invoke('installUpdateAndQuitOrRestart', false);
+            setModStatus("Lade Update...");
+            ipcRenderer.once("updateDownloaded", () => {
+                setModStatus("Installiere Update...");
+                ipcRenderer.invoke('installUpdateAndQuitOrRestart', false);
+            });
+            await ipcRenderer.invoke("installUpdate");
+
             return;
         }
 
@@ -278,10 +292,10 @@ const Instances = ({ jaholldeData }) => {
     }
 
     const getStatus = () => {
-        if (launcherUpdateAvailable) return "Launcher aktualisieren";
         if (isInQueue || modStatus) return "Installiere";
+        if (launcherUpdateAvailable) return "Launcher aktualisieren";
         if (updateInstance) return "Installieren";
-        if (updateMods.length > 0 || updateAssets || launcherUpdateAvailable) return "Aktualisieren";
+        if (updateMods.length > 0 || updateAssets) return "Aktualisieren";
         if (instanceLoading) return "Lade Instanz...";
         if (isPlaying) return "Beenden";
         return "Starten";
@@ -441,7 +455,7 @@ const Instances = ({ jaholldeData }) => {
 
                             <div className={"install-instance-status"}>
                                 {isInQueue && <span>{isInQueue.status} - {isInQueue.percentage}%</span>}
-                                {(updateMods.length > 0 || updateAssets) && modStatus && <span>{modStatus}</span>}
+                                {(updateMods.length > 0 || updateAssets || launcherUpdateAvailable) && modStatus && <span>{modStatus}</span>}
                             </div>
                         </button>
                     </div>
