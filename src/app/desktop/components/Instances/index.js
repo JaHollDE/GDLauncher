@@ -149,7 +149,17 @@ const Instances = ({ jaholldeData }) => {
 
     const instancesPath = useSelector(_getInstancesPath);
 
+    const openCookies = (force = true) => {
+        dispatch(openModal('Cookies', { force }));
+    }
 
+    useEffect(async () => {
+        const agreedToCookies = await ipcRenderer.invoke("get-config-key", "agreedToCookies");
+        if (!agreedToCookies) {
+            console.log("Did not agree to cookies!");
+            openCookies(true);
+        }
+    }, []);
 
 
     useEffect(() => {
@@ -436,6 +446,11 @@ const Instances = ({ jaholldeData }) => {
 
                 <div className={"start-instance " + (jaholldeData === undefined || jaholldeData === false ? 'disable-start-instance' : '')}>
                     <div>
+                        <button css={`
+                            font-size: .5em;
+                            margin-right: .5rem;
+                            color: rgba(255, 255, 255, 0.5);
+                          `} onClick={() => openCookies(false)}>Cookies</button>
                         {(!isInQueue) && <button css={`
             font-size: .5em;  
           `} onClick={() => openModSettings()}>Mods</button>}
