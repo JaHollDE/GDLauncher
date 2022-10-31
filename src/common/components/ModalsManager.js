@@ -98,6 +98,9 @@ const modalsComponentLookupTable = {
   JaHollDEInstanceCreation: AsyncComponent(
       lazy(() => import("../modals/JaHollDEInstanceCreation"))
   ),
+  Cookies: AsyncComponent(
+    lazy(() => import("../modals/Cookies"))
+  ),
   InfoModal: AsyncComponent(lazy(() => import('../modals/InfoModal')))
 };
 

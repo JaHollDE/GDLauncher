@@ -135,12 +135,13 @@ const SystemNavbar = () => {
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') return;
-    setTimeout(() => {
+    checkForUpdates();
+    const interval = window.setInterval(() => {
       checkForUpdates();
-      setInterval(() => {
-        checkForUpdates();
-      }, 600000);
-    }, 1500);
+    }, 5*60*1000);
+    return () => {
+      window.clearInterval(interval);
+    }
   }, []);
 
   const quitApp = () => {
@@ -193,7 +194,6 @@ const SystemNavbar = () => {
       <Container os={isOsx}>
         {!isOsx ? (
           <>
-            {isUpdateAvailable && <UpdateButton isAppImage={isAppImage} />}
             {!isLocation('/') && !isLocation('/onboarding') && (
               <DevtoolButton/>
             )}
@@ -260,7 +260,6 @@ const SystemNavbar = () => {
             {!isLocation('/') && !isLocation('/onboarding') && (
               <SettingsButton />
             )}
-            {isUpdateAvailable && <UpdateButton isAppImage={isAppImage} />}
           </>
         )}
       </Container>

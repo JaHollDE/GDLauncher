@@ -16,8 +16,8 @@ import {
   faNewspaper,
   faFolder,
   faFire,
-  faSort
-} from '@fortawesome/free-solid-svg-icons';
+  faSort, faWindowMaximize
+} from "@fortawesome/free-solid-svg-icons";
 import { Select, Tooltip, Button, Switch, Input, Checkbox } from 'antd';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import {
@@ -268,6 +268,19 @@ const General = () => {
     setDataPath(filePaths[0]);
   };
 
+
+  const [showTaskbar, setShowTaskbar] = useState(false);
+  useEffect(async () => {
+    const state = await ipcRenderer.invoke("get-config-key", "showTaskbar");
+    setShowTaskbar(state);
+  });
+
+  const updateShowTaskbar = async (state) => {
+    await ipcRenderer.invoke("config-update", "showTaskbar", state);
+    setShowTaskbar(state);
+  }
+
+
   return (
     <>
       <PersonalData>
@@ -342,6 +355,27 @@ const General = () => {
           <Select.Option value={1}>Beta</Select.Option>
         </Select>
       </Content>
+
+
+      <Title>
+        Overlay in Taskleiste &nbsp; <FontAwesomeIcon icon={faWindowMaximize} />
+      </Title>
+      <Content>
+        <p>
+          <span>Das Overlay als Fenster in der Taskleiste anzeigen. Diese Funktion wird hauptsächlich für das <b css={"margin: 0 !important;"}>Streamen</b> des Overlays als Fenster benötigt.</span>
+          <p>
+            <b>Erfordert einen Neustart von Minecraft.</b>
+          </p>
+        </p>
+
+        <Switch
+          onChange={e => {
+            updateShowTaskbar(e)
+          }}
+          checked={showTaskbar}
+        />
+      </Content>
+
       <Title>
         Concurrent Downloads &nbsp; <FontAwesomeIcon icon={faTachometerAlt} />
       </Title>

@@ -898,16 +898,28 @@ if (process.env.REACT_APP_RELEASE_TYPE === 'setup') {
     provider: 'github'
   });
 
-  autoUpdater.on('update-available', () => {
-    autoUpdater.downloadUpdate();
-  });
+  let updateAvailable = false;
 
-  autoUpdater.on('update-downloaded', () => {
+  autoUpdater.on('update-available', () => {
+    updateAvailable = true;
     mainWindow.webContents.send('updateAvailable');
   });
 
+  autoUpdater.on('update-downloaded', () => {
+    mainWindow.webContents.send('updateDownloaded');
+  });
+
   ipcMain.handle('checkForUpdates', () => {
+    if (updateAvailable) {
+      mainWindow.webContents.send('updateAvailable');
+      return;
+    }
+
     autoUpdater.checkForUpdates();
+  });
+
+  ipcMain.handle("installUpdate", async () => {
+    await autoUpdater.downloadUpdate();
   });
 }
 

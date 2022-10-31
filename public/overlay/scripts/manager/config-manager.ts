@@ -43,6 +43,8 @@ interface Config {
     isDevInstance: boolean;
     instances: string[];
     devInstances: string[];
+    agreedToCookies: boolean;
+    showTaskbar: boolean;
 }
 
 const defaultConfig: Config = {
@@ -59,7 +61,9 @@ const defaultConfig: Config = {
     assetsVersion: "undefined",
     isDevInstance: false,
     instances: ["jahollde"],
-    devInstances: []
+    devInstances: [],
+    agreedToCookies: false,
+    showTaskbar: false
 };
 
 class ConfigManager {
@@ -101,6 +105,9 @@ class ConfigManager {
             //this.application.socketManager.sendUUIDUpdate();
             // disable mouse events on load
             //this.application.windowManager.disableMouseEvents();
+        });
+        ipcMain.handle("get-config-key", (event, key: string) => {
+            return this.config[key];
         });
     }
 

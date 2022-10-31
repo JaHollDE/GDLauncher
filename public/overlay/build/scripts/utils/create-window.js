@@ -1,12 +1,12 @@
 import { app, BrowserWindow } from "electron";
 import { is } from "electron-util";
-export async function createWindow() {
+export async function createWindow(showTaskbar) {
     const options = {
         title: app.name,
         titleBarStyle: "customButtonsOnHover",
         backgroundColor: "#00000000",
         acceptFirstMouse: true,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         frame: false,
         hasShadow: false,
         closable: true,
@@ -30,7 +30,7 @@ export async function createWindow() {
             //preload: path.join(__dirname, "./preload.js"),
         },
     };
-    if (is.windows)
+    if (!showTaskbar && is.windows)
         options.type = "toolbar";
     const win = new BrowserWindow(options);
     is.macos ? app.dock.hide() : undefined;
