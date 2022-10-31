@@ -2,7 +2,7 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron";
 import * as path from "path";
 import {is} from "electron-util";
 
-export async function createWindow(): Promise<BrowserWindow> {
+export async function createWindow(showTaskbar: boolean): Promise<BrowserWindow> {
   const options: BrowserWindowConstructorOptions = {
     title: app.name,
     titleBarStyle: "customButtonsOnHover",
@@ -33,7 +33,7 @@ export async function createWindow(): Promise<BrowserWindow> {
     },
   };
 
-  //if (is.windows) options.type = "toolbar";
+  if (!showTaskbar && is.windows) options.type = "toolbar";
   const win = new BrowserWindow(options);
 
 

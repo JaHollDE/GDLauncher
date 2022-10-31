@@ -44,6 +44,7 @@ interface Config {
     instances: string[];
     devInstances: string[];
     agreedToCookies: boolean;
+    showTaskbar: boolean;
 }
 
 const defaultConfig: Config = {
@@ -61,7 +62,8 @@ const defaultConfig: Config = {
     isDevInstance: false,
     instances: ["jahollde"],
     devInstances: [],
-    agreedToCookies: false
+    agreedToCookies: false,
+    showTaskbar: false
 };
 
 class ConfigManager {

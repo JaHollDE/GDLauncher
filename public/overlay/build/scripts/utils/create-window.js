@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import { is } from "electron-util";
-export async function createWindow() {
+export async function createWindow(showTaskbar) {
     const options = {
         title: app.name,
         titleBarStyle: "customButtonsOnHover",
@@ -30,7 +30,8 @@ export async function createWindow() {
             //preload: path.join(__dirname, "./preload.js"),
         },
     };
-    //if (is.windows) options.type = "toolbar";
+    if (!showTaskbar && is.windows)
+        options.type = "toolbar";
     const win = new BrowserWindow(options);
     is.macos ? app.dock.hide() : undefined;
     win.setFullScreenable(false);
