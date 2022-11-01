@@ -74,8 +74,8 @@ class ConfigManager {
 
     constructor(private application: JaHollDEApplication) {
         ConfigManager.instance = this;
-        const appData = app.getPath('appData');
-        const newPath = path.join(appData, "gdlauncher_next", "jahollde_config.json");
+        const appData = app.getPath('userData');
+        const newPath = path.join(appData, "jahollde_config.json");
         if (fs.existsSync(newPath)) {
             this.config = JSON.parse(fs.readFileSync(newPath).toString());
             for (const key of Object.keys(defaultConfig)) {

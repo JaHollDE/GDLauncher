@@ -16,8 +16,8 @@ export function accountChange() {
 let forceInstance = undefined;
 export async function getDevURL(isDevInstance) {
     if (forceInstance === undefined) {
-        const appData = await ipcRenderer.invoke('getAppdataPath');
-        forceInstance = fss.existsSync(path.join(appData, "gdlauncher_next", "developer"));
+        const appData = await ipcRenderer.invoke('getUserData');
+        forceInstance = fss.existsSync(path.join(appData, "developer"));
     }
 
     if (forceInstance) isDevInstance = true;
@@ -27,8 +27,8 @@ export async function getDevURL(isDevInstance) {
 
 export async function checkDevInstance(instanceName) {
     let isDevInstance = false;
-    const appData = await ipcRenderer.invoke('getAppdataPath');
-    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_instance.txt");
+    const appData = await ipcRenderer.invoke('getUserData');
+    const p = path.join(appData, "instances", instanceName, "jahollde_instance.txt");
     if (fss.existsSync(p)) {
         const content = fss.readFileSync(p).toString();
         if (content === "dev") isDevInstance = true;

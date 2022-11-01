@@ -18,8 +18,8 @@ export async function createInstance(dispatch, instanceName, isDevInstance = fal
     };
 
     // create jahollde identifier
-    const appData = await ipcRenderer.invoke('getAppdataPath');
-    const folder = path.join(appData, "gdlauncher_next", "instances", instanceName);
+    const userData = await ipcRenderer.invoke('getUserData');
+    const folder = path.join(userData, "instances", instanceName);
     const p = path.join(folder, "jahollde_instance.txt");
     fs.mkdirSync(folder, {recursive: true});
     fs.writeFileSync(p, isDevInstance ? "dev" : "prod");

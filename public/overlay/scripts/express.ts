@@ -63,8 +63,8 @@ export class ExpressManager {
   }
 
   public async init(expressApp: express.Express, instanceName: string): Promise<void> {
-    const appData: string = app.getPath('appData');
-    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets");
+    const appData: string = app.getPath('userData');
+    const p = path.join(appData, "instances", instanceName, "jahollde_assets");
 
     expressApp.get("/", (req: express.Request, res: express.Response) => {
       res.sendFile(path.join(p, "./index.html"));

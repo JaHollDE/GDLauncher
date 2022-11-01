@@ -15,9 +15,9 @@ export async function initConfig(instanceName) {
     const url = await getDevURL(isDevUrl);
 
     const json = await (await fetch(`${url}/launcher/mods.json`)).json();
-    const appData = await ipcRenderer.invoke('getAppdataPath');
+    const userData = await ipcRenderer.invoke('getUserData');
 
-    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "mods.json");
+    const p = path.join(userData, "instances", instanceName, "mods.json");
 
     if (fsa.existsSync(p)) {
         config = JSON.parse(fsa.readFileSync(p, "utf-8"));
@@ -138,9 +138,9 @@ export async function setConfig(newConfig, instanceName) {
 
     config = newConfig;
     handlers.forEach(l => l(newConfig));
-    const appData = await ipcRenderer.invoke('getAppdataPath');
+    const userData = await ipcRenderer.invoke('getUserData');
 
-    const instanceFolder = path.join(appData, "gdlauncher_next", "instances", instanceName);
+    const instanceFolder = path.join(userData, "instances", instanceName);
 
     if (fsa.existsSync(instanceFolder)) {
         await fsa.writeFile(path.join(instanceFolder, "mods.json"), JSON.stringify(config, undefined, 2));
