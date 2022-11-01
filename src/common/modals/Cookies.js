@@ -13,7 +13,8 @@ const Cookies = function ({force}) {
   const [cookies, setCookies] = useState([]);
 
   useEffect(async () => {
-    const request = await fetch(`${getDevURL(false)}/api/cookies`);
+    const url = await getDevURL(false);
+    const request = await fetch(`${url}/api/cookies`);
     const content = await request.text();
     setCookies(content.split("\n"));
   });

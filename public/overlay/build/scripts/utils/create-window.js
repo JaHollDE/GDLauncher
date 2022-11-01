@@ -23,11 +23,8 @@ export async function createWindow(showTaskbar) {
         minWidth: 0,
         minHeight: 0,
         webPreferences: {
-            //contextIsolation: !is.linux,
             contextIsolation: false,
-            //enableRemoteModule: true,
             nodeIntegration: true,
-            //preload: path.join(__dirname, "./preload.js"),
         },
     };
     if (!showTaskbar && is.windows)
@@ -38,9 +35,5 @@ export async function createWindow(showTaskbar) {
     win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     is.macos ? app.dock.show() : undefined;
     win.setMenu(null);
-    /*
-    win.webContents.openDevTools({
-      mode: "undocked"
-    });*/
     return win;
 }

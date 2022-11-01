@@ -25,11 +25,8 @@ export async function createWindow(showTaskbar: boolean): Promise<BrowserWindow>
     minWidth: 0,
     minHeight: 0,
     webPreferences: {
-      //contextIsolation: !is.linux,
       contextIsolation: false,
-      //enableRemoteModule: true,
       nodeIntegration: true,
-      //preload: path.join(__dirname, "./preload.js"),
     },
   };
 
@@ -43,11 +40,6 @@ export async function createWindow(showTaskbar: boolean): Promise<BrowserWindow>
   is.macos ? app.dock.show() : undefined;
 
   win.setMenu(null);
-
-  /*
-  win.webContents.openDevTools({
-    mode: "undocked"
-  });*/
 
   return win;
 }

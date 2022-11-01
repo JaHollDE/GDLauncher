@@ -97,9 +97,9 @@ const Home = () => {
         extractFace(account.skin).then(setProfileImage).catch(console.error);
     }, [account]);
 
-    const [jaholldeData, setJaholldeData] = useState(undefined);
+    const [jaholldeData, setJaholldeData] = useState(null);
     const connected = useRef(false);
-    const [devInstanceData, setDevInstanceData] = useState(undefined);
+    const [devInstanceData, setDevInstanceData] = useState(null);
     const [isDevInstance, setDevInstance] = useState(false);
 
     const token = useSelector(state => state.app.currentAccountId);
@@ -114,13 +114,12 @@ const Home = () => {
     const updateData = async (reconnect = false) => {
         if (updateDataTimeout.current !== undefined) window.clearTimeout(updateDataTimeout.current);
 
-        setJaholldeData(null);
         return dispatch(async (dispatch, getState) => {
             const state = getState();
             const account = _getCurrentAccount(state);
 
             if (account.accessToken === undefined) {
-                console.log("Unable to get access token for account: ", account);
+                console.warn("Unable to get access token for account: ", account);
                 return;
             }
 

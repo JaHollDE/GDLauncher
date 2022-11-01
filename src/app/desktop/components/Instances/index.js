@@ -105,15 +105,12 @@ const getInstances = (instances, sortOrder) => {
 };
 
 
-let playerOnline;
-fetch("https://api.mcsrvstat.us/2/prodnode.jaholl.de:25566").then(data => data.json()).then(json => {
-    playerOnline = json.players.online;
-    return null;
-}).catch(l => console.warn(l));
+
 
 const Instances = ({ jaholldeData }) => {
 
     const [isDevInstance, setIsDevInstance] = useState(false);
+
 
     useEffect(() => {
         setIsDevInstance(!!jaholldeData?.hasDevRights);
@@ -224,6 +221,17 @@ const Instances = ({ jaholldeData }) => {
 
     useEffect(async () => {
         await loadData();
+    }, []);
+
+    const [playerOnline, setPlayerOnline] = useState(undefined);
+    useEffect(async () => {
+        try {
+            const request = await fetch("https://api.mcsrvstat.us/2/prodnode.jaholl.de:25566");
+            const result = await request.json();
+            setPlayerOnline(result.players.online);
+        } catch (err) {
+            console.warn(err);
+        }
     }, []);
 
 
@@ -382,7 +390,13 @@ const Instances = ({ jaholldeData }) => {
                 </div>
 
 
-                <div className={"player-online"}>Online: <span>{playerOnline}</span>
+                <div className={"player-online"}>
+                    {playerOnline !== undefined && (
+                      <>
+                          Online: <span css={"margin-left: .5rem;"}>{playerOnline}</span>
+                      </>
+                    )}
+
                     <div style={{
                         marginLeft: "1rem",
                     }}>

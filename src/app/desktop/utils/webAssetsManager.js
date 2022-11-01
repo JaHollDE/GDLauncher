@@ -39,7 +39,7 @@ export async function installAssets(instanceName, isDevInstance, callback) {
   const config = await loadConfig(instanceName);
   const webData = await loadWebData(isDevInstance);
 
-  const url = await getURL();
+  const url = await getDevURL(isDevInstance);
 
   const appData = await ipcRenderer.invoke('getAppdataPath');
   const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets");

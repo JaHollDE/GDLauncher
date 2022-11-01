@@ -5,30 +5,14 @@ import { checkDevInstance, getDevURL } from "../../app/desktop/utils/jaholldeVer
 
 // let URL = "https://interface.jaholl.de"
 // TODO change back
-let URL = "https://devweb.jaholl.de"
 
-const urlProc = (async () => {
-    const appData = await ipcRenderer.invoke('getAppdataPath');
-    const p = path.join(appData, "gdlauncher_next", "jahollde_url.txt");
-
-    if (fsa.existsSync(p)) {
-        URL = fsa.readFileSync(p, "utf-8");
-    }
-})();
-
-export async function getURL() {
-    await urlProc;
-    return URL;
-}
 
 let config = undefined;
 let webData;
 
 export async function initConfig(instanceName) {
-    await urlProc;
-
     const isDevUrl = await checkDevInstance(instanceName);
-    const url = getDevURL(isDevUrl);
+    const url = await getDevURL(isDevUrl);
 
     const json = await (await fetch(`${url}/launcher/mods.json`)).json();
     const appData = await ipcRenderer.invoke('getAppdataPath');
