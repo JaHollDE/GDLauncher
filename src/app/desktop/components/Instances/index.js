@@ -393,7 +393,7 @@ const Instances = ({ jaholldeData }) => {
                 <div className={"player-online"}>
                     {playerOnline !== undefined && (
                       <>
-                          Online im RP: <span css={"margin-left: .5rem;"}>34</span>
+                          Online im RP: <span css={"margin-left: .5rem;"}>{playerOnline}</span>
                       </>
                     )}
 
