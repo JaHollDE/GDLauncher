@@ -61,7 +61,7 @@ const JavaSetup = () => {
     <Modal
       title="Java Setup"
       css={`
-        height: 380px;
+        height: 450px;
         width: 600px;
         display: flex;
         flex-direction: row;
@@ -158,7 +158,7 @@ const JavaSetup = () => {
                 <Button
                   type="primary"
                   css={`
-                    width: 150px;
+                    width: 200px;
                   `}
                   onClick={() => {
                     setStep(1);
@@ -172,7 +172,7 @@ const JavaSetup = () => {
                 <Button
                   type="text"
                   css={`
-                    width: 150px;
+                    width: 200px;
                   `}
                   onClick={() => {
                     setStep(1);
