@@ -101,6 +101,7 @@ const Home = () => {
     const connected = useRef(false);
     const [devInstanceData, setDevInstanceData] = useState(null);
     const [isDevInstance, setDevInstance] = useState(false);
+    const didOpenRegister = useRef(false);
 
     const token = useSelector(state => state.app.currentAccountId);
 
@@ -154,7 +155,10 @@ const Home = () => {
                 } else {
                     setInstanceData(undefined);
                     connected.current = true;
-                    !isDevInstance && openRegisterScreen();
+                    if (!isDevInstance && !didOpenRegister.current) {
+                        didOpenRegister.current = true;
+                        openRegisterScreen();
+                    }
                     break;
                 }
             }
