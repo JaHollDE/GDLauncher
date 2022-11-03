@@ -393,20 +393,20 @@ const Instances = ({ jaholldeData }) => {
                 <div className={"player-online"}>
                     {playerOnline !== undefined && (
                       <>
-                          Online: <span css={"margin-left: .5rem;"}>{playerOnline}</span>
+                          Online im RP: <span css={"margin-left: .5rem;"}>34</span>
                       </>
                     )}
 
                     <label className={"clickable"} css={`
-                            font-size: .5em;
-                            margin-left: .5rem;
+                            font-size: .4em;
+                            margin-left: 17.0rem;
                             color: rgba(255, 255, 255, 0.5);
                             display: flex;
                             flex-direction: column;
                             flex-wrap: nowrap;
                             justify-content: center;
                         
-                          `} onClick={() => openCookies(false)}><span>Cookies</span></label>
+                          `} onClick={() => openCookies(false)}><span>Datenschutzerklärung</span></label>
                 </div>
 
                 {
