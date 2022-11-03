@@ -188,8 +188,8 @@ const Instance = ({ instanceName }) => {
     const [isDevInstance, setIsDevInstance] = useState(false);
 
     useEffect(async () => {
-        const appData = await ipcRenderer.invoke('getAppdataPath');
-        const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_instance.txt");
+        const userData = await ipcRenderer.invoke('getUserData');
+        const p = path.join(userData, "instances", instanceName, "jahollde_instance.txt");
 
         if (fs.existsSync(p)) {
             setIsInstance(true);

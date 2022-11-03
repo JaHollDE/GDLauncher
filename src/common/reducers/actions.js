@@ -3244,7 +3244,7 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     let isDevInstance = false;
 
-    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_instance.txt");
+    const p = path.join(userData, "instances", instanceName, "jahollde_instance.txt");
     if (fss.existsSync(p)) {
       const content = fss.readFileSync(p).toString();
       if (content === "dev") isDevInstance = true;

@@ -22,7 +22,7 @@ const InstanceLog = function ({ instanceName }) {
     }
     lastUpdate.current = Date.now();
 
-    const url = getDevURL(false);
+    const url = await getDevURL(false);
     const path = `${url}/api/upload_logs`;
     const result = await fetch(path, {
       method: "POST",

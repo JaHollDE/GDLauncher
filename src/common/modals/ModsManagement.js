@@ -126,7 +126,7 @@ const ModsManagement = ({instanceName}) => {
 
             </Header>
 
-            <small>Quelle: {el.source}</small>
+            <small>Quelle: {el.source} - <i>{el.version}</i></small>
 
           </ModElement>
         ))}

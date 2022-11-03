@@ -6,9 +6,9 @@ import { downloadFile } from "./downloader";
 import { getDevURL } from "./jaholldeVerification";
 
 export async function loadConfig(instanceName) {
-  const appData = await ipcRenderer.invoke('getAppdataPath');
+  const appData = await ipcRenderer.invoke('getUserData');
 
-  const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets.json");
+  const p = path.join(appData, "instances", instanceName, "jahollde_assets.json");
 
   let config = undefined;
 
@@ -39,10 +39,10 @@ export async function installAssets(instanceName, isDevInstance, callback) {
   const config = await loadConfig(instanceName);
   const webData = await loadWebData(isDevInstance);
 
-  const url = await getURL();
+  const url = await getDevURL(isDevInstance);
 
-  const appData = await ipcRenderer.invoke('getAppdataPath');
-  const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets");
+  const appData = await ipcRenderer.invoke('getUserData');
+  const p = path.join(appData, "instances", instanceName, "jahollde_assets");
 
   if (!fsa.existsSync(p)) fsa.mkdirsSync(p);
 
@@ -60,6 +60,6 @@ export async function installAssets(instanceName, isDevInstance, callback) {
 
   config.version = webData.version;
 
-  const p2 = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_assets.json");
+  const p2 = path.join(appData, "instances", instanceName, "jahollde_assets.json");
   fsa.writeFileSync(p2, JSON.stringify(webData, undefined, 2));
 }

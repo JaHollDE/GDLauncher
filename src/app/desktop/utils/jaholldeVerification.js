@@ -13,18 +13,22 @@ export function accountChange() {
     c?.();
 }
 
-const forceDevURL = true;
+let forceInstance = undefined;
+export async function getDevURL(isDevInstance) {
+    if (forceInstance === undefined) {
+        const appData = await ipcRenderer.invoke('getUserData');
+        forceInstance = fss.existsSync(path.join(appData, "developer"));
+    }
 
-export function getDevURL(isDevInstance) {
-    if (forceDevURL) isDevInstance = true;
+    if (forceInstance) isDevInstance = true;
 
     return isDevInstance ? "https://devweb.jaholl.de" : "https://interface.jaholl.de";
 }
 
 export async function checkDevInstance(instanceName) {
     let isDevInstance = false;
-    const appData = await ipcRenderer.invoke('getAppdataPath');
-    const p = path.join(appData, "gdlauncher_next", "instances", instanceName, "jahollde_instance.txt");
+    const appData = await ipcRenderer.invoke('getUserData');
+    const p = path.join(appData, "instances", instanceName, "jahollde_instance.txt");
     if (fss.existsSync(p)) {
         const content = fss.readFileSync(p).toString();
         if (content === "dev") isDevInstance = true;
@@ -33,7 +37,7 @@ export async function checkDevInstance(instanceName) {
 }
 
 export async function verifyToken(mcToken, isDevInstance) {
-    const url = getDevURL(isDevInstance);
+    const url = await getDevURL(isDevInstance);
 
     const request = `${url}/api/user/verify`;
 

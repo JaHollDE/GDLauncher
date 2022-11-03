@@ -29,6 +29,7 @@ export class Window {
     }
 
     private updateShowState(focused?: boolean): void {
+        if (this.window === undefined || this.window.isDestroyed()) return;
         if (focused === undefined) focused = this.window?.isFocused();
         const alwaysOnTop = this.mcFocused || focused;
         const showWindow = !this.mcIconified && !this.windowHidden;
