@@ -32,6 +32,7 @@ export function initIPCEvents(application: JaHollDEApplication): void {
     let cb: (() => void) | undefined;
     ipcMain.handle("update-texture-pack", async (event) => {
         const instanceName = application.socket.getInstanceBySender(event.sender)?.instanceName;
+        console.log("Check for updates for instance: ", instanceName);
         if (instanceName === undefined) return;
 
         const promise = new Promise((resolve) => {
