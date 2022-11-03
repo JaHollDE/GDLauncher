@@ -45,6 +45,8 @@ const SettingsButton = () => {
 
   const modals = useSelector(state => state.modals);
 
+
+
   const areSettingsOpen = modals.find(
     v => v.modalType === 'Settings' && !v.unmounting
   );
@@ -94,6 +96,9 @@ const SystemNavbar = () => {
   const isUpdateAvailable = useSelector(state => state.updateAvailable);
   const location = useSelector(state => state.router.location.pathname);
   const [isAppImage, setIsAppImage] = useState(false);
+
+  const startedInstances = useSelector(state => state.startedInstances);
+  const isPlaying = startedInstances["jahollde"];
 
   const checkForUpdates = async () => {
     const isAppImageVar = await ipcRenderer.invoke('isAppImage');
@@ -145,10 +150,14 @@ const SystemNavbar = () => {
   }, []);
 
   const quitApp = () => {
-    if (isUpdateAvailable && (isAppImage || !isLinux)) {
-      ipcRenderer.invoke('installUpdateAndQuitOrRestart', true);
+    if (isPlaying) {
+        dispatch(openModal("CloseWarning", {}))
     } else {
-      ipcRenderer.invoke('quit-app');
+      if (isUpdateAvailable && (isAppImage || !isLinux)) {
+        ipcRenderer.invoke('installUpdateAndQuitOrRestart', true);
+      } else {
+        ipcRenderer.invoke('quit-app');
+      }
     }
   };
 

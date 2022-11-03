@@ -12,6 +12,8 @@ const InstanceLog = function ({ instanceName }) {
   const logElement = useRef();
 
   const [logCode, setLogCode] = useState("");
+  const [logsAvailable, setLogsAvailable] = useState(false);
+  const logsAvailableRef = useRef(false);
 
   const lastUpdate = useRef(0);
 
@@ -41,8 +43,15 @@ const InstanceLog = function ({ instanceName }) {
 
     const cb = (event, instance, log) => {
       if (instance === instanceName) {
+        if (!logsAvailableRef.current) {
+          logData.current = []
+          logElement.current.innerText = "";
+        }
         logData.current.push(log);
         logElement.current.innerText += "\n" + log;
+
+        setLogsAvailable(true);
+        logsAvailableRef.current = true;
       }
     }
 
@@ -51,6 +60,8 @@ const InstanceLog = function ({ instanceName }) {
         logData.current = logs;
 
         logElement.current.innerText = logData.current.join("\n");
+        setLogsAvailable(true);
+        logsAvailableRef.current = true;
       } else {
         logData.current = ["Es sind keine Logs vorhanden"];
         logElement.current.innerText = "Es sind keine Logs vorhanden";
@@ -83,7 +94,9 @@ const InstanceLog = function ({ instanceName }) {
         `}
         >
           <label>{logCode}</label>
-          <Button onClick={uploadLogs}>Hochladen</Button>
+          {logsAvailable && (
+            <Button onClick={uploadLogs}>Hochladen</Button>
+          )}
           <div ref={logElement} css={`
             display: flex;
             flex-direction: column-reverse;

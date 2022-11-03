@@ -73,6 +73,8 @@ export class Window {
         this.mouseEventsEnabled = false;
     }
     async loadHomePage() {
+        if (this.socketInstance.expressInstance === undefined)
+            return;
         this.setWindowHidden(false);
         if (this.window !== undefined) {
             this.window.showInactive();

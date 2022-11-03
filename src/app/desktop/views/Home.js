@@ -185,7 +185,7 @@ const Home = () => {
                 </div>
             ) : null}
             <Instances jaholldeData={jaholldeData} />
-            <div className={"jahollde-symbol"}>
+            <div className={"jahollde-symbol"} onClick={() => require('electron').shell.openExternal("https://jaholl.de")}>
                 <Logo size={35} />
                 {
                     jaholldeData?.hasDevRights ?

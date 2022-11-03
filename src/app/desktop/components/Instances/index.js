@@ -397,32 +397,16 @@ const Instances = ({ jaholldeData }) => {
                       </>
                     )}
 
-                    <div style={{
-                        marginLeft: "1rem",
-                    }}>
-
-                        <img className={overlayConnected ? "click-effect" : ""} title={"Electron neustarten"} src={overlayHovered ? arrowRepeat : link} onClick={restartElectron} onMouseOver={() => setOverlayHovered(true)} onMouseLeave={() => setOverlayHovered(false)} style={{
-                            filter: "invert(1)",
-                            height: "1.5rem",
-                            transform: "rotate(45deg)",
-                            opacity: overlayConnected ? "100%" : "0%",
-                            transition: "all 0.5s"
-                        }}></img>
-
-                        <img title={"Overlay versteckt"} src={eyeSlash} style={{
-                            filter: "invert(1)",
-                            height: "1.5rem",
-                            opacity: !overlayVisible && overlayConnected ? "100%" : "0%",
-                            transition: "all 0.5s"
-                        }}></img>
-
-                        <img src={boxArrowInDown} style={{
-                            filter: "invert(1)",
-                            height: "1.5rem",
-                            opacity: overlayAlwaysOnTop && overlayConnected ? "100%" : "0%",
-                            transition: "all 0.5s"
-                        }}></img>
-                    </div>
+                    <label className={"clickable"} css={`
+                            font-size: .5em;
+                            margin-left: .5rem;
+                            color: rgba(255, 255, 255, 0.5);
+                            display: flex;
+                            flex-direction: column;
+                            flex-wrap: nowrap;
+                            justify-content: center;
+                        
+                          `} onClick={() => openCookies(false)}><span>Cookies</span></label>
                 </div>
 
                 {
@@ -460,11 +444,7 @@ const Instances = ({ jaholldeData }) => {
 
                 <div className={"start-instance " + ((jaholldeData === undefined || jaholldeData === false) && !launcherUpdateAvailable ? 'disable-start-instance' : '')}>
                     <div>
-                        <button css={`
-                            font-size: .5em;
-                            margin-right: .5rem;
-                            color: rgba(255, 255, 255, 0.5);
-                          `} onClick={() => openCookies(false)}>Cookies</button>
+
                         {(!isInQueue) && <button css={`
             font-size: .5em;  
           `} onClick={() => openModSettings()}>Mods</button>}

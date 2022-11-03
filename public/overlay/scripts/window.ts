@@ -85,6 +85,8 @@ export class Window {
     }
 
     public async loadHomePage(): Promise<void> {
+        if (this.socketInstance.expressInstance === undefined) return;
+
         this.setWindowHidden(false);
         if (this.window !== undefined) {
             this.window.showInactive();

@@ -13,12 +13,12 @@ export default class JaHollDEApplication {
     async init(mainWindow) {
         this.config = new ConfigManager(this);
         this.socket = new SocketManager(this);
-        await this.socket.init();
         this.express = new ExpressManager(this);
         this.log = new LogManager(this);
         //this.window = new Window(this);
         this.mainWindow = mainWindow;
         initIPCEvents(this);
+        await this.socket.init();
         console.log("--- JaHollDE Electron-Setup finished ---");
     }
     getURL(withPrefix = true) {

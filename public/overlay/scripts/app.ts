@@ -17,7 +17,7 @@ export default class JaHollDEApplication {
     public async init(mainWindow: BrowserWindow) {
         this.config = new ConfigManager(this);
         this.socket = new SocketManager(this);
-        await this.socket.init();
+
         this.express = new ExpressManager(this);
         this.log = new LogManager(this);
         //this.window = new Window(this);
@@ -26,6 +26,8 @@ export default class JaHollDEApplication {
 
         initIPCEvents(this);
 
+
+        await this.socket.init();
         console.log("--- JaHollDE Electron-Setup finished ---")
     }
 

@@ -101,6 +101,9 @@ const modalsComponentLookupTable = {
   Cookies: AsyncComponent(
     lazy(() => import("../modals/Cookies"))
   ),
+  CloseWarning: AsyncComponent(
+    lazy(() => import("../modals/CloseWarning"))
+  ),
   InfoModal: AsyncComponent(lazy(() => import('../modals/InfoModal')))
 };
 
