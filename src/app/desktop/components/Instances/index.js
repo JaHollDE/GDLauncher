@@ -278,7 +278,7 @@ const Instances = ({ jaholldeData }) => {
     const [modStatus, setModStatus] = useState(undefined);
 
     const runInstall = async () => {
-        if (launcherUpdateAvailable) {
+        if (launcherUpdateAvailable && !isPlaying) {
             setModStatus("Lade Update...");
             ipcRenderer.once("updateDownloaded", () => {
                 setModStatus("Installiere Update...");
@@ -311,7 +311,7 @@ const Instances = ({ jaholldeData }) => {
 
     const getStatus = () => {
         if (isInQueue || modStatus) return "Installiere";
-        if (launcherUpdateAvailable) return "Launcher aktualisieren";
+        if (launcherUpdateAvailable && !isPlaying) return "Launcher aktualisieren";
         if (updateInstance) return "Installieren";
         if (updateMods.length > 0 || updateAssets) return "Aktualisieren";
         if (instanceLoading) return "Lade Instanz...";
@@ -458,7 +458,7 @@ const Instances = ({ jaholldeData }) => {
                 }
 
 
-                <div className={"start-instance " + (jaholldeData === undefined || jaholldeData === false ? 'disable-start-instance' : '')}>
+                <div className={"start-instance " + ((jaholldeData === undefined || jaholldeData === false) && !launcherUpdateAvailable ? 'disable-start-instance' : '')}>
                     <div>
                         <button css={`
                             font-size: .5em;

@@ -663,30 +663,7 @@ const General = () => {
             flex-direction: row;
           `}
         >
-          {updateAvailable ? (
-            <Button
-              onClick={() =>
-                ipcRenderer.invoke('installUpdateAndQuitOrRestart')
-              }
-              css={`
-                margin-right: 10px;
-              `}
-              type="primary"
-            >
-              aktualisieren &nbsp;
-              <FontAwesomeIcon icon={faDownload} />
-            </Button>
-          ) : (
-            <div
-              css={`
-                width: 96px;
-                height: 36px;
-                padding: 6px 8px;
-              `}
-            >
-              Up to date
-            </div>
-          )}
+
         </div>
       </LauncherVersion>
     </>
