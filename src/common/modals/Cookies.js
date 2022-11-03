@@ -17,7 +17,7 @@ const Cookies = function ({force}) {
     const request = await fetch(`${url}/api/cookies`);
     const content = await request.text();
     setCookies(content.split("\n"));
-  });
+  }, []);
 
   const quitApp = () => {
     ipcRenderer.invoke('quit-app');
