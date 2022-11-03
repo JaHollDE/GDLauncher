@@ -546,6 +546,7 @@ ipcMain.handle('quit-app', async () => {
   }
   mainWindow.close();
   mainWindow = null;
+  process.exit(0);
 });
 
 ipcMain.handle('isAppImage', () => {
@@ -970,5 +971,6 @@ ipcMain.handle('installUpdateAndQuitOrRestart', async (e, quitAfterInstall) => {
     });
     updateSpawn.unref();
     mainWindow.close();
+    process.exit(0);
   }
 });
