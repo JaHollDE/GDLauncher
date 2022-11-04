@@ -11,6 +11,7 @@ import { WebContents } from "electron";
 import OnMcFocus from "./api/mc-focus";
 import { ExpressInstance } from "./express";
 import { Window } from "./window";
+import EventEmitter from "./utils/event-emitter";
 
 export class SocketInstance {
     private webSocket?: WebSocket;
@@ -97,6 +98,8 @@ export class SocketInstance {
 export default class SocketManager {
     public port!: number;
 
+    public readonly onUpdate: EventEmitter<string[]> = new EventEmitter<string[]>();
+
     private webSocketServer!: WebSocketServer;
 
     private webSockets: {[key: string]: SocketInstance} = {};
@@ -116,6 +119,7 @@ export default class SocketManager {
     public removeWebSocket(instanceName: string) {
         delete this.webSockets[instanceName];
         console.log("Removed instance: ", instanceName);
+        this.onUpdate.emit(Object.keys(this.webSockets));
     }
 
     public async init(): Promise<void> {
@@ -164,6 +168,8 @@ export default class SocketManager {
                         return;
                     }
                     this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, token, this);
+
+                    this.onUpdate.emit(Object.keys(this.webSockets));
                 }
             });
 

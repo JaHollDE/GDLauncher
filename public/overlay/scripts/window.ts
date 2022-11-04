@@ -180,10 +180,10 @@ export class Window {
     public setGeometry(width: number, height: number, x: number, y: number): void {
         const scaling = screen.getPrimaryDisplay().scaleFactor;
 
-        width /= scaling;
-        height /= scaling;
-        x /= scaling;
-        y /= scaling;
+        width = Math.round(width / scaling);
+        height = Math.round(height / scaling);
+        x = Math.round(x / scaling);
+        y = Math.round(y / scaling);
 
         const showWindow = this.size[0] === 0 || this.size[1] === 0 || this.pos[0] === 0 || this.pos[1] === 0;
 

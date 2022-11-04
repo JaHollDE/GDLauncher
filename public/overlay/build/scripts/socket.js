@@ -4,6 +4,7 @@ import OnScreenUpdate from "./api/screen-update";
 import ElectronEventTransmitter from "./api/electron-event";
 import OnMcFocus from "./api/mc-focus";
 import { Window } from "./window";
+import EventEmitter from "./utils/event-emitter";
 export class SocketInstance {
     instanceName;
     token;
@@ -82,6 +83,7 @@ export class SocketInstance {
 export default class SocketManager {
     app;
     port;
+    onUpdate = new EventEmitter();
     webSocketServer;
     webSockets = {};
     events = [];
@@ -93,6 +95,7 @@ export default class SocketManager {
     removeWebSocket(instanceName) {
         delete this.webSockets[instanceName];
         console.log("Removed instance: ", instanceName);
+        this.onUpdate.emit(Object.keys(this.webSockets));
     }
     async init() {
         let port = 5050;
@@ -134,6 +137,7 @@ export default class SocketManager {
                         return;
                     }
                     this.webSockets[instanceName] = new SocketInstance(webSocket, instanceName, token, this);
+                    this.onUpdate.emit(Object.keys(this.webSockets));
                 }
             });
         });

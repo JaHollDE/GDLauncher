@@ -240,8 +240,8 @@ const Home = () => {
                     `}>Roleplay</span>
 
 
-                    {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}>Registrieren</AccountBackground>}
-                    {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={openRegisterScreen}><Spin /></AccountBackground>}
+                    {jaholldeData === undefined && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(false)}>Registrieren</AccountBackground>}
+                    {jaholldeData === null && <AccountBackground css={`margin-right: .5rem;`} onClick={() => openRegisterScreen(false)}><Spin /></AccountBackground>}
                     {jaholldeData === false && <AccountBackground css={`margin-right: .5rem;`} onClick={updateData}>Server Offline</AccountBackground>}
                     {jaholldeData !== undefined && jaholldeData !== null && jaholldeData !== false && <AccountBackground onClick={openAccountModal}>
                         {

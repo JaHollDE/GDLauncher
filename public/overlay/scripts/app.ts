@@ -5,6 +5,7 @@ import { initIPCEvents } from "./utils/ipc-events";
 import { ConfigManager } from "./manager/config-manager";
 import { BrowserWindow } from "electron";
 import LogManager from "./manager/log-manager";
+import { TrayManager } from "./tray";
 
 export default class JaHollDEApplication {
     public socket!: SocketManager;
@@ -13,6 +14,7 @@ export default class JaHollDEApplication {
     public config!: ConfigManager;
     public mainWindow!: BrowserWindow;
     public log!: LogManager;
+    public tray!: TrayManager;
 
     public async init(mainWindow: BrowserWindow) {
         this.config = new ConfigManager(this);
@@ -23,6 +25,8 @@ export default class JaHollDEApplication {
         //this.window = new Window(this);
 
         this.mainWindow = mainWindow;
+
+        this.tray = new TrayManager(this);
 
         initIPCEvents(this);
 

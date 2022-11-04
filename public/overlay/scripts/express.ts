@@ -4,6 +4,7 @@ import path from "path";
 import JaHollDEApplication from "./app";
 import * as tcpPortUsed from "tcp-port-used";
 import { app } from "electron";
+import EventEmitter from "./utils/event-emitter";
 
 export class ExpressInstance {
   private server: http.Server;

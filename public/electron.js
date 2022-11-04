@@ -342,29 +342,6 @@ function createWindow() {
     }
   );
 
-  const RESOURCE_DIR = isDev ? __dirname : path.join(__dirname, '../build');
-
-  const iconPath = path.join(RESOURCE_DIR, 'logo_32x32.png');
-
-  const nimage = nativeImage.createFromPath(iconPath);
-
-  tray = new Tray(nimage);
-  const trayMenuTemplate = [
-    {
-      label: 'JaHollDELauncher',
-      enabled: false
-    },
-    {
-      label: 'Show Dev Tools',
-      click: () => mainWindow.webContents.openDevTools()
-    }
-  ];
-
-  const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
-  tray.setContextMenu(trayMenu);
-  tray.setToolTip('JaHollDELauncher');
-  tray.on('double-click', () => mainWindow.show());
-
   mainWindow.loadURL(
     isDev
       ? 'http://localhost:3000'

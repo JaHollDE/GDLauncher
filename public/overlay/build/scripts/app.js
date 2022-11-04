@@ -3,6 +3,7 @@ import { ExpressManager } from "./express";
 import { initIPCEvents } from "./utils/ipc-events";
 import { ConfigManager } from "./manager/config-manager";
 import LogManager from "./manager/log-manager";
+import { TrayManager } from "./tray";
 export default class JaHollDEApplication {
     socket;
     express;
@@ -10,6 +11,7 @@ export default class JaHollDEApplication {
     config;
     mainWindow;
     log;
+    tray;
     async init(mainWindow) {
         this.config = new ConfigManager(this);
         this.socket = new SocketManager(this);
@@ -17,6 +19,7 @@ export default class JaHollDEApplication {
         this.log = new LogManager(this);
         //this.window = new Window(this);
         this.mainWindow = mainWindow;
+        this.tray = new TrayManager(this);
         initIPCEvents(this);
         await this.socket.init();
         console.log("--- JaHollDE Electron-Setup finished ---");

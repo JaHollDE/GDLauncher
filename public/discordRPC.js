@@ -2,7 +2,6 @@ const { Client } = require('discord-rpc');
 const log = require('electron-log');
 
 let client;
-let activity;
 
 const initialAppStartup = Math.floor(Date.now() / 1000);
 
@@ -16,6 +15,8 @@ const defaultValue = {
 };
 
 const messages = ["www.jaholl.de", "Jetzt beitreten!"];
+
+let activity = defaultValue;
 
 exports.initRPC = () => {
   client = new Client({ transport: 'ipc' });
