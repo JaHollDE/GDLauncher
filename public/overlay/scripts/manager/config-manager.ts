@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { app, ipcMain, ipcRenderer } from "electron";
 import IpcMainEvent = Electron.IpcMainEvent;
 import JaHollDEApplication from "../app";
+import handleScale from "./config-key-handler/scale-handler";
 
 const presetConfig = {
     url: "https://interface.jaholl.de",
@@ -69,6 +70,10 @@ const defaultConfig: Config = {
 class ConfigManager {
     public static instance: ConfigManager;
 
+    private handlers: {[key: string]: (application: JaHollDEApplication, newValue: any) => Promise<void>} = {
+        windowScaling: handleScale
+    }
+
     public config: Config;
     private path: string;
 
@@ -111,14 +116,16 @@ class ConfigManager {
         });
     }
 
-    public updateConfig(
+    public async updateConfig(
         event: IpcMainEvent | undefined,
         key: string,
         value: any
-    ): void {
+    ): Promise<void> {
         this.config[key] = value;
         this.save();
         console.log("received config update: ", key, value);
+
+        if (this.handlers[key] !== undefined) await this.handlers[key](this.application, value);
 
         this.application.socket.getAllInstances().forEach(win => {
             win.window?.getWindow().then(w => w.webContents.send(

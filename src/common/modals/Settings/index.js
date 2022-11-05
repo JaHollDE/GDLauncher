@@ -100,6 +100,10 @@ const pages = {
   Java: {
     name: 'Java',
     component: AsyncComponent(lazy(() => import('./components/Java')))
+  },
+  Overlay: {
+    name: 'Overlay',
+    component: AsyncComponent(lazy(() => import('./components/Overlay')))
   }
 };
 

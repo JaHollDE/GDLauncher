@@ -1,30 +1,24 @@
 module.exports = {
   new: [
-    {
-      header: 'Der Launcher kann nun über das Tray beendet werden.',
-      content: ''
-    }
   ],
   improvements: [
     {
-      header: 'Iris Shader wurde auf die neuste Version aktualisiert.',
-      content: ''
+      header: 'Overlay-Einstellungen im Launcher in zusätzliche Kategorie bewegt',
+      content: '',
+      advanced: {}
     }
   ],
   bugfixes: [
     {
-      header: 'Registrieren funktioniert wieder',
+      header: 'Overlay-Skalierung kann über den Launcher wieder eingestellt werden',
+      content: '@xCraimax @Janik',
+      advanced: {}
+      //advanced: { cm: '391dd9cc', pr: '1412' }
+    },
+    {
+      header: 'Overlay-Positionen können wieder zurückgesetzt werden',
       content: '',
-      //advanced: { cm: '391dd9cc', pr: '1412' }
-    },
-    {
-      header: 'Bug bei deaktiviertem Discord-Status (@Allzweckmehl)',
-      content: 'Sobald die Discord-Presence deaktiviert wurde, kam es zu Fehlern.',
-      //advanced: { cm: '391dd9cc', pr: '1412' }
-    },
-    {
-      header: 'Auf Bildschirmen, auf denen die Skalierung nicht 100% beträgt, startet das Overlay nicht.',
-      content: ''
+      advanced: {}
     }
   ]
 };

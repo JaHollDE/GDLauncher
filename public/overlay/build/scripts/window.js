@@ -83,6 +83,7 @@ export class Window {
         this.mcIconified = false;
         this.setWindowHidden(false);
         this.window = await createWindow(this.application.config.config.showTaskbar);
+        this.window.webContents.setZoomFactor(this.application.config.config.windowScaling);
         this.window.setMinimumSize(...this.size);
         this.window.setSize(...this.size);
         this.window.setPosition(...this.pos);

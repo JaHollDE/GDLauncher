@@ -356,26 +356,6 @@ const General = () => {
         </Select>
       </Content>
 
-
-      <Title>
-        Overlay in Taskleiste &nbsp; <FontAwesomeIcon icon={faWindowMaximize} />
-      </Title>
-      <Content>
-        <p>
-          <span>Das Overlay als Fenster in der Taskleiste anzeigen. Diese Funktion wird hauptsächlich für das <b css={"margin: 0 !important;"}>Streamen</b> des Overlays als Fenster benötigt.</span>
-          <p>
-            <b>Erfordert einen Neustart von Minecraft.</b>
-          </p>
-        </p>
-
-        <Switch
-          onChange={e => {
-            updateShowTaskbar(e)
-          }}
-          checked={showTaskbar}
-        />
-      </Content>
-
       <Title>
         Concurrent Downloads &nbsp; <FontAwesomeIcon icon={faTachometerAlt} />
       </Title>
