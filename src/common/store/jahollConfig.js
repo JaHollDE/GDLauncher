@@ -2,6 +2,7 @@ import fsa from "fs-extra";
 import path from "path";
 import { ipcRenderer } from "electron";
 import { checkDevInstance, getDevURL } from "../../app/desktop/utils/jaholldeVerification";
+import crypto from "crypto";
 
 // let URL = "https://interface.jaholl.de"
 // TODO change back
@@ -72,16 +73,30 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
     let deleteMod = false;
 
     config = config.filter(element => {
-        let found = false;
+        let found = undefined;
 
         webData.forEach(l => {
-            if (l.file === element.file && l.name === element.name) found = true;
+            if (l.file === element.file && l.name === element.name) {
+                found = {
+                    ...l,
+                    ...element
+                };
+            }
         });
 
+        const p = path.join(modsFolder, element.file);
         if (!found) {
-            const p = path.join(modsFolder, element.file);
             if (fsa.existsSync(p)) fsa.rmSync(p);
             deleteMod = true;
+        } else if (fsa.existsSync(p)) {
+            const sum = found.sha512;
+            const localSum = crypto.createHash("sha512").update(fsa.readFileSync(p)).digest("hex");
+
+            if (sum !== localSum) {
+                console.warn("Found invalid mod: ", found.name);
+                fsa.rmSync(p);
+                deleteMod = true;
+            }
         }
 
         return found;

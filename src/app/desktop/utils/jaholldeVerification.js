@@ -16,8 +16,8 @@ export function accountChange() {
 let forceInstance = undefined;
 export async function getDevURL(isDevInstance) {
     if (forceInstance === undefined) {
-        const appData = await ipcRenderer.invoke('getUserData');
-        forceInstance = fss.existsSync(path.join(appData, "developer"));
+        const appData = await ipcRenderer.invoke('getAppdataPath');
+        forceInstance = fss.existsSync(path.join(appData, "gdlauncher_next", "developer"));
     }
 
     if (forceInstance) isDevInstance = true;
