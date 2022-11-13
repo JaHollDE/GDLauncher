@@ -68,7 +68,7 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
 
     const toUpdate = [];
 
-    const modsFolder = path.join(instancesPath, instanceName);
+    const instanceFolder = path.join(instancesPath, instanceName);
 
     let deleteMod = false;
 
@@ -84,7 +84,7 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
             }
         });
 
-        const p = path.join(modsFolder, element.file);
+        const p = path.join(instanceFolder, element.file);
         if (!found) {
             if (fsa.existsSync(p)) fsa.rmSync(p);
             deleteMod = true;
@@ -92,7 +92,9 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
             const sum = found.sha512;
             const localSum = crypto.createHash("sha512").update(fsa.readFileSync(p)).digest("hex");
 
-            if (sum !== localSum) {
+            if (sum === undefined) {
+                console.warn("Sum for mod could not be found: ", found.name)
+            } else if (sum !== localSum) {
                 console.warn("Found invalid mod: ", found.name);
                 fsa.rmSync(p);
                 deleteMod = true;
@@ -101,12 +103,19 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
 
         return found;
     });
+    const modFolder = path.join(instanceFolder, "mods");
+
+    fsa.readdirSync(modFolder).forEach(mod => {
+        const file = "./mods/" + mod;
+        const found = config.find(l => l.file === file);
+        if (!found) fsa.rmSync(path.join(modFolder, mod))
+    });
 
     if (deleteMod) await setConfig(config, instanceName);
 
     config.forEach(element => {
 
-        const p = path.join(modsFolder, element.file);
+        const p = path.join(instanceFolder, element.file);
         const pathExists = fsa.existsSync(p);
 
         const webDataEntry = webData.find(l => l.file === element.file);

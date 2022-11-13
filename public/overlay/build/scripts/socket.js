@@ -2,6 +2,7 @@ import { Server as WebSocketServer } from "ws";
 import * as tcpPortUsed from "tcp-port-used";
 import OnScreenUpdate from "./api/screen-update";
 import ElectronEventTransmitter from "./api/electron-event";
+import { ipcMain } from "electron";
 import OnMcFocus from "./api/mc-focus";
 import { Window } from "./window";
 import EventEmitter from "./utils/event-emitter";
@@ -71,10 +72,12 @@ export class SocketInstance {
             }
         });
     }
-    async destroy() {
+    async destroy(closeConnection = false) {
         await this.window.deleteHomePage();
         this.expressInstance?.stop();
         this.socketManager.removeWebSocket(this.instanceName);
+        if (closeConnection)
+            this.webSocket?.close(1000);
     }
     sendMessage(message, query = true) {
         this.webSocket?.send(message);
@@ -91,6 +94,12 @@ export default class SocketManager {
     constructor(app) {
         this.app = app;
         this.events.push(new OnScreenUpdate(this.app), new ElectronEventTransmitter(this.app), new OnMcFocus(this.app));
+        this.onUpdate.subscribe((data) => {
+            this.app.mainWindow?.webContents?.send("connected-instances-update", data);
+        });
+        ipcMain.handle("reload-connected-instances", () => {
+            this.app.mainWindow?.webContents?.send("connected-instances-update", Object.keys(this.webSockets));
+        });
     }
     removeWebSocket(instanceName) {
         delete this.webSockets[instanceName];

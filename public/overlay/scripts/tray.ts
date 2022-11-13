@@ -44,16 +44,15 @@ export class TrayManager {
       }
     ];
 
-    /*
+
     data.forEach(element => {
       trayMenuTemplate.push({
-        label: `${element}: Overlay schließen`,
+        label: `${element}: Overlay neustarten`,
         click: () => {
-          this.application.socket.getInstanceByName(element)?.destroy();
+          this.application.socket.getInstanceByName(element)?.destroy(true);
         }
       });
     });
-     */
 
     const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
     this.tray.setContextMenu(trayMenu);

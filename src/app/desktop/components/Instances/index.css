@@ -79,7 +79,9 @@
 
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    /*justify-content: center;
+*/
+    width: 100%;
 
     font-size: 1.5rem;
 
@@ -113,4 +115,16 @@
 
 .clickable:hover {
     cursor: pointer;
+}
+
+.show-instance, .hide-instance {
+    transition: opacity 0.5s, transform 2s;
+}
+.show-instance {
+    pointer-events: unset;
+    opacity: 100%;
+}
+.hide-instance {
+    pointer-events: none;
+    opacity: 0%;
 }

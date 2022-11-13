@@ -151,8 +151,8 @@ export class Window {
     }
 
     public async hideHomePage() {
-        if (this.window.isDestroyed()) return;
-        this.window.hide();
+        if (this.window?.isDestroyed()) return;
+        this.window?.hide();
         this.setWindowHidden(true);
     }
 
@@ -160,9 +160,9 @@ export class Window {
         if (this.window === undefined) return;
         this.pos = [0, 0];
         this.size = [0, 0];
-        if (!this.window.isDestroyed()) {
-            this.window.hide();
-            this.window.destroy();
+        if (!this.window?.isDestroyed()) {
+            this.window?.hide();
+            this.window?.destroy();
         }
         this.window = undefined;
 

@@ -19,8 +19,9 @@ export function initIPCEvents(application) {
     ipcMain.handle("transmit-mod", (event, data) => {
         application.socket.sendMessageToSender(JSON.stringify(data), event.sender);
     });
-    ipcMain.handle("restart-electron", (event, instanceName) => {
-        return application.socket.getInstanceBySender(event.sender)?.window?.restart();
+    ipcMain.handle("restart-electron", async (event, instanceName) => {
+        const app = application.socket.getInstanceByName(instanceName);
+        await app?.destroy(true);
     });
     let cb;
     ipcMain.handle("update-texture-pack", async (event) => {

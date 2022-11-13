@@ -7,7 +7,7 @@ import ElectronEvent from "./electron-event";
 import JaHollDEApplication from "./app";
 import OnScreenUpdate from "./api/screen-update";
 import ElectronEventTransmitter from "./api/electron-event";
-import { WebContents } from "electron";
+import { ipcMain, WebContents } from "electron";
 import OnMcFocus from "./api/mc-focus";
 import { ExpressInstance } from "./express";
 import { Window } from "./window";
@@ -84,10 +84,11 @@ export class SocketInstance {
         });
     }
 
-    public async destroy(): Promise<void> {
+    public async destroy(closeConnection: boolean = false): Promise<void> {
         await this.window.deleteHomePage();
-        this.expressInstance?.stop()
+        this.expressInstance?.stop();
         this.socketManager.removeWebSocket(this.instanceName);
+        if (closeConnection) this.webSocket?.close(1000);
     }
 
     public sendMessage(message: string, query: boolean = true) {
@@ -114,6 +115,14 @@ export default class SocketManager {
             new ElectronEventTransmitter(this.app),
             new OnMcFocus(this.app)
         );
+
+        this.onUpdate.subscribe((data) => {
+            this.app.mainWindow?.webContents?.send("connected-instances-update", data);
+        });
+
+        ipcMain.handle("reload-connected-instances", () => {
+            this.app.mainWindow?.webContents?.send("connected-instances-update", Object.keys(this.webSockets));
+        });
     }
 
     public removeWebSocket(instanceName: string) {

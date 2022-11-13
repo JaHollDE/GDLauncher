@@ -25,8 +25,9 @@ export function initIPCEvents(application: JaHollDEApplication): void {
         application.socket.sendMessageToSender(JSON.stringify(data), event.sender);
     });
 
-    ipcMain.handle("restart-electron", (event, instanceName) => {
-        return application.socket.getInstanceBySender(event.sender)?.window?.restart();
+    ipcMain.handle("restart-electron", async (event, instanceName: string) => {
+        const app = application.socket.getInstanceByName(instanceName);
+        await app?.destroy(true);
     });
 
     let cb: (() => void) | undefined;

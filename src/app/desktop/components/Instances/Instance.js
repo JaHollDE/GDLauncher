@@ -218,6 +218,10 @@ const Instance = ({ instanceName }) => {
       await ipcRenderer.invoke("trigger-devtools", instanceName);
     }
 
+    const restartElectron = async () => {
+      await ipcRenderer.invoke("restart-electron", instanceName);
+    }
+
 
     useEffect(() => {
         if (instance.background) {
@@ -541,6 +545,9 @@ const Instance = ({ instanceName }) => {
                         <MenuItem onClick={openDevTools}>
                           Konsole öffnen
                         </MenuItem>
+                        <MenuItem onClick={restartElectron}>
+                          Electron Neustarten
+                        </MenuItem>
                       </>
                     )}
 
@@ -558,9 +565,9 @@ const Instance = ({ instanceName }) => {
                         <FontAwesomeIcon
                             icon={faServer}
                             css={`
-                    margin-right: 10px;
-                    width: 25px !important;
-                  `}
+                              margin-right: 10px;
+                              width: 25px !important;
+                            `}
                         />
                         Create Server
                     </MenuItem>

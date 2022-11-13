@@ -234,13 +234,26 @@ const Instances = ({ jaholldeData }) => {
         }
     }, []);
 
+    const [instanceConnected, setInstanceConnected] = useState(false);
+
+    useEffect(() => {
+        const cb = (event, instances) => {
+            setInstanceConnected(instances.includes(instanceName));
+        }
+        ipcRenderer.addListener("connected-instances-update", cb);
+        ipcRenderer.invoke("reload-connected-instances");
+        return () => {
+            ipcRenderer.removeAllListeners("connected-instances-update");
+        }
+    }, []);
+
 
     //onConfig(() => loadData());
 
     onModChange(() => loadData());
 
 
-    const startInstance = () => {
+    const startInstance = async () => {
         if (isInQueue || isPlaying) return;
         dispatch(addStartedInstance({ instanceName }));
         dispatch(launchInstance(instanceName, (state) => setInstanceLoading(state), undefined));
@@ -356,9 +369,11 @@ const Instances = ({ jaholldeData }) => {
         dispatch(openModal('AddInstance', { defaultPage }));
     };
 
+    const [electronRotation, setElectronRotation] = useState(0);
+
     const restartElectron = () => {
-        if (!overlayConnected) return;
-        //ipcRenderer.invoke("restart-electron"); // TODO verlegen auf instanz-rechtsklick menü
+        setElectronRotation(electronRotation + 720);
+        ipcRenderer.invoke("restart-electron", instanceName);
     }
 
     const createJaHollDEInstance = () => {
@@ -396,15 +411,36 @@ const Instances = ({ jaholldeData }) => {
                           Online im RP: <span css={"margin-left: .5rem;"}>{playerOnline}</span>
                       </>
                     )}
+                    {(instanceConnected || true) && (
+                      <>
+                          <img src={link} css={`
+                            height: 1.5rem;
+                            filter: invert(100%);
+                            align-self: center;
+                            margin-left: .5rem;
+                          `} className={instanceConnected ? "show-instance" : "hide-instance"}/>
+
+                          <img onClick={restartElectron} className={instanceConnected ? "clickable show-instance" : "hide-instance"} title={"Overlay neustarten"} src={arrowRepeat} css={`
+                            height: 1.5rem;
+                            filter: invert(100%);
+                            align-self: center;
+                            margin-left: .5rem;
+                            transform: rotate(${electronRotation}deg)
+                          `} />
+                      </>
+                    )}
 
                     <label className={"clickable"} css={`
                             font-size: .4em;
-                            margin-left: 17.0rem;
                             color: rgba(255, 255, 255, 0.5);
                             display: flex;
                             flex-direction: column;
                             flex-wrap: nowrap;
                             justify-content: center;
+                            position: absolute;
+                            left: 50%;
+                            bottom: 0;
+                            transform: translateX(-50%);
                         
                           `} onClick={() => openCookies(false)}><span>Datenschutzerklärung</span></label>
                 </div>
