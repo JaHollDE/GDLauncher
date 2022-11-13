@@ -16,13 +16,13 @@ module.exports = {
   bugfixes: [
     {
       header: 'Mods mit einem ungültigen Namen werden automatisch gelöscht.',
-      content: '@FCKJohni',
+      content: '@DerSimeon',
       advanced: {}
       //advanced: { cm: '391dd9cc', pr: '1412' }
     },
     {
       header: 'Das Argument `fabric.addmods` wurde als Startoption ausgeschlossen.',
-      content: '@FCKJohni',
+      content: '@DerSimeon',
       advanced: {}
     }
   ]
