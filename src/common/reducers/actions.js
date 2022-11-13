@@ -3277,7 +3277,7 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     //clearLogs();
 
-    const result = completeArgs.filter(l => l.includes("fabric.addmods") || l.includes("fabric-addmods"));
+    const result = completeArgs.find(l => l.includes("fabric.addmods") || l.includes("fabric-addmods"));
     if (result) {
       console.warn("Aborted start, `fabric.addmods` is not allowed");
       dispatch(closeModal());
