@@ -1,24 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { _getAccounts, _getCurrentAccount } from "../../utils/selectors";
 import Modal from "../../components/Modal";
-import {
-  loginWithAccessToken,
-  loginWithOAuthAccessToken, removeAccount,
-  updateAccount,
-  updateCurrentAccountId
-} from "../../reducers/actions";
-import { load } from "../../reducers/loading/actions";
-import features from "../../reducers/loading/features";
-import { ACCOUNT_MICROSOFT } from "../../utils/constants";
 import { Button, Form, Input, message, Select, Spin } from "antd";
 import { closeModal, openModal } from "../../reducers/modals/actions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 import React, { useState } from "react";
 import "tinycolor2"
-import { Option } from "antd/es/mentions";
-import { getURL } from "../../store/jahollConfig";
 import axios from "axios";
 import { accountChange, getDevURL } from "../../../app/desktop/utils/jaholldeVerification";
 
