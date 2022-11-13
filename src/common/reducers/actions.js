@@ -3277,6 +3277,22 @@ export function launchInstance(instanceName, forceQuit = false) {
 
     //clearLogs();
 
+    const result = completeArgs.filter(l => l.includes("fabric.addmods") || l.includes("fabric-addmods"));
+    if (result) {
+      console.warn("Aborted start, `fabric.addmods` is not allowed");
+      dispatch(closeModal());
+      dispatch(removeStartedInstance(instanceName));
+      setTimeout(() => {
+        dispatch(
+          openModal('InstanceCrashed', {
+            code: 0,
+            errorLogs: "Das Attribut `fabric.addmods` ist nicht erlaubt!"
+          })
+        );
+      }, 225);
+      return;
+    }
+
     const ps = spawn(
       `${addQuotes(needsQuote, javaPath)}`,
       completeArgs,
