@@ -39,7 +39,7 @@
     "test": "craco test",
     "eject": "craco eject",
     "buildtsc": "cd public/overlay && tsc",
-    "build-electron:portable": "npm run buildtsc && cross-env-shaell NODE_ENV=production REACT_APP_RELEASE_TYPE=portable webpack --config ./scripts/electronWebpackConfig.js --color",
+    "build-electron:portable": "npm run buildtsc && cross-env-shell NODE_ENV=production REACT_APP_RELEASE_TYPE=portable webpack --config ./scripts/electronWebpackConfig.js --color",
     "build-electron:setup": "npm run buildtsc && cross-env-shell NODE_ENV=production REACT_APP_RELEASE_TYPE=setup webpack --config ./scripts/electronWebpackConfig.js --color",
     "build-electron:dev": "npm run buildtsc && cross-env-shell NODE_ENV=development REACT_APP_RELEASE_TYPE=setup webpack --config ./scripts/electronWebpackConfig.js --color",
     "lint": "eslint .",
