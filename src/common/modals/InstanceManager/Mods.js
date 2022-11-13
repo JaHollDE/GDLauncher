@@ -37,6 +37,7 @@ import {
 } from '../../reducers/actions';
 import { openModal } from '../../reducers/modals/actions';
 import { makeModRestorePoint } from '../../utils';
+import instanceLog from "../InstanceLog";
 
 const Header = styled.div`
   height: 40px;
@@ -801,19 +802,21 @@ const Mods = ({ instanceName }) => {
             </StyledDropdown>
           </span>
         </div>
-        <Button
-          type="primary"
-          onClick={() => {
-            dispatch(
-              openModal('ModsBrowser', {
-                gameVersions: instance.loader?.mcVersion,
-                instanceName
-              })
-            );
-          }}
-        >
-          Add Mod
-        </Button>
+        {instanceName !== "jahollde" && (
+          <Button
+            type="primary"
+            onClick={() => {
+              dispatch(
+                openModal('ModsBrowser', {
+                  gameVersions: instance.loader?.mcVersion,
+                  instanceName
+                })
+              );
+            }}
+          >
+            Add Mod
+          </Button>
+        )}
         <Input
           allowClear
           value={search}
