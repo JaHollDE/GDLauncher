@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import fss from 'fs-extra';
 import path from 'path';
@@ -12,13 +12,13 @@ import {
     faCog,
     faFolder
 } from '@fortawesome/free-solid-svg-icons';
-import { Input, Button, Switch, Slider, Select } from 'antd';
+import { Input, Button, Switch, Slider, Select, Spin } from "antd";
 import { ipcRenderer } from 'electron';
 import {
-    _getInstancesPath,
-    _getInstance,
-    _getJavaPath
-} from '../../utils/selectors';
+  _getInstancesPath,
+  _getInstance,
+  _getJavaPath, _getInstances
+} from "../../utils/selectors";
 import instanceDefaultBackground from '../../assets/instance_default.png';
 import {
     DEFAULT_JAVA_ARGS,
@@ -28,7 +28,7 @@ import {
     getJavaVersionForMCVersion,
     updateInstanceConfig
 } from '../../reducers/actions';
-import { openModal } from '../../reducers/modals/actions';
+import { closeModal, openModal } from "../../reducers/modals/actions";
 import {
     convertMinutesToHumanTime,
     marks,
@@ -37,6 +37,8 @@ import {
     sysMemScaled
 } from '../../utils';
 import { CURSEFORGE } from '../../utils/constants';
+import * as ActionTypes from "../../reducers/actionTypes";
+import fse from "fs-extra";
 
 const Container = styled.div`
   padding: 0 50px;
@@ -194,6 +196,7 @@ const Overview = ({ instanceName, background, manifest }) => {
     const [screenResolution, setScreenResolution] = useState(null);
     const [height, setHeight] = useState(config?.resolution?.height);
     const [width, setWidth] = useState(config?.resolution?.width);
+    const instances = useSelector(_getInstances);
 
     useEffect(() => {
         ipcRenderer
@@ -266,11 +269,51 @@ const Overview = ({ instanceName, background, manifest }) => {
         updateCustomJavaPath(defaultJavaPath);
     };
 
-    const renameInstance = () => {
-        fss.rename(
-            path.join(instancesPath, instanceName),
-            path.join(instancesPath, newName)
+    const [renamingInstance, setRenamingInstance] = useState(false);
+
+    const renameInstance = async () => {
+        console.log("Renaming from:", instanceName, "to", newName);
+        const oldName = JSON.parse(JSON.stringify(instanceName));
+        setRenamingInstance(true);
+        const oldPath = path.join(instancesPath, instanceName);
+        const newPath = path.join(instancesPath, newName);
+        if (oldPath === newPath) return;
+        await fss.promises.cp(
+          oldPath,
+          newPath,
+          { recursive: true }
         );
+        await fss.promises.rm(
+            oldPath,
+          { recursive: true }
+        );
+        const configPath = path.join(
+          instancesPath,
+          newName,
+          'config.json'
+        );
+        dispatch(async (dispatch, getState) => {
+          const newState = getState();
+          try {
+            const config = await fse.readJSON(configPath);
+
+            if (!config.loader) {
+              throw new Error(`Config for ${newName} could not be parsed`);
+            }
+            console.log('[RTS] ADDING INSTANCE', newName);
+            dispatch({
+              type: ActionTypes.UPDATE_INSTANCES,
+              instances: {
+                ...newState.instances.list,
+                [newName]: { ...config, name: newName }
+              }
+            });
+          } catch (err) {
+            console.warn(err);
+          }
+        })
+
+        dispatch(closeModal());
     };
 
     const computeLastPlayed = timestamp => {
@@ -378,10 +421,28 @@ const Overview = ({ instanceName, background, manifest }) => {
                     !isJaHollDEInstance() ?
                         <RenameRow>
                             <Input value={newName} onChange={e => setNewName(e.target.value)} />
-                            <RenameButton onClick={() => renameInstance()} type="primary">
+                            <RenameButton onClick={() => renameInstance()} type="primary" css={(renamingInstance || instanceName === newName) && `
+                              opacity: 50%;
+                              pointer-events: none;
+                            `}>
                                 Rename&nbsp;
                                 <FontAwesomeIcon icon={faSave} />
                             </RenameButton>
+                            {
+                              renamingInstance && (
+                                <div css={`
+                                display: flex;
+                                align-content: center;
+                                justify-content: center;
+                                flex-direction: column;
+                                margin-left: .5rem;
+                              `}>
+                                  <Spin />
+                                </div>
+                              )
+                            }
+
+
                         </RenameRow>
                         : null
                 }

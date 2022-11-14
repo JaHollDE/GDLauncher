@@ -463,8 +463,8 @@ const Instances = ({ jaholldeData }) => {
                         gap: "10px"
                     }}>
                         {
-                            memoInstances.length > 0 ? (
-                                memoInstances.map(i => <Instance key={i.name} instanceName={i.name} />)
+                            instances.length > 0 ? (
+                                instances.map(i => <Instance key={i.name} instanceName={i.name} />)
                             ) : (
                                 <NoInstance>
                                     Es wurde keine Instanz erstellt.
