@@ -7,6 +7,7 @@ import path from "path";
 import { ipcRenderer } from "electron";
 import { closeModal, openModal } from "../reducers/modals/actions";
 import { useDispatch } from "react-redux";
+import { Button, Form, Select } from "antd";
 
 const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
 
@@ -22,7 +23,6 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
   }, []);
 
   const submit = async (event) => {
-    event.preventDefault();
     const userData = await ipcRenderer.invoke("getUserData");
     const folder = path.join(userData, "skins");
     const skinsFile = path.join(folder, "skins.json");
@@ -33,7 +33,7 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
     if (edit) {
       const skins = JSON.parse(fs.readFileSync(skinsFile).toString());
       skins.forEach((skin) => {
-        if (skin.name === path.relative(folder, editPath).split(".")[0]) {
+        if (skin.name === path.relative(folder, editPath)) {
           skin.variant = selectedVariant;
         }
       });
@@ -42,31 +42,38 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
       dispatch(closeModal());
       setTimeout(() => {
         dispatch(openModal("Success", {
-          title: "Erfolg!", message: "Der Skin wurde erfolgreich bearbeitet."
+          title: "Erfolg!", message: "Der Skin wurde erfolgreich bearbeitet.", closeCallback: () => {
+            window.setTimeout(() => {
+              dispatch(openModal("SkinManager"));
+            }, 250);
+          }
         }));
       }, 225);
       return;
     }
+
+    let name = selectedFile.name;
+    let p = selectedFile.path;
 
     if (fs.existsSync(path.join(folder, selectedFile.name))) {
-      setTimeout(() => {
-        dispatch(openModal("InstanceCrashed", {
-          code: 5, errorLogs: "Eine Datei mit diesem Namen existiert bereits. Bitte wähle einen anderen Namen aus."
-        }));
-      }, 225);
-      return;
+      name = (Math.random()*1000000).toString(16) + "_" + name;
+      p = path.join(p, "..", name);
     }
 
-    fs.copyFileSync(selectedFile.path, path.join(folder, selectedFile.name));
+    fs.copyFileSync(selectedFile.path, path.join(folder, name));
     const skins = JSON.parse(fs.readFileSync(skinsFile).toString());
     skins.push({
-      name: selectedFile.name.split(".")[0], variant: selectedVariant
+      name: name, variant: selectedVariant
     });
     fs.writeFileSync(skinsFile, JSON.stringify(skins));
     dispatch(closeModal());
     setTimeout(() => {
       dispatch(openModal("Success", {
-        title: "Erfolg!", message: "Dein Skin wurde erfolgreich importiert."
+        title: "Erfolg!", message: "Dein Skin wurde erfolgreich importiert.", closeCallback: () => {
+          window.setTimeout(() => {
+            dispatch(openModal("SkinManager"));
+          }, 250);
+        }
       }));
     }, 225);
   };
@@ -81,16 +88,30 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
   >
     <Container>
       <Logo size={100} />
+
       <Title>{!edit ? "Skin Import" : "Bearbeiten"}</Title>
-      {!edit && (<Upload type={"file"} value={selectedFile} onChange={event => setSelectedFile(event.target.files[0])}
-                         accept="image/png, image/jpeg" />)}
-      <Variant name={"variant"} id={"variant"} onChange={event => setSelectedVariant(event.target.value)}>
-        <option value={""} selected={!selectedVariant}></option>
-        <option value={"Classic"} selected={selectedVariant === "classic"}>Classic</option>
-        <option value={"Slim"} selected={selectedVariant === "slim"}>Slim</option>
-      </Variant>
-      <Button type={"submit"} name={"submit"} value={!edit ? "Importieren" : "Speichern"}
-              onClick={event => submit(event)} />
+      <Form onFinish={event => submit(event)} css={"display: flex; flex-direction: column"}>
+
+        {!edit && (
+          <Form.Item name={"file"} rules={[{required: true, message: "Es wird eine Datei benötigt."}]}>
+            <Upload type={"file"} value={selectedFile} onChange={event => setSelectedFile(event.target.files[0])}
+                    accept="image/png, image/jpeg" />
+          </Form.Item>
+        )}
+        <Form.Item name={"variant"} rules={[{required: true, message: "Es wird eine Variante benötigt."}]}>
+          <Select name={"variant"} id={"variant"} onChange={val => setSelectedVariant(val)} css={"min-width: 5rem; margin: .5rem !important;"}>
+            <Select.Option value={""} selected={!selectedVariant}>{" "}</Select.Option>
+            <Select.Option value={"Classic"} selected={selectedVariant === "classic"}>Classic</Select.Option>
+            <Select.Option value={"Slim"} selected={selectedVariant === "slim"}>Slim</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button htmlType={"submit"} name={"submit"} css={"margin-top: .5rem;" }>
+            {!edit ? "Importieren" : "Speichern"}
+          </Button>
+        </Form.Item>
+
+      </Form>
     </Container>
   </Modal>);
 
@@ -126,10 +147,4 @@ const Variant = styled.select`
   margin-top: 1rem;
   background-color: #000c17;
   color: ${props => props.theme.palette.text.primary};
-`;
-
-const Button = styled.input`
-  flex-grow: 1;
-  margin-top: 1rem;
-  background-color: #000c17;
 `;

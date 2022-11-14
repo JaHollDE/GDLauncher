@@ -59,23 +59,18 @@ const JaHollDESkinManager = () => {
     folderRef.current = folder;
     skinsFile.current = file;
 
-    fs.readdir(folder, (err, files) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
+    const files = await fs.promises.readdir(folder);
 
-      setSkins(skins => [...skins, ...files
+    setSkins(skins => [...skins, ...files
         .map(file => path.join(folder, file))
-        .filter(file => !path.basename(file).includes(account.selectedProfile.name))
         .filter(file => path.extname(file) === ".png")]);
-    });
     let url = await getPlayerSkin(account.selectedProfile.id);
     setCurrentSkin(url);
   }, []);
 
+
   function getSkinName(input) {
-    return path.relative(folderRef.current, input).split(".")[0];
+    return path.relative(folderRef.current, input);
   }
 
   const capitalize = (s) => {
@@ -97,19 +92,24 @@ const JaHollDESkinManager = () => {
   async function applySkin() {
     let variant = getVariant(selected);
     if (!variant) variant = "Classic";
-    msMinecraftUploadSkin(account.accessToken, selected, variant, getSkinName(selected)).then(
-      function success(data) {
-        if (data.code === 200) {
+    msMinecraftUploadSkin(account.accessToken, selected, variant).then(
+      (data) => {
+        if (data.status === 200) {
           dispatch(closeModal());
-          setTimeout(() => {
+          window.setTimeout(() => {
             dispatch(openModal("Success", {
-              title: "Erfolg!", message: "Dein Skin wurde erfolgreich geändert."
+              title: "Erfolg!", message: "Dein Skin wurde erfolgreich geändert.", closeCallback: () => {
+                window.setTimeout(() => {
+                  dispatch(openModal("SkinManager"));
+                }, 250);
+              }
             }));
           }, 225);
-        }
-      },
-      function error() {
-        setTimeout(() => {
+        } else throw new Error("");
+      }).catch(
+      (err) => {
+        console.warn(err);
+        window.setTimeout(() => {
           dispatch(closeModal());
           dispatch(
             openModal("InstanceCrashed", {
@@ -187,8 +187,8 @@ const JaHollDESkinManager = () => {
           <SkinContainer>
             <SkinLabel>Dein Skin:</SkinLabel>
             <Button css={`height: 250px;
-              border-color: #516682;`}>
-              <ReactSkinview3d skinUrl={currentSkin} height={250} width={100}
+              border-color: #516682; cursor: pointer`}>
+              <ReactSkinview3d skinUrl={currentSkin} height={250} width={100} css={"cursor: pointer !important;"}
                                onReady={({ viewer }) => viewer.controls.enableZoom = false} />
             </Button>
           </SkinContainer>
@@ -198,7 +198,7 @@ const JaHollDESkinManager = () => {
               <ContextMenuTrigger id={`skin_${skin}`} holdToDisplay={-1}>
                 <Button css={`height: 250px;`} onClick={event => chooseSkin(event, skin)}>
                   <ReactSkinview3d skinUrl={skin} height={250} width={100}
-                                   onReady={({ viewer }) => viewer.controls.enableZoom = false} />
+                                   onReady={({ viewer }) => viewer.controls.enableZoom = false} css={"cursor: pointer !important;"} />
                 </Button>
                 <VariantFooterLabel>{capitalize(getVariant(skin))}</VariantFooterLabel>
               </ContextMenuTrigger>

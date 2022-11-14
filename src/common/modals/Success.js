@@ -3,9 +3,10 @@ import styled from "styled-components";
 import React, { memo } from "react";
 import Logo from "../../ui/Logo";
 
-const Success = ({ title, message }) => {
+const Success = ({ title, message, closeCallback }) => {
   return (
     <Modal
+      closeCallback={closeCallback}
       css={`
         height: auto;
         width: 350px;

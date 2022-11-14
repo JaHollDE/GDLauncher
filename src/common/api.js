@@ -17,7 +17,7 @@ import {
 } from "./utils/constants";
 import { sortByDate } from "./utils";
 import ga from "./utils/analytics";
-import unirest from "unirest";
+import fs from "fs";
 
 const axioInstance = axios.create({
   headers: {
@@ -85,7 +85,17 @@ export const msMinecraftProfile = mcAccessToken => {
   });
 };
 
-export const msMinecraftUploadSkin = async (mcAccessToken, skinData, variant, name) => {
+export const msMinecraftUploadSkin = async (mcAccessToken, skinData, variant) => {
+  const formData = new FormData();
+  formData.append("file", new Blob([fs.readFileSync(skinData)]), "skin.png");
+  formData.append("variant", variant);
+  return axios.post(`${MINECRAFT_SERVICES_URL}/minecraft/profile/skins`, formData, {
+    headers: {
+      Authorization: `Bearer ${mcAccessToken}`
+    }
+  });
+
+  /*
   return new Promise(async (resolve, reject) => {
     await unirest("POST", `${MINECRAFT_SERVICES_URL}/minecraft/profile/skins`)
       .headers({
@@ -97,7 +107,7 @@ export const msMinecraftUploadSkin = async (mcAccessToken, skinData, variant, na
         if (res.error) reject(res.error);
         resolve(res);
       });
-  });
+  });*/
 };
 
 export const msOAuthRefresh = (clientId, refreshToken) => {
