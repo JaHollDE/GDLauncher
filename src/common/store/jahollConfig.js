@@ -105,11 +105,13 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
     });
     const modFolder = path.join(instanceFolder, "mods");
 
-    fsa.readdirSync(modFolder).forEach(mod => {
-        const file = "./mods/" + mod;
-        const found = config.find(l => l.file === file);
-        if (!found) fsa.rmSync(path.join(modFolder, mod))
-    });
+    if (fsa.existsSync(modFolder)) {
+        fsa.readdirSync(modFolder).forEach(mod => {
+            const file = "./mods/" + mod;
+            const found = config.find(l => l.file === file);
+            if (!found) fsa.rmSync(path.join(modFolder, mod))
+        });
+    }
 
     if (deleteMod) await setConfig(config, instanceName);
 
