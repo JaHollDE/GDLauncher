@@ -3,7 +3,7 @@ module.exports = {
     {
       header: "SkinManager",
       content: "Es ist jetzt möglich seine Skins innerhalb vom Launcher zu verwalten. @DerSimeon",
-      advanced: {}
+      advanced: {pr: "1"}
     }
   ],
   improvements: [],
