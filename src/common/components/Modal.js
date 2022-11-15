@@ -47,7 +47,9 @@ const Modal = ({
 
   return (
     <div
-      onMouseDown={e => e.stopPropagation()}
+      onMouseDown={e => {
+        e.stopPropagation();
+      }}
       transparentBackground={transparentBackground}
       className={className}
       css={`

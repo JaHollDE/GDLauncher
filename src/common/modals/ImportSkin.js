@@ -9,15 +9,15 @@ import { closeModal, openModal } from "../reducers/modals/actions";
 import { useDispatch } from "react-redux";
 import { Button, Form, Select } from "antd";
 
-const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
+const ImportSkin = ({ editPath = undefined, variant = undefined, edit = false }) => {
 
   const dispatch = useDispatch();
   const [selectedFile, setSelectedFile] = React.useState(null);
-  const [selectedVariant, setSelectedVariant] = React.useState(null);
+  const [selectedVariant, setSelectedVariant] = React.useState(variant ? variant : "classic");
 
   useEffect(() => {
-    if (editPath === "") return;
-    const file = fs.readFileSync(String(editPath));
+    if (!editPath) return;
+    const file = fs.readFileSync(editPath);
     setSelectedFile(file);
     setSelectedVariant(variant);
   }, []);
@@ -42,7 +42,7 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
       dispatch(closeModal());
       setTimeout(() => {
         dispatch(openModal("Success", {
-          title: "Erfolg!", message: "Der Skin wurde erfolgreich bearbeitet.", closeCallback: () => {
+          title: "Erfolg!", message: "Der Skin wurde erfolgreich bearbeitet.", closeButtonTitle: "Skins", closeCallback: () => {
             window.setTimeout(() => {
               dispatch(openModal("SkinManager"));
             }, 250);
@@ -69,7 +69,7 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
     dispatch(closeModal());
     setTimeout(() => {
       dispatch(openModal("Success", {
-        title: "Erfolg!", message: "Dein Skin wurde erfolgreich importiert.", closeCallback: () => {
+        title: "Erfolg!", message: "Dein Skin wurde erfolgreich importiert.", closeButtonTitle: "Skins", closeCallback: () => {
           window.setTimeout(() => {
             dispatch(openModal("SkinManager"));
           }, 250);
@@ -77,6 +77,8 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
       }));
     }, 225);
   };
+
+  // <Select.Option value={""} defaultValue={!selectedVariant}>{" "}</Select.Option>
 
   // File input
   return (<Modal
@@ -98,13 +100,21 @@ const ImportSkin = ({ editPath = "", variant = "", edit = false }) => {
                     accept="image/png, image/jpeg" />
           </Form.Item>
         )}
-        <Form.Item name={"variant"} rules={[{required: true, message: "Es wird eine Variante benötigt."}]}>
-          <Select name={"variant"} id={"variant"} onChange={val => setSelectedVariant(val)} css={"min-width: 5rem; margin: .5rem !important;"}>
-            <Select.Option value={""} selected={!selectedVariant}>{" "}</Select.Option>
-            <Select.Option value={"Classic"} selected={selectedVariant === "classic"}>Classic</Select.Option>
-            <Select.Option value={"Slim"} selected={selectedVariant === "slim"}>Slim</Select.Option>
-          </Select>
-        </Form.Item>
+        {selectedVariant ? (
+          <Form.Item name={"variant"}>
+            <Select defaultValue={selectedVariant} name={"variant"} id={"variant"} onChange={val => setSelectedVariant(val)} css={"min-width: 5rem; margin: .5rem !important;"}>
+              <Select.Option value={"classic"}>Classic</Select.Option>
+              <Select.Option value={"slim"}>Slim</Select.Option>
+            </Select>
+          </Form.Item>
+        ) : (
+          <Form.Item name={"variant2"}>
+            <Select defaultValue={"classic"} name={"variant"} id={"variant"} onChange={val => setSelectedVariant(val)} css={"min-width: 5rem; margin: .5rem !important;"}>
+              <Select.Option value={"classic"}>Classic</Select.Option>
+              <Select.Option value={"slim"}>Slim</Select.Option>
+            </Select>
+          </Form.Item>
+        )}
         <Form.Item>
           <Button htmlType={"submit"} name={"submit"} css={"margin-top: .5rem;" }>
             {!edit ? "Importieren" : "Speichern"}

@@ -2,11 +2,14 @@ import Modal from "../components/Modal";
 import styled from "styled-components";
 import React, { memo } from "react";
 import Logo from "../../ui/Logo";
+import { Button } from "antd";
+import { useDispatch } from "react-redux";
+import { closeModal } from "../reducers/modals/actions";
 
-const Success = ({ title, message, closeCallback }) => {
+const Success = ({ title, message, closeCallback, closeButtonTitle }) => {
+  const dispatch = useDispatch();
   return (
     <Modal
-      closeCallback={closeCallback}
       css={`
         height: auto;
         width: 350px;
@@ -17,6 +20,12 @@ const Success = ({ title, message, closeCallback }) => {
         <Logo size={100} />
         <Title>{title}</Title>
         <Message>{message}</Message>
+        {closeButtonTitle && (
+          <Button onClick={() => {
+            dispatch(closeModal());
+            closeCallback();
+          }}>{closeButtonTitle}</Button>
+        )}
       </Container>
     </Modal>
   );

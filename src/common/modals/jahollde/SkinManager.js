@@ -98,7 +98,7 @@ const JaHollDESkinManager = () => {
           dispatch(closeModal());
           window.setTimeout(() => {
             dispatch(openModal("Success", {
-              title: "Erfolg!", message: "Dein Skin wurde erfolgreich geändert.", closeCallback: () => {
+              title: "Erfolg!", message: "Dein Skin wurde erfolgreich geändert.", closeButtonTitle: "Skins", closeCallback: () => {
                 window.setTimeout(() => {
                   dispatch(openModal("SkinManager"));
                 }, 250);
