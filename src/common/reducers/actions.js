@@ -3264,24 +3264,7 @@ export function launchInstance(instanceName, forceQuit = false) {
         completeArgs.push(`-Djahollde.version=${modVersion}`);
         completeArgs.push(`-Djahollde.instance=${instanceName}`);
       }
-      if (
-        l.toString().includes('fabric.addmods') ||
-        l.toString().includes('fabric-addmods')
-      ) {
-        const addModsError = 122;
-        setTimeout(() => {
-          dispatch(closeModal());
-          dispatch(
-            openModal('InstanceCrashed', {
-              addModsError,
-              errorLogs:
-                'Ein Versuch das Hashing System zu umgehen wurde erkannt, bitte entferne -fabric-addmods aus deinen Java Argumenten.'
-            })
-          );
-        }, 225);
-        dispatch(launchInstance(instanceName, true));
-        return;
-      }
+
       completeArgs.push(l.toString()
           .replace(...replaceRegex)
           .replace(
