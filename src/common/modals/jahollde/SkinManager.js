@@ -14,7 +14,7 @@ import { getPlayerSkin } from "../../../app/desktop/utils";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import { faTrash, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import * as skinApi from "../../../app/desktop/utils/skinApi";
 
 const JaHollDESkinManager = () => {
   function importSkin() {
@@ -48,29 +48,9 @@ const JaHollDESkinManager = () => {
   };
 
 
-  useEffect(async () => {
-    const userData = await ipcRenderer.invoke("getUserData");
-    const folder = path.join(userData, "skins");
-    const file = path.join(folder, "skins.json");
-    fs.mkdirSync(folder, { recursive: true });
-    if (!fs.existsSync(file)) {
-      fs.writeFileSync(file, "[]");
-    }
-    folderRef.current = folder;
-    skinsFile.current = file;
-
-    const files = await fs.promises.readdir(folder);
-
-    setSkins(skins => [...skins, ...files
-        .map(file => path.join(folder, file))
-        .filter(file => path.extname(file) === ".png")]);
-    let url = await getPlayerSkin(account.selectedProfile.id);
-    setCurrentSkin(url);
-  }, []);
-
-
-  function getSkinName(input) {
-    return path.relative(folderRef.current, input);
+  const getSkinNameByPath = async (skinPath) => {
+    const {skinsFolder} = await skinApi.getSkinPath();
+    return path.relative(skinsFolder, skinPath);
   }
 
   const capitalize = (s) => {
@@ -78,19 +58,40 @@ const JaHollDESkinManager = () => {
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
 
-  function getVariant(input) {
-    let name = getSkinName(input);
-    let result = "Classic";
-    JSON.parse(fs.readFileSync(skinsFile.current).toString()).forEach(skin => {
-      if (skin.name === name) {
-        result = skin.variant;
-      }
-    });
-    return result.toLowerCase();
+  const getVariantByPath = async (skinPath) => {
+    const name = await getSkinNameByPath(skinPath);
+    const config = await skinApi.getConfig();
+    const res = config.find(skin => skin.name === name);
+    return res ? res.variant.toLowerCase() : "classic";
   }
 
+  useEffect(async () => {
+    const {skinsFolder} = await skinApi.getSkinPath();
+    const files = await skinApi.getAvailableSkins();
+    const mappedFiles = [];
+    for (const file of files) {
+      if (path.extname(file) !== ".png") continue;
+      const p = path.join(skinsFolder, file);
+      mappedFiles.push({
+        skinPath: p,
+        skinVariant: await getVariantByPath(p)
+      });
+    }
+
+    console.log("mapped skins: ", mappedFiles);
+
+    setSkins(skins => [...skins, ...mappedFiles]);
+
+    const url = await getPlayerSkin(account.selectedProfile.id);
+    setCurrentSkin(url);
+  }, []);
+
+
+
+
   async function applySkin() {
-    let variant = getVariant(selected);
+    const {skinVariant, path} = selected;
+    let variant = skinVariant;
     if (!variant) variant = "Classic";
     msMinecraftUploadSkin(account.accessToken, selected, variant).then(
       (data) => {
@@ -124,13 +125,21 @@ const JaHollDESkinManager = () => {
     return undefined;
   }
 
-  const deleteSkin = (event, data) => {
+  const deleteSkin = async (event, data) => {
     let parent = event.target.parentElement.parentElement;
     if (parent) {
       event.target.parentElement.parentElement.remove();
       fs.rmSync(data.skin);
       // remove it from the skins
-      setSkins(skins => skins.filter(skin => skin !== data.skin));
+
+      console.log("Remove element: ", data.skin);
+
+      const config = await skinApi.getConfig();
+
+      setSkins(skins => {
+        const newVal = skins.filter(skin => skin !== data.skin);
+        return newVal;
+      });
       if (parent === selected) {
         setSelectedElement(null);
         setSelected(null);
@@ -141,7 +150,7 @@ const JaHollDESkinManager = () => {
   const editSkin = (event, data) => {
     dispatch(closeModal());
     setTimeout(() => {
-      dispatch(openModal("ImportSkin", { editPath: data.skin, variant: getVariant(data.skin), edit: true }));
+      dispatch(openModal("ImportSkin", { editPath: data.skin.skinPath, variant: data.skin.skinVariant, edit: true }));
     }, 225);
   };
 
@@ -195,15 +204,15 @@ const JaHollDESkinManager = () => {
 
           {skins.map((skin) => (
             <SkinContainer>
-              <ContextMenuTrigger id={`skin_${skin}`} holdToDisplay={-1}>
+              <ContextMenuTrigger id={`skin_${skin.skinPath}`} holdToDisplay={-1}>
                 <Button css={`height: 250px;`} onClick={event => chooseSkin(event, skin)}>
-                  <ReactSkinview3d skinUrl={skin} height={250} width={100}
+                  <ReactSkinview3d skinUrl={skin.skinPath} height={250} width={100}
                                    onReady={({ viewer }) => viewer.controls.enableZoom = false} css={"cursor: pointer !important;"} />
                 </Button>
-                <VariantFooterLabel>{capitalize(getVariant(skin))}</VariantFooterLabel>
+                <VariantFooterLabel>{capitalize(skin.skinVariant)}</VariantFooterLabel>
               </ContextMenuTrigger>
 
-              <ContextMenu id={`skin_${skin}`}>
+              <ContextMenu id={`skin_${skin.skinPath}`}>
                 <MenuItem data={{ skin: skin }} onClick={editSkin}>
                   <FontAwesomeIcon
                     icon={faWrench}

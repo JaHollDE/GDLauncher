@@ -8,6 +8,7 @@ import { ipcRenderer } from "electron";
 import { closeModal, openModal } from "../reducers/modals/actions";
 import { useDispatch } from "react-redux";
 import { Button, Form, Select } from "antd";
+import * as skinApi from "../../app/desktop/utils/skinApi"
 
 const ImportSkin = ({ editPath = undefined, variant = undefined, edit = false }) => {
 
@@ -30,14 +31,21 @@ const ImportSkin = ({ editPath = undefined, variant = undefined, edit = false })
       return;
     }
 
+    const skins = await skinApi.getConfig();
+
     if (edit) {
-      const skins = JSON.parse(fs.readFileSync(skinsFile).toString());
+      let worked = false;
       skins.forEach((skin) => {
         if (skin.name === path.relative(folder, editPath)) {
           skin.variant = selectedVariant;
+          worked = true;
         }
       });
-      fs.writeFileSync(skinsFile, JSON.stringify(skins));
+      if (!worked) skins.push({
+        name: path.relative(folder, editPath),
+        variant: selectedVariant
+      })
+      await skinApi.writeConfig(skins);
 
       dispatch(closeModal());
       setTimeout(() => {
@@ -61,11 +69,12 @@ const ImportSkin = ({ editPath = undefined, variant = undefined, edit = false })
     }
 
     fs.copyFileSync(selectedFile.path, path.join(folder, name));
-    const skins = JSON.parse(fs.readFileSync(skinsFile).toString());
+
     skins.push({
       name: name, variant: selectedVariant
     });
-    fs.writeFileSync(skinsFile, JSON.stringify(skins));
+    await skinApi.writeConfig(skins);
+
     dispatch(closeModal());
     setTimeout(() => {
       dispatch(openModal("Success", {
@@ -100,6 +109,7 @@ const ImportSkin = ({ editPath = undefined, variant = undefined, edit = false })
                     accept="image/png, image/jpeg" />
           </Form.Item>
         )}
+
         {selectedVariant ? (
           <Form.Item name={"variant"}>
             <Select defaultValue={selectedVariant} name={"variant"} id={"variant"} onChange={val => setSelectedVariant(val)} css={"min-width: 5rem; margin: .5rem !important;"}>

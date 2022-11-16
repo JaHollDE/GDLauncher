@@ -21,13 +21,21 @@ import {
   removeDuplicates,
   sortByForgeVersionDesc
 } from '../../../common/utils';
-import { getAddon, getAddonFile, mcGetPlayerSkin } from '../../../common/api';
+import { getAddon, getAddonFile, mcGetPlayerSkin } from "../../../common/api";
 import { downloadFile } from './downloader';
 import browserDownload from '../../../common/utils/browserDownload';
 import { REQUIRED_JAVA_ARGS } from './constants';
 
 export const isDirectory = source =>
   fs.lstat(source).then(r => r.isDirectory());
+
+export async function getPlayerSkin(uuid) {
+  const playerSkin = await mcGetPlayerSkin(uuid);
+  const { data } = playerSkin;
+  const base64 = data.properties[0].value;
+  const decoded = JSON.parse(Buffer.from(base64, 'base64').toString());
+  return decoded?.textures?.SKIN?.url;
+}
 
 export const getDirectories = async source => {
   const dirs = await fs.readdir(source);
@@ -873,14 +881,6 @@ export const downloadAddonZip = async (id, fileID, instancePath, tempPath) => {
   });
   const manifest = await fse.readJson(instanceManifest);
   return manifest;
-};
-
-export const getPlayerSkin = async uuid => {
-  const playerSkin = await mcGetPlayerSkin(uuid);
-  const { data } = playerSkin;
-  const base64 = data.properties[0].value;
-  const decoded = JSON.parse(Buffer.from(base64, 'base64').toString());
-  return decoded?.textures?.SKIN?.url;
 };
 
 export const extractFace = async buffer => {
