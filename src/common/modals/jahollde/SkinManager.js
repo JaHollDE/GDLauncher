@@ -42,7 +42,7 @@ const JaHollDESkinManager = () => {
       setSelectedElement(null);
       if (selectedElement === element) return;
     }
-    element.style.border = "2px solid #1ba70c";
+    //element.style.border = "2px solid #1ba70c";
     setSelected(skin);
     setSelectedElement(element);
   };
@@ -90,10 +90,10 @@ const JaHollDESkinManager = () => {
 
 
   async function applySkin() {
-    const {skinVariant, path} = selected;
+    const {skinVariant, skinPath} = selected;
     let variant = skinVariant;
     if (!variant) variant = "Classic";
-    msMinecraftUploadSkin(account.accessToken, selected, variant).then(
+    msMinecraftUploadSkin(account.accessToken, skinPath, variant).then(
       (data) => {
         if (data.status === 200) {
           dispatch(closeModal());
@@ -205,7 +205,10 @@ const JaHollDESkinManager = () => {
           {skins.map((skin) => (
             <SkinContainer>
               <ContextMenuTrigger id={`skin_${skin.skinPath}`} holdToDisplay={-1}>
-                <Button css={`height: 250px;`} onClick={event => chooseSkin(event, skin)}>
+                <Button css={`
+                  height: 250px;
+                  border: ${selected !== null && selected.skinPath === skin.skinPath ? "2px" : "0px"} solid #1ba70c !important;
+                `} onClick={event => chooseSkin(event, skin)}>
                   <ReactSkinview3d skinUrl={skin.skinPath} height={250} width={100}
                                    onReady={({ viewer }) => viewer.controls.enableZoom = false} css={"cursor: pointer !important;"} />
                 </Button>
