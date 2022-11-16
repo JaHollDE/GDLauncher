@@ -94,20 +94,6 @@ export const msMinecraftUploadSkin = async (mcAccessToken, skinData, variant) =>
       Authorization: `Bearer ${mcAccessToken}`
     }
   });
-
-  /*
-  return new Promise(async (resolve, reject) => {
-    await unirest("POST", `${MINECRAFT_SERVICES_URL}/minecraft/profile/skins`)
-      .headers({
-        "Authorization": `Bearer ${mcAccessToken}`
-      })
-      .field("variant", variant)
-      .attach("file", skinData)
-      .end(function(res) {
-        if (res.error) reject(res.error);
-        resolve(res);
-      });
-  });*/
 };
 
 export const msOAuthRefresh = (clientId, refreshToken) => {
