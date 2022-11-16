@@ -1,103 +1,80 @@
 // @flow
-import axios from 'axios';
-import qs from 'querystring';
+import axios from "axios";
+import qs from "querystring";
 import {
-  MOJANG_APIS,
-  FORGESVC_URL,
-  MC_MANIFEST_URL,
   FABRIC_APIS,
-  JAVA_MANIFEST_URL,
+  FORGESVC_URL,
+  FTB_API_URL,
   IMGUR_CLIENT_ID,
+  JAVA_LATEST_MANIFEST_URL,
+  JAVA_MANIFEST_URL,
+  MC_MANIFEST_URL,
   MICROSOFT_LIVE_LOGIN_URL,
   MICROSOFT_XBOX_LOGIN_URL,
   MICROSOFT_XSTS_AUTH_URL,
   MINECRAFT_SERVICES_URL,
-  FTB_API_URL,
-  JAVA_LATEST_MANIFEST_URL
-} from './utils/constants';
-import { sortByDate } from './utils';
-import ga from './utils/analytics';
+  MOJANG_APIS
+} from "./utils/constants";
+import { sortByDate } from "./utils";
+import ga from "./utils/analytics";
+import fs from "fs";
 
 const axioInstance = axios.create({
   headers: {
-    'X-API-KEY': '$2a$10$5BgCleD8.rLQ5Ix17Xm2lOjgfoeTJV26a1BXmmpwrOemgI517.nuC',
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
+    "X-API-KEY": "$2a$10$5BgCleD8.rLQ5Ix17Xm2lOjgfoeTJV26a1BXmmpwrOemgI517.nuC",
+    "Content-Type": "application/json",
+    Accept: "application/json"
   }
 });
 
 const trackFTBAPI = () => {
-  ga.sendCustomEvent('FTBAPICall');
+  ga.sendCustomEvent("FTBAPICall");
 };
 
 const trackCurseForgeAPI = () => {
-  ga.sendCustomEvent('CurseForgeAPICall');
+  ga.sendCustomEvent("CurseForgeAPICall");
 };
 
 // Microsoft Auth
-export const msExchangeCodeForAccessToken = (
-  clientId,
-  redirectUrl,
-  code,
-  codeVerifier
-) => {
-  return axios.post(
-    `${MICROSOFT_LIVE_LOGIN_URL}/oauth20_token.srf`,
-    qs.stringify({
-      grant_type: 'authorization_code',
-      client_id: clientId,
-      scope: 'offline_access xboxlive.signin xboxlive.offline_access',
-      redirect_uri: redirectUrl,
-      code,
-      code_verifier: codeVerifier
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Skip-Origin': 'skip'
-      }
+export const msExchangeCodeForAccessToken = (clientId, redirectUrl, code, codeVerifier) => {
+  return axios.post(`${MICROSOFT_LIVE_LOGIN_URL}/oauth20_token.srf`, qs.stringify({
+    grant_type: "authorization_code",
+    client_id: clientId,
+    scope: "offline_access xboxlive.signin xboxlive.offline_access",
+    redirect_uri: redirectUrl,
+    code,
+    code_verifier: codeVerifier
+  }), {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", "X-Skip-Origin": "skip"
     }
-  );
+  });
 };
 
 export const msAuthenticateXBL = accessToken => {
-  return axios.post(
-    `${MICROSOFT_XBOX_LOGIN_URL}/user/authenticate`,
-    {
-      Properties: {
-        AuthMethod: 'RPS',
-        SiteName: 'user.auth.xboxlive.com',
-        RpsTicket: `d=${accessToken}` // your access token from step 2 here
-      },
-      RelyingParty: 'http://auth.xboxlive.com',
-      TokenType: 'JWT'
-    },
-    {
-      headers: {
-        'x-xbl-contract-version': 1
-      }
+  return axios.post(`${MICROSOFT_XBOX_LOGIN_URL}/user/authenticate`, {
+    Properties: {
+      AuthMethod: "RPS", SiteName: "user.auth.xboxlive.com", RpsTicket: `d=${accessToken}` // your access token from step 2 here
+    }, RelyingParty: "http://auth.xboxlive.com", TokenType: "JWT"
+  }, {
+    headers: {
+      "x-xbl-contract-version": 1
     }
-  );
+  });
 };
 
 export const msAuthenticateXSTS = xblToken => {
   return axios.post(`${MICROSOFT_XSTS_AUTH_URL}/xsts/authorize`, {
     Properties: {
-      SandboxId: 'RETAIL',
-      UserTokens: [xblToken]
-    },
-    RelyingParty: 'rp://api.minecraftservices.com/',
-    TokenType: 'JWT'
+      SandboxId: "RETAIL", UserTokens: [xblToken]
+    }, RelyingParty: "rp://api.minecraftservices.com/", TokenType: "JWT"
   });
 };
 
 export const msAuthenticateMinecraft = (uhsToken, xstsToken) => {
-  return axios.post(
-    `${MINECRAFT_SERVICES_URL}/authentication/login_with_xbox`,
-    {
-      identityToken: `XBL3.0 x=${uhsToken};${xstsToken}`
-    }
-  );
+  return axios.post(`${MINECRAFT_SERVICES_URL}/authentication/login_with_xbox`, {
+    identityToken: `XBL3.0 x=${uhsToken};${xstsToken}`
+  });
 };
 
 export const msMinecraftProfile = mcAccessToken => {
@@ -108,93 +85,71 @@ export const msMinecraftProfile = mcAccessToken => {
   });
 };
 
-export const msOAuthRefresh = (clientId, refreshToken) => {
-  return axios.post(
-    `${MICROSOFT_LIVE_LOGIN_URL}/oauth20_token.srf`,
-    qs.stringify({
-      grant_type: 'refresh_token',
-      scope: 'offline_access xboxlive.signin xboxlive.offline_access',
-      client_id: clientId,
-      refresh_token: refreshToken
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Skip-Origin': 'skip'
-      }
+export const msMinecraftUploadSkin = async (mcAccessToken, skinData, variant) => {
+  const formData = new FormData();
+  formData.append("file", new Blob([fs.readFileSync(skinData)]), "skin.png");
+  formData.append("variant", variant);
+  return axios.post(`${MINECRAFT_SERVICES_URL}/minecraft/profile/skins`, formData, {
+    headers: {
+      Authorization: `Bearer ${mcAccessToken}`
     }
-  );
+  });
+};
+
+export const msOAuthRefresh = (clientId, refreshToken) => {
+  return axios.post(`${MICROSOFT_LIVE_LOGIN_URL}/oauth20_token.srf`, qs.stringify({
+    grant_type: "refresh_token",
+    scope: "offline_access xboxlive.signin xboxlive.offline_access",
+    client_id: clientId,
+    refresh_token: refreshToken
+  }), {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", "X-Skip-Origin": "skip"
+    }
+  });
 };
 
 // Minecraft API
 
 export const mcAuthenticate = (username, password, clientToken) => {
-  return axios.post(
-    `${MOJANG_APIS}/authenticate`,
-    {
-      agent: {
-        name: 'Minecraft',
-        version: 1
-      },
-      username,
-      password,
-      clientToken,
-      requestUser: true
-    },
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  return axios.post(`${MOJANG_APIS}/authenticate`, {
+    agent: {
+      name: "Minecraft", version: 1
+    }, username, password, clientToken, requestUser: true
+  }, { headers: { "Content-Type": "application/json" } });
 };
 
 export const mcValidate = (accessToken, clientToken) => {
-  return axios.post(
-    `${MOJANG_APIS}/validate`,
-    {
-      accessToken,
-      clientToken
-    },
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  return axios.post(`${MOJANG_APIS}/validate`, {
+    accessToken, clientToken
+  }, { headers: { "Content-Type": "application/json" } });
 };
 
 export const mcRefresh = (accessToken, clientToken) => {
-  return axios.post(
-    `${MOJANG_APIS}/refresh`,
-    {
-      accessToken,
-      clientToken,
-      requestUser: true
-    },
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  return axios.post(`${MOJANG_APIS}/refresh`, {
+    accessToken, clientToken, requestUser: true
+  }, { headers: { "Content-Type": "application/json" } });
 };
 
 export const mcGetPlayerSkin = uuid => {
-  return axios.get(
-    `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`
-  );
+  return axios.get(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
 };
 
 export const imgurPost = (image, onProgress) => {
   const bodyFormData = new FormData();
-  bodyFormData.append('image', image);
+  bodyFormData.append("image", image);
 
-  return axios.post('https://api.imgur.com/3/image', bodyFormData, {
+  return axios.post("https://api.imgur.com/3/image", bodyFormData, {
     headers: {
       Authorization: `Client-ID ${IMGUR_CLIENT_ID}`
-    },
-    ...(onProgress && { onUploadProgress: onProgress })
+    }, ...(onProgress && { onUploadProgress: onProgress })
   });
 };
 
 export const mcInvalidate = (accessToken, clientToken) => {
-  return axios.post(
-    `${MOJANG_APIS}/invalidate`,
-    {
-      accessToken,
-      clientToken
-    },
-    { headers: { 'Content-Type': 'application/json' } }
-  );
+  return axios.post(`${MOJANG_APIS}/invalidate`, {
+    accessToken, clientToken
+  }, { headers: { "Content-Type": "application/json" } });
 };
 
 export const getMcManifest = () => {
@@ -223,11 +178,7 @@ export const getJavaLatestManifest = () => {
 };
 
 export const getFabricJson = ({ mcVersion, loaderVersion }) => {
-  return axios.get(
-    `${FABRIC_APIS}/versions/loader/${encodeURIComponent(
-      mcVersion
-    )}/${encodeURIComponent(loaderVersion)}/profile/json`
-  );
+  return axios.get(`${FABRIC_APIS}/versions/loader/${encodeURIComponent(mcVersion)}/${encodeURIComponent(loaderVersion)}/profile/json`);
 };
 
 // FORGE ADDONS
@@ -242,12 +193,9 @@ export const getAddon = async projectID => {
 export const getMultipleAddons = async addons => {
   trackCurseForgeAPI();
   const url = `${FORGESVC_URL}/mods`;
-  const { data } = await axioInstance.post(
-    url,
-    JSON.stringify({
-      modIds: addons
-    })
-  );
+  const { data } = await axioInstance.post(url, JSON.stringify({
+    modIds: addons
+  }));
   return data?.data;
 };
 
@@ -312,39 +260,29 @@ export const getCFVersionIds = async () => {
   return data.data;
 };
 
-export const getSearch = async (
-  type,
-  searchFilter,
-  pageSize,
-  index,
-  sort,
-  isSortDescending,
-  gameVersion,
-  categoryId,
-  modLoaderType
-) => {
+export const getSearch = async (type, searchFilter, pageSize, index, sort, isSortDescending, gameVersion, categoryId, modLoaderType) => {
   trackCurseForgeAPI();
   const url = `${FORGESVC_URL}/mods/search`;
 
   // Map sort to sortField
   let sortField = 1;
   switch (sort) {
-    case 'Popularity':
+    case "Popularity":
       sortField = 2;
       break;
-    case 'LastUpdated':
+    case "LastUpdated":
       sortField = 3;
       break;
-    case 'Name':
+    case "Name":
       sortField = 4;
       break;
-    case 'Author':
+    case "Author":
       sortField = 5;
       break;
-    case 'TotalDownloads':
+    case "TotalDownloads":
       sortField = 6;
       break;
-    case 'Featured':
+    case "Featured":
     default:
       sortField = 1;
       break;
@@ -356,10 +294,9 @@ export const getSearch = async (
     pageSize,
     index,
     sortField,
-    sortOrder: isSortDescending ? 'desc' : 'asc',
-    gameVersion: gameVersion || '',
-    ...(modLoaderType === 'fabric' && { modLoaderType: 'Fabric' }),
-    classId: type === 'mods' ? 6 : 4471,
+    sortOrder: isSortDescending ? "desc" : "asc",
+    gameVersion: gameVersion || "", ...(modLoaderType === "fabric" && { modLoaderType: "Fabric" }),
+    classId: type === "mods" ? 6 : 4471,
     searchFilter
   };
 
@@ -374,7 +311,7 @@ export const getFTBModpackData = async modpackId => {
     const { data } = await axios.get(url);
     return data;
   } catch {
-    return { status: 'error' };
+    return { status: "error" };
   }
 };
 
@@ -385,7 +322,7 @@ export const getFTBModpackVersionData = async (modpackId, versionId) => {
     const { data } = await axios.get(url);
     return data;
   } catch {
-    return { status: 'error' };
+    return { status: "error" };
   }
 };
 export const getFTBChangelog = async (modpackId, versionId) => {
@@ -395,7 +332,7 @@ export const getFTBChangelog = async (modpackId, versionId) => {
     const { data } = await axios.get(url);
     return data;
   } catch {
-    return { status: 'error' };
+    return { status: "error" };
   }
 };
 

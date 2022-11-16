@@ -203,6 +203,7 @@
     "react-redux": "^7.2.6",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
+    "react-skinview3d": "^5.0.0",
     "react-transition-group": "^4.4.2",
     "react-type-animation": "^1.1.2",
     "react-virtualized-auto-sizer": "^1.0.6",

@@ -3161,10 +3161,10 @@ export function launchInstance(instanceName, forceQuit = false) {
         ? getJVMArguments113
         : getJVMArguments112;
 
-    const javaArguments = (javaArgs !== undefined ? javaArgs : args).split(' ');
     const javaMem = javaMemory !== undefined ? javaMemory : memory;
     const gameResolution = instanceResolution || globalMinecraftResolution;
 
+    const javaArguments = (javaArgs !== undefined ? javaArgs : args).split(' ');
     const jvmArguments = getJvmArguments(
       libraries,
       mcMainFile,
@@ -3264,6 +3264,7 @@ export function launchInstance(instanceName, forceQuit = false) {
         completeArgs.push(`-Djahollde.version=${modVersion}`);
         completeArgs.push(`-Djahollde.instance=${instanceName}`);
       }
+
       completeArgs.push(l.toString()
           .replace(...replaceRegex)
           .replace(
