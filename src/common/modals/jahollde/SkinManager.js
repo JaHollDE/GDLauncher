@@ -133,13 +133,18 @@ const JaHollDESkinManager = () => {
       // remove it from the skins
 
       console.log("Remove element: ", data.skin);
+      fs.rmSync(data.skin.skinPath);
 
       const config = await skinApi.getConfig();
+      const skinName = await getSkinNameByPath(data.skin.skinPath);
+      const newConfig = config.filter(skin => skin.name !== skinName);
+      await skinApi.writeConfig(newConfig);
 
       setSkins(skins => {
         const newVal = skins.filter(skin => skin !== data.skin);
         return newVal;
       });
+      setSkins(skins => skins.filter(skin => !skin.skinPath.includes(skinName)));
       if (parent === selected) {
         setSelectedElement(null);
         setSelected(null);
