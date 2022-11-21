@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import styled, { css, keyframes } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -108,13 +108,9 @@ const getInstances = (instances, sortOrder) => {
 
 
 const Instances = ({ jaholldeData }) => {
-
     const [isDevInstance, setIsDevInstance] = useState(false);
-
-
-    useEffect(() => {
-        setIsDevInstance(!!jaholldeData?.hasDevRights);
-    }, [jaholldeData]);
+    const allowDevMods = useRef(null);
+    const [allowDevModsVal, setAllowDevMods] = useState(null);
 
     const instanceSortOrder = useSelector(
         state => state.settings.instanceSortOrder
@@ -158,7 +154,6 @@ const Instances = ({ jaholldeData }) => {
         }
     }, []);
 
-
     useEffect(() => {
         ipcRenderer.removeAllListeners("check-for-texturepack-updates");
         ipcRenderer.on("check-for-texturepack-updates", async (event, instanceName) => {
@@ -199,10 +194,12 @@ const Instances = ({ jaholldeData }) => {
     }, [startedInstances]);
 
     const loadData = async (updateConfig = false) => {
+        if (allowDevMods.current === null) return;
+
         //if (modsOpen) return;
         console.log("checking if update is available for: ", instanceName, updateConfig);
 
-        const updateMods2 = await getUpdateMods(instancesPath, instanceName, updateConfig);
+        const updateMods2 = await getUpdateMods(instancesPath, instanceName, updateConfig, allowDevMods.current);
         setUpdateMods(updateMods2);
         const finishedInstances = await getInstancesComplete(instancesPath);
         const createInstance2 = Object.keys(finishedInstances).find(l => l === instanceName) === undefined;
@@ -218,6 +215,18 @@ const Instances = ({ jaholldeData }) => {
         setUpdateAvailable(updateAv);
         return updateAv;
     };
+
+    useEffect(() => {
+        setIsDevInstance(!!jaholldeData?.hasDevRights);
+        if (jaholldeData) {
+            const dw = !!jaholldeData?.allowDevMods;
+            if (dw !== allowDevMods.current) {
+                allowDevMods.current = dw;
+                setAllowDevMods(dw);
+                loadData();
+            }
+        }
+    }, [jaholldeData]);
 
     useEffect(async () => {
         await loadData();
@@ -341,7 +350,7 @@ const Instances = ({ jaholldeData }) => {
 
     const openModSettings = () => {
         setModsOpen(true);
-        dispatch(openModal('ModsManagement', { instanceName }));
+        dispatch(openModal('ModsManagement', { instanceName, allowDevMods: allowDevMods.current }));
     }
 
     const [overlayConnected, setOverlayConnected] = useState(false);
@@ -464,7 +473,7 @@ const Instances = ({ jaholldeData }) => {
                     }}>
                         {
                             instances.length > 0 ? (
-                                instances.map(i => <Instance key={i.name} instanceName={i.name} />)
+                                instances.map(i => <Instance key={i.name} instanceName={i.name} allowDevMods={allowDevModsVal} />)
                             ) : (
                                 <NoInstance>
                                     Es wurde keine Instanz erstellt.
