@@ -122,7 +122,7 @@ const ModsManagement = ({instanceName, allowDevMods}) => {
             <Header>
               <b>{el.name}</b>
               <div style={{flexGrow: 1}} />
-              <input type="checkbox" checked={el.active} disabled={!el.optional || hasActivatedDependency(el)} css={`
+              <input type="checkbox" checked={el.active} disabled={(!el.optional || hasActivatedDependency(el)) && !allowDevMods} css={`
                   align-self: center;
                 `} onChange={(event) => setModChecked(el.name, event.target.checked)} />
 
