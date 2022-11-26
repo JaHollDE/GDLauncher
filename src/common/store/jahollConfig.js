@@ -10,8 +10,9 @@ import crypto from "crypto";
 
 let config = undefined;
 let webData;
+let webDataDev;
 
-export async function initConfig(instanceName) {
+export async function initConfig(instanceName, allowDevMods = false) {
     const isDevUrl = await checkDevInstance(instanceName);
     const url = await getDevURL(isDevUrl);
 
@@ -26,13 +27,23 @@ export async function initConfig(instanceName) {
         config = [];
     }
 
-    webData = json;
-    fillConfig();
+    const webDataD = [];
+    webData = json.filter(l => {
+        if (l.devMod) {
+            webDataD.push(l);
+            return false;
+        }
+        return true;
+    });
+    webDataDev = webDataD;
+    fillConfig(allowDevMods);
 
 }
 
-function fillConfig() {
-    webData.forEach(element => {
+function fillConfig(allowDevMods = false) {
+    const res = [...webData];
+    if (allowDevMods) res.push(...webDataDev);
+    res.forEach(element => {
         let found = false;
         config = config.map(l => {
             if (l.file === element.file) {
@@ -60,8 +71,8 @@ export async function getModVersions(instanceName) {
     return config;
 }
 
-export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
-    loadingConfig = initConfig(instanceName);
+export async function getUpdateMods(instancesPath, instanceName, updateConfig, allowDevMods = false) {
+    loadingConfig = initConfig(instanceName, allowDevMods);
     await loadingConfig;
 
     await setConfig(config, instanceName);
@@ -70,12 +81,15 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
 
     const instanceFolder = path.join(instancesPath, instanceName);
 
+    const newWebData = [...webData];
+    if (allowDevMods) newWebData.push(...webDataDev);
+
     let deleteMod = false;
 
     config = config.filter(element => {
         let found = undefined;
 
-        webData.forEach(l => {
+        newWebData.forEach(l => {
             if (l.file === element.file && l.name === element.name) {
                 found = {
                     ...l,
@@ -120,7 +134,7 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
         const p = path.join(instanceFolder, element.file);
         const pathExists = fsa.existsSync(p);
 
-        const webDataEntry = webData.find(l => l.file === element.file);
+        const webDataEntry = newWebData.find(l => l.file === element.file);
 
         if (webDataEntry === undefined || webDataEntry === null) return;
 
@@ -139,8 +153,11 @@ export async function getUpdateMods(instancesPath, instanceName, updateConfig) {
     return toUpdate;
 }
 
-export async function getWebData() {
+export async function getWebData(allowDevMods = false) {
     await loadingConfig;
+    if (allowDevMods) {
+        return [...webData, ...webDataDev];
+    }
     return webData;
 }
 

@@ -169,7 +169,7 @@ const MenuInstanceName = styled.div`
   font-weight: 700;
 `;
 
-const Instance = ({ instanceName }) => {
+const Instance = ({ instanceName, allowDevMods }) => {
     const dispatch = useDispatch();
     const [isHovered, setIsHovered] = useState(false);
     const [background, setBackground] = useState(`${instanceDefaultBackground}`);
@@ -206,7 +206,7 @@ const Instance = ({ instanceName }) => {
     }
 
     const openModSettings = () => {
-        dispatch(openModal('ModsManagement', { instanceName }));
+        dispatch(openModal('ModsManagement', { instanceName, allowDevMods }));
     };
 
     const openMinecraftLogs = () => {
