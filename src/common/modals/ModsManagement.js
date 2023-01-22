@@ -57,7 +57,7 @@ export function triggerModChangeEvent() {
   modChangeEvent?.();
 }
 
-const ModsManagement = ({instanceName}) => {
+const ModsManagement = ({instanceName, allowDevMods}) => {
   const [config, setConfig] = useState([]);
   const [webData, setWebData] = useState([]);
 
@@ -66,10 +66,12 @@ const ModsManagement = ({instanceName}) => {
     setConfig(await getConfig());
   }, []);
 
-
-  getWebData().then(data => {
-    setWebData(data)
-  }).catch(console.warn);
+  useEffect(() => {
+    getWebData(allowDevMods).then(data => {
+      setWebData(data);
+      console.log("WEb data: ", data);
+    }).catch(console.warn);
+  }, []);
 
   const setModChecked = async (name, state) => {
     const toActive = [];
@@ -120,7 +122,7 @@ const ModsManagement = ({instanceName}) => {
             <Header>
               <b>{el.name}</b>
               <div style={{flexGrow: 1}} />
-              <input type="checkbox" checked={el.active} disabled={!el.optional || hasActivatedDependency(el)} css={`
+              <input type="checkbox" checked={el.active} disabled={(!el.optional || hasActivatedDependency(el)) && !allowDevMods} css={`
                   align-self: center;
                 `} onChange={(event) => setModChecked(el.name, event.target.checked)} />
 
