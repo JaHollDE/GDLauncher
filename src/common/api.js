@@ -2,6 +2,8 @@
 import axios from "axios";
 import qs from "querystring";
 import {
+  MOJANG_APIS,
+  FORGESVC_URL,
   FABRIC_APIS,
   FORGESVC_URL,
   FTB_API_URL,
@@ -13,8 +15,11 @@ import {
   MICROSOFT_XBOX_LOGIN_URL,
   MICROSOFT_XSTS_AUTH_URL,
   MINECRAFT_SERVICES_URL,
-  MOJANG_APIS
-} from "./utils/constants";
+  FTB_API_URL,
+  JAVA_LATEST_MANIFEST_URL
+} from './utils/constants';
+import { sortByDate, getMcManifestUrl } from './utils';
+import ga from './utils/analytics';
 import { sortByDate } from "./utils";
 import ga from "./utils/analytics";
 import fs from "fs";
@@ -153,7 +158,7 @@ export const mcInvalidate = (accessToken, clientToken) => {
 };
 
 export const getMcManifest = () => {
-  const url = `${MC_MANIFEST_URL}?timestamp=${new Date().getTime()}`;
+  const url = `${getMcManifestUrl()}?timestamp=${new Date().getTime()}`;
   return axios.get(url);
 };
 

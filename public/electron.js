@@ -23,8 +23,8 @@ const {
 } = require('base64url');
 const { URL } = require('url');
 const UserAgent = require('user-agents');
-const nsfw = require('./native/nsfw');
-const napi = require('./native/napi');
+const nsfw = require('./nsfw');
+const napi = require('./native/napi.node');
 
 // console.log(napi.fibonacci(10));
 
@@ -169,7 +169,13 @@ const userAgent = new UserAgent({
 // app.allowRendererProcessReuse = true;
 Menu.setApplicationMenu(Menu.buildFromTemplate(edit));
 
-app.setPath('userData', path.join(app.getPath('appData'), 'gdlauncher_next'));
+const baseUserPath = path.join(app.getPath('appData'), 'gdlauncher_next');
+
+if (!fss.existsSync(baseUserPath)) {
+  fss.mkdirSync(baseUserPath);
+}
+
+app.setPath('userData', baseUserPath);
 
 let allowUnstableReleases = false;
 const releaseChannelExists = fss.existsSync(
@@ -242,7 +248,7 @@ const get7zPath = async () => {
     if (process.platform === 'win32') {
       baseDir = path.join(baseDir, '7zip-bin/win/x64');
     } else if (process.platform === 'linux') {
-      baseDir = path.join(baseDir, '7zip-bin/linux/x64');
+      baseDir = path.join(baseDir, '7zip-bin/linux', process.arch);
     } else if (process.platform === 'darwin') {
       baseDir = path.resolve(baseDir, '../../../', '7zip-bin/mac/x64');
     }
@@ -765,6 +771,51 @@ ipcMain.handle('download-optedout-mods', async (e, { mods, instancePath }) => {
                 error: false,
                 warning: true
               });
+            } else if (details.statusCode > 400) {
+              /**
+               * Check for Cloudflare blocking automated downloads.
+               *
+               * Sometimes, Cloudflare prevents the internal browser from navigating to the
+               * Curseforge mod download page and starting the download. The HTTP status code
+               * it returns is (generally) either 403 or 503. The code below retrieves the
+               * HTML of the page returned to the browser and checks for the title and some
+               * content on the page to determine if the returned page is Cloudflare.
+               * Unfortunately using the `webContents.getTitle()` returns an empty string.
+               */
+              details.webContents
+                .executeJavaScript(
+                  `
+                    function getHTML () {
+                      return new Promise((resolve, reject) => { resolve(document.documentElement.innerHTML); });
+                    }
+                    getHTML();
+                  `
+                )
+                .then(content => {
+                  const isCloudflare =
+                    content.includes('Just a moment...') &&
+                    content.includes(
+                      'needs to review the security of your connection before proceeding.'
+                    );
+
+                  if (isCloudflare) {
+                    resolve();
+                    mainWindow.webContents.send(
+                      'opted-out-download-mod-status',
+                      {
+                        modId: modManifest.id,
+                        error: false,
+                        warning: true,
+                        cloudflareBlock: true
+                      }
+                    );
+                  }
+
+                  return null;
+                })
+                .catch(() => {
+                  // no-op
+                });
             }
           }
         );
@@ -927,7 +978,7 @@ ipcMain.handle('installUpdateAndQuitOrRestart', async (e, quitAfterInstall) => {
 
     await fs.writeFile(
       path.join(tempFolder, updaterVbs),
-      `Set WshShell = CreateObject("WScript.Shell") 
+      `Set WshShell = CreateObject("WScript.Shell")
           WshShell.Run chr(34) & "${path.join(
             tempFolder,
             updaterBat
