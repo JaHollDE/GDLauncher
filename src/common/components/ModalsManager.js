@@ -1,9 +1,9 @@
-import React, { useState, useEffect, lazy } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { closeModal } from '../reducers/modals/actions';
-import AsyncComponent from './AsyncComponent';
-import Settings from '../modals/Settings';
+import React, { useState, useEffect, lazy } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
+import { closeModal } from "../reducers/modals/actions";
+import AsyncComponent from "./AsyncComponent";
+import Settings from "../modals/Settings";
 
 const Overlay = styled.div`
   position: absolute;
@@ -33,70 +33,75 @@ const Modal = styled.div`
 `;
 
 const modalsComponentLookupTable = {
-  AddInstance: AsyncComponent(lazy(() => import('../modals/AddInstance'))),
+  AddInstance: AsyncComponent(lazy(() => import("../modals/AddInstance"))),
+  Success: AsyncComponent(lazy(() => import("../modals/Success"))),
+  ImportSkin: AsyncComponent(lazy(() => import("../modals/ImportSkin"))),
+  SkinManager: AsyncComponent(
+    lazy(() => import("../modals/jahollde/SkinManager"))
+  ),
   AccountsManager: AsyncComponent(
-      lazy(() => import('../modals/AccountsManager'))
+    lazy(() => import("../modals/AccountsManager"))
   ),
   JaHollDERegister: AsyncComponent(
-      lazy(() => import('../modals/jahollde/Register'))
+    lazy(() => import("../modals/jahollde/Register"))
   ),
   ModsManagement: AsyncComponent(
-      lazy(() => import("../modals/ModsManagement"))
+    lazy(() => import("../modals/ModsManagement"))
   ),
   Settings,
-  Screenshot: AsyncComponent(lazy(() => import('../modals/Screenshot'))),
+  Screenshot: AsyncComponent(lazy(() => import("../modals/Screenshot"))),
   InstanceDeleteConfirmation: AsyncComponent(
-      lazy(() => import('../modals/InstanceDeleteConfirmation'))
+    lazy(() => import("../modals/InstanceDeleteConfirmation"))
   ),
   ActionConfirmation: AsyncComponent(
-      lazy(() => import('../modals/ActionConfirmation'))
+    lazy(() => import("../modals/ActionConfirmation"))
   ),
-  AddAccount: AsyncComponent(lazy(() => import('../modals/AddAccount'))),
+  AddAccount: AsyncComponent(lazy(() => import("../modals/AddAccount"))),
   ModpackDescription: AsyncComponent(
-      lazy(() => import('../modals/ModpackDescription'))
+    lazy(() => import("../modals/ModpackDescription"))
   ),
   InstanceManager: AsyncComponent(
-      lazy(() => import('../modals/InstanceManager'))
+    lazy(() => import("../modals/InstanceManager"))
   ),
   InstanceExportCurseForge: AsyncComponent(
-      lazy(() => import('../modals/InstanceExport/CurseForge'))
+    lazy(() => import("../modals/InstanceExport/CurseForge"))
   ),
   InstanceDuplicateName: AsyncComponent(
-      lazy(() => import('../modals/InstanceDuplicateName'))
+    lazy(() => import("../modals/InstanceDuplicateName"))
   ),
   AutoUpdatesNotAvailable: AsyncComponent(
-      lazy(() => import('../modals/AutoUpdatesNotAvailable'))
+    lazy(() => import("../modals/AutoUpdatesNotAvailable"))
   ),
   OptedOutModsList: AsyncComponent(
-      lazy(() => import('../modals/OptedOutModsList'))
+    lazy(() => import("../modals/OptedOutModsList"))
   ),
-  BisectHosting: AsyncComponent(lazy(() => import('../modals/BisectHosting'))),
-  Onboarding: AsyncComponent(lazy(() => import('../modals/Onboarding'))),
-  ModOverview: AsyncComponent(lazy(() => import('../modals/ModOverview'))),
-  ModChangelog: AsyncComponent(lazy(() => import('../modals/ModChangelog'))),
-  ModsBrowser: AsyncComponent(lazy(() => import('../modals/ModsBrowser'))),
-  JavaSetup: AsyncComponent(lazy(() => import('../modals/JavaSetup'))),
-  ModsUpdater: AsyncComponent(lazy(() => import('../modals/ModsUpdater'))),
+  BisectHosting: AsyncComponent(lazy(() => import("../modals/BisectHosting"))),
+  Onboarding: AsyncComponent(lazy(() => import("../modals/Onboarding"))),
+  ModOverview: AsyncComponent(lazy(() => import("../modals/ModOverview"))),
+  ModChangelog: AsyncComponent(lazy(() => import("../modals/ModChangelog"))),
+  ModsBrowser: AsyncComponent(lazy(() => import("../modals/ModsBrowser"))),
+  JavaSetup: AsyncComponent(lazy(() => import("../modals/JavaSetup"))),
+  ModsUpdater: AsyncComponent(lazy(() => import("../modals/ModsUpdater"))),
   InstanceCrashed: AsyncComponent(
-      lazy(() => import('../modals/InstanceCrashed'))
+    lazy(() => import("../modals/InstanceCrashed"))
   ),
-  ChangeLogs: AsyncComponent(lazy(() => import('../modals/ChangeLogs'))),
+  ChangeLogs: AsyncComponent(lazy(() => import("../modals/ChangeLogs"))),
   McVersionChanger: AsyncComponent(
-      lazy(() => import('../modals/McVersionChanger'))
+    lazy(() => import("../modals/McVersionChanger"))
   ),
-  PolicyModal: AsyncComponent(lazy(() => import('../modals/PolicyModal'))),
+  PolicyModal: AsyncComponent(lazy(() => import("../modals/PolicyModal"))),
   InstanceStartupAd: AsyncComponent(
-      lazy(() => import('../modals/InstanceStartupAd'))
+    lazy(() => import("../modals/InstanceStartupAd"))
   ),
 
   InstanceLog: AsyncComponent(
-    lazy(() => import('../modals/InstanceLog'))
+    lazy(() => import("../modals/InstanceLog"))
   ),
   InstanceDownloadFailed: AsyncComponent(
-      lazy(() => import('../modals/InstanceDownloadFailed'))
+    lazy(() => import("../modals/InstanceDownloadFailed"))
   ),
   JaHollDEInstanceCreation: AsyncComponent(
-      lazy(() => import("../modals/JaHollDEInstanceCreation"))
+    lazy(() => import("../modals/JaHollDEInstanceCreation"))
   ),
   Cookies: AsyncComponent(
     lazy(() => import("../modals/Cookies"))
@@ -104,7 +109,8 @@ const modalsComponentLookupTable = {
   CloseWarning: AsyncComponent(
     lazy(() => import("../modals/CloseWarning"))
   ),
-  InfoModal: AsyncComponent(lazy(() => import('../modals/InfoModal')))
+  InfoModal: AsyncComponent(lazy(() => import("../modals/InfoModal")))
+
 };
 
 const ModalContainer = ({
@@ -117,7 +123,7 @@ const ModalContainer = ({
     opacity: 0
   });
   const [bgStyle, setBgStyle] = useState({
-    background: 'rgba(0, 0, 0, 0.70)',
+    background: "rgba(0, 0, 0, 0.70)",
     opacity: 0
   });
 
@@ -140,7 +146,7 @@ const ModalContainer = ({
 
       setTimeout(() => {
         setModalStyle({
-          transform: 'scale(1)'
+          transform: "scale(1)"
         });
       }, 500);
       return;
@@ -155,7 +161,7 @@ const ModalContainer = ({
       opacity: 1
     });
     setBgStyle({
-      background: 'rgba(0, 0, 0, 0.70)',
+      background: "rgba(0, 0, 0, 0.70)",
       opacity: 0
     });
   };
@@ -167,15 +173,15 @@ const ModalContainer = ({
     });
 
     setBgStyle({
-      background: 'rgba(0, 0, 0, 0.70)',
+      background: "rgba(0, 0, 0, 0.70)",
       opacity: 1
     });
   };
 
   return (
-      <Overlay onMouseDown={back} style={bgStyle}>
-        <Modal style={modalStyle}>{children}</Modal>
-      </Overlay>
+    <Overlay onMouseDown={back} style={bgStyle}>
+      <Modal style={modalStyle}>{children}</Modal>
+    </Overlay>
   );
 };
 
@@ -187,16 +193,16 @@ const ModalsManager = () => {
     const ModalComponent = modalsComponentLookupTable[modalType];
 
     return (
-        <ModalContainer
-            unmounting={unmounting}
-            key={modalType}
-            preventClose={modalProps.preventClose}
-            abortCallback={modalProps.abortCallback}
-            modalType={modalType}
-        >
-          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-          <ModalComponent {...modalProps} />
-        </ModalContainer>
+      <ModalContainer
+        unmounting={unmounting}
+        key={modalType}
+        preventClose={modalProps.preventClose}
+        abortCallback={modalProps.abortCallback}
+        modalType={modalType}
+      >
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <ModalComponent {...modalProps} />
+      </ModalContainer>
     );
   });
 

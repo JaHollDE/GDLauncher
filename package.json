@@ -30,7 +30,7 @@
   "homepage": "./",
   "main": "build/electron.js",
   "scripts": {
-    "install": "npm run napi-build",
+    "install": "npm run napi-build && npm run nsfw-move",
     "start": "cross-env-shell NODE_ENV=development craco start",
     "start-electron": "concurrently \"npm run start\" \"wait-on http://localhost:3000 && electron .\"",
     "start-prod": "electron .",
@@ -40,7 +40,7 @@
     "eject": "craco eject",
     "buildtsc": "cd public/overlay && tsc",
     "build-electron:portable": "npm run buildtsc && cross-env-shell NODE_ENV=production REACT_APP_RELEASE_TYPE=portable webpack --config ./scripts/electronWebpackConfig.js --color",
-    "build-electron:setup": "npm run buildtsc && cross-env-shell NODE_ENV=production REACT_APP_RELEASE_TYPE=setup webpack --config ./scripts/electronWebpackConfig.js --color",
+    "build-electron:setup": "npm run buildtsc && cross-env-shell NODE_ENV=production REACT_APP_RELEASE_TYPE=setup webpack --config ./scripts/electronWebpackConfig.js --c\n./src/common/api.js\nSyntaxError: C:\\Users\\simon\\Documents\\Coding\\jahollde\\JaHollDELauncher\\src\\common\\api.js: Identifier 'FORGESVC_URL' has already been declared. (8:2)\n\n   6 |   FORGESVC_URL,\n   7 |   FABRIC_APIS,\n>  8 |   FORGESVC_URL,\n     |   ^\n   9 |   FTB_API_URL,\n  10 |   IMGUR_CLIENT_ID,\n  11 |   JAVA_LATEST_MANIFEST_URL,\nThis error occurred during the build time and cannot be dismissed.olor",
     "build-electron:dev": "npm run buildtsc && cross-env-shell NODE_ENV=development REACT_APP_RELEASE_TYPE=setup webpack --config ./scripts/electronWebpackConfig.js --color",
     "lint": "eslint .",
     "dev": "npm run build-electron:dev && cross-env-shell NODE_ENV=development APP_TYPE=electron BROWSER=none \"npm run start-electron\"",
@@ -51,7 +51,8 @@
     "upload": "node ./scripts/uploadRelease.js",
     "release": "npm run napi-build && rimraf ./deploy && npm run release:setup && npm run release:portable",
     "prepare": "husky install",
-    "napi-build": "cd napi && npm run build && node ../scripts/moveNapi.js"
+    "napi-build": "cd napi && npm run build && node ../scripts/moveNapi.js",
+    "nsfw-move": "cd node_modules/nsfw && npm install && cd ../.. && node scripts/moveNsfw.js"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -78,7 +79,8 @@
   },
   "cpu": [
     "x64",
-    "arm64"
+    "arm64",
+    "arm"
   ],
   "browserslist": {
     "production": [
@@ -122,9 +124,9 @@
     "concurrently": "^6.2.1",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
-    "electron": "^19.0.4",
-    "electron-builder": "^23.0.3",
-    "electron-updater": "^5.0.1",
+    "electron": "^19.0.5",
+    "electron-builder": "^23.0.9",
+    "electron-updater": "^5.0.4",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.3.0",
@@ -140,6 +142,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.4",
     "native-ext-loader": "^2.3.0",
+    "nsfw": "2.1.2",
     "prettier": "^2.5.1",
     "react-scripts": "4.0.3",
     "rimraf": "^3.0.2",
@@ -203,6 +206,7 @@
     "react-redux": "^7.2.6",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
+    "react-skinview3d": "^5.0.0",
     "react-transition-group": "^4.4.2",
     "react-type-animation": "^1.1.2",
     "react-virtualized-auto-sizer": "^1.0.6",

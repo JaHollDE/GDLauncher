@@ -21,13 +21,21 @@ import {
   removeDuplicates,
   sortByForgeVersionDesc
 } from '../../../common/utils';
-import { getAddon, getAddonFile, mcGetPlayerSkin } from '../../../common/api';
+import { getAddon, getAddonFile, mcGetPlayerSkin } from "../../../common/api";
 import { downloadFile } from './downloader';
 import browserDownload from '../../../common/utils/browserDownload';
 import { REQUIRED_JAVA_ARGS } from './constants';
 
 export const isDirectory = source =>
   fs.lstat(source).then(r => r.isDirectory());
+
+export async function getPlayerSkin(uuid) {
+  const playerSkin = await mcGetPlayerSkin(uuid);
+  const { data } = playerSkin;
+  const base64 = data.properties[0].value;
+  const decoded = JSON.parse(Buffer.from(base64, 'base64').toString());
+  return decoded?.textures?.SKIN?.url;
+}
 
 export const getDirectories = async source => {
   const dirs = await fs.readdir(source);
@@ -76,6 +84,21 @@ export const convertOSToJavaFormat = ElectronFormat => {
       return 'mac';
     case 'linux':
       return 'linux';
+    default:
+      return false;
+  }
+};
+
+export const convertArchToJavaFormat = ElectronFormat => {
+  switch (ElectronFormat) {
+    case 'x64':
+      return 'x64';
+    case 'ia32':
+      return 'x32';
+    case 'arm':
+      return 'arm';
+    case 'arm64':
+      return 'aarch64';
     default:
       return false;
   }
@@ -321,6 +344,7 @@ export const isLatestJavaDownloaded = async (
   version = 8
 ) => {
   const javaOs = convertOSToJavaFormat(process.platform);
+  const javaArch = convertArchToJavaFormat(process.arch);
   let log = null;
 
   const isJavaLatest = version === LATEST_JAVA_VERSION;
@@ -330,7 +354,7 @@ export const isLatestJavaDownloaded = async (
   const javaMeta = manifest.find(
     v =>
       v.os === javaOs &&
-      v.architecture === 'x64' &&
+      v.architecture === javaArch &&
       (v.binary_type === 'jre' || v.binary_type === 'jdk')
   );
   const javaFolder = path.join(
@@ -873,14 +897,6 @@ export const downloadAddonZip = async (id, fileID, instancePath, tempPath) => {
   });
   const manifest = await fse.readJson(instanceManifest);
   return manifest;
-};
-
-export const getPlayerSkin = async uuid => {
-  const playerSkin = await mcGetPlayerSkin(uuid);
-  const { data } = playerSkin;
-  const base64 = data.properties[0].value;
-  const decoded = JSON.parse(Buffer.from(base64, 'base64').toString());
-  return decoded?.textures?.SKIN?.url;
 };
 
 export const extractFace = async buffer => {
