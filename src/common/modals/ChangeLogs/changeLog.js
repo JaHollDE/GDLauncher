@@ -8,6 +8,10 @@ module.exports = {
   ],
   improvements: [],
   bugfixes: [
-
+    {
+      header: "Instanz-Installation fehlerhaft",
+      content: "Das Installieren von Instanzen war fehlerhaft, durch einen Merge wurde dieser Fehler behoben",
+      advanced: {}
+    }
   ]
 };
