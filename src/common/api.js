@@ -5,10 +5,7 @@ import {
   MOJANG_APIS,
   FORGESVC_URL,
   FABRIC_APIS,
-  FORGESVC_URL,
-  FTB_API_URL,
   IMGUR_CLIENT_ID,
-  JAVA_LATEST_MANIFEST_URL,
   JAVA_MANIFEST_URL,
   MC_MANIFEST_URL,
   MICROSOFT_LIVE_LOGIN_URL,
@@ -20,8 +17,6 @@ import {
 } from './utils/constants';
 import { sortByDate, getMcManifestUrl } from './utils';
 import ga from './utils/analytics';
-import { sortByDate } from "./utils";
-import ga from "./utils/analytics";
 import fs from "fs";
 
 const axioInstance = axios.create({
