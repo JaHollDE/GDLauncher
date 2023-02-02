@@ -14,10 +14,16 @@ export function accountChange() {
 }
 
 let forceInstance = undefined;
+let forceLocalhost = undefined;
 export async function getDevURL(isDevInstance) {
-    if (forceInstance === undefined) {
+    if (forceInstance === undefined || forceLocalhost === undefined) {
         const appData = await ipcRenderer.invoke('getAppdataPath');
         forceInstance = fss.existsSync(path.join(appData, "gdlauncher_next", "developer"));
+        forceLocalhost = fss.existsSync(path.join(appData, "gdlauncher_next", "localhost"));
+    }
+
+    if (forceLocalhost) {
+        return "http://localhost:4200";
     }
 
     if (forceInstance) isDevInstance = true;
