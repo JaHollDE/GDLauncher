@@ -28,7 +28,7 @@ export async function createInstance(dispatch, instanceName, isDevInstance = fal
         addToQueue(instanceName, {
             loaderType: FABRIC,
             mcVersion: "1.20.1",
-            loaderVersion: "0.14.9"
+            loaderVersion: "0.14.21"
         })
     );
 
