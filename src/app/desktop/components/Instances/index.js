@@ -10,11 +10,6 @@ import {
 
 import getInstancesComplete from "../../utils/getInstances"
 
-import bg0 from "../../../../common/assets/jahollde/backgrounds/bg0.jpg"
-import bg1 from "../../../../common/assets/jahollde/backgrounds/bg1.jpg"
-import bg2 from "../../../../common/assets/jahollde/backgrounds/bg2.jpg"
-import bg3 from "../../../../common/assets/jahollde/backgrounds/bg3.png"
-
 import link from "../../../../common/assets/jahollde/link.svg"
 import arrowRepeat from "../../../../common/assets/jahollde/arrow-repeat.svg"
 import eyeSlash from "../../../../common/assets/jahollde/eye-slash.svg"

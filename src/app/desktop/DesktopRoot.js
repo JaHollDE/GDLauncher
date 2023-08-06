@@ -41,6 +41,13 @@ import bg0 from "../../common/assets/jahollde/backgrounds/bg0.jpg";
 import bg1 from "../../common/assets/jahollde/backgrounds/bg1.jpg";
 import bg2 from "../../common/assets/jahollde/backgrounds/bg2.jpg";
 import bg3 from "../../common/assets/jahollde/backgrounds/bg3.png";
+import bg4 from "../../common/assets/jahollde/backgrounds/bg4.jpg";
+import bg5 from "../../common/assets/jahollde/backgrounds/bg5.jpg";
+import bg6 from "../../common/assets/jahollde/backgrounds/bg6.jpg";
+import bg7 from "../../common/assets/jahollde/backgrounds/bg7.jpg";
+import bg8 from "../../common/assets/jahollde/backgrounds/bg8.jpg";
+import bg9 from "../../common/assets/jahollde/backgrounds/bg9.jpg";
+import bg10 from "../../common/assets/jahollde/backgrounds/bg10.jpg";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -59,7 +66,7 @@ const Container = styled.div`
   will-change: transform;
 `;
 
-const randomBackgrounds = [bg0, bg1, bg2, bg3];
+const randomBackgrounds = [bg0, bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9, bg10];
 const randomBackground = randomBackgrounds[Math.floor(Math.random() * randomBackgrounds.length)];
 
 function DesktopRoot({ store }) {
